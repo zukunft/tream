@@ -25,7 +25,7 @@ You should have received a copy of the GNU General Public License
 along with TREAM. If not, see <http://www.gnu.org/licenses/gpl.html>.
 
 To contact the authors write to: 
-Timon Zielonka <heang@zukunft.com>
+Timon Zielonka <timon@zukunft.com>
 
 Copyright (c) 2013-2015 zukunft.com AG, Zurich
 Heang Lor <heang@zukunft.com>
