@@ -3,7 +3,7 @@
 
 /* 
 
-tream_db.php - Yahoo link
+tream_get_yahoo.php - Yahoo link
 
 TO DO: 
 
