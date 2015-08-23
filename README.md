@@ -10,5 +10,6 @@ Install
 4. Download all TREAM files and save it in the www root folder incl. the path (e.g. /batch in ../www/batch/.. )
 5. Create a new sql database with a user called p4a and save the password in /batch/tream_db_adapter.php and /p4a/applications/tream/index.php
 6. create the database by executing /sql/tream.sql
-7. start the program with /yourserver/p4a/applications/tream
+7. fill the database with default settings by executing /sql/tream_data.sql
+8. start the program with /yourserver/p4a/applications/tream
 
