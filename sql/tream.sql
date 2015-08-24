@@ -2278,6 +2278,79 @@ CREATE TABLE IF NOT EXISTS `v_portfolio_pos_closed` (
 -- --------------------------------------------------------
 
 --
+-- Stand-in structure for view `v_portfolio_pos_derivate`
+--
+DROP VIEW IF EXISTS `v_portfolio_pos_derivate`;
+CREATE TABLE IF NOT EXISTS `v_portfolio_pos_derivate` (
+`portfolio_id` int(11)
+,`security_id` int(11)
+,`security_type_id` int(11)
+,`security_name` varchar(200)
+,`currency_id` int(11)
+,`asset_class` varchar(200)
+,`position` double
+,`trade_curr` varchar(20)
+,`sec_curr` varchar(20)
+,`security_issuer_id` int(11)
+,`decimals` int(11)
+,`ref_decimals` int(11)
+,`bid` float
+,`ask` float
+,`last` float
+,`open_value` double
+,`buy_price` double
+,`pos_value` double
+,`pos_value_ref` double
+,`pnl` double
+,`pnl_last` double
+,`pnl_ref` double
+,`pnl_ref_open` double
+,`pnl_pct` double
+,`pnl_market` double
+,`pnl_fx` double
+);
+-- --------------------------------------------------------
+
+--
+-- Stand-in structure for view `v_portfolio_pos_get`
+--
+DROP VIEW IF EXISTS `v_portfolio_pos_get`;
+CREATE TABLE IF NOT EXISTS `v_portfolio_pos_get` (
+`portfolio_id` int(11)
+,`security_id` int(11)
+,`currency_id` int(11)
+,`position` double
+);
+-- --------------------------------------------------------
+
+--
+-- Stand-in structure for view `v_portfolio_pos_get_prices`
+--
+DROP VIEW IF EXISTS `v_portfolio_pos_get_prices`;
+CREATE TABLE IF NOT EXISTS `v_portfolio_pos_get_prices` (
+`portfolio_id` int(11)
+,`security_id` int(11)
+,`currency_id` int(11)
+,`position` double
+,`bid` float
+,`ask` float
+,`last_price` float
+,`update_time` datetime
+,`used_price` double
+);
+-- --------------------------------------------------------
+
+--
+-- Stand-in structure for view `v_portfolio_types`
+--
+DROP VIEW IF EXISTS `v_portfolio_types`;
+CREATE TABLE IF NOT EXISTS `v_portfolio_types` (
+`portfolio_type_id` int(11)
+,`type_name` varchar(200)
+);
+-- --------------------------------------------------------
+
+--
 -- Stand-in structure for view `v_position_pnl`
 --
 CREATE TABLE IF NOT EXISTS `v_position_pnl` (
@@ -2300,6 +2373,7 @@ CREATE TABLE IF NOT EXISTS `v_position_pnl` (
 ,`ask` float
 ,`last_price` double
 ,`sell_price` double
+,`update_time` datetime
 ,`pos_value` double
 ,`pos_value_ref` double
 ,`pos_value_ref_open` double
@@ -2397,6 +2471,16 @@ CREATE TABLE IF NOT EXISTS `v_securities_mm_symbol_request` (
 -- --------------------------------------------------------
 
 --
+-- Stand-in structure for view `v_security_amount_types`
+--
+DROP VIEW IF EXISTS `v_security_amount_types`;
+CREATE TABLE IF NOT EXISTS `v_security_amount_types` (
+`security_amount_type_id` int(11)
+,`type_name` varchar(200)
+);
+-- --------------------------------------------------------
+
+--
 -- Stand-in structure for view `v_security_exposure_stati`
 --
 CREATE TABLE IF NOT EXISTS `v_security_exposure_stati` (
@@ -2415,11 +2499,31 @@ CREATE TABLE IF NOT EXISTS `v_security_fields` (
 -- --------------------------------------------------------
 
 --
+-- Stand-in structure for view `v_security_field_source_types`
+--
+DROP VIEW IF EXISTS `v_security_field_source_types`;
+CREATE TABLE IF NOT EXISTS `v_security_field_source_types` (
+`security_field_source_type_id` int(11)
+,`type_name` varchar(200)
+);
+-- --------------------------------------------------------
+
+--
 -- Stand-in structure for view `v_security_issuers`
 --
 CREATE TABLE IF NOT EXISTS `v_security_issuers` (
 `security_issuer_id` int(11)
 ,`issuer_name` varchar(200)
+);
+-- --------------------------------------------------------
+
+--
+-- Stand-in structure for view `v_security_payment_types`
+--
+DROP VIEW IF EXISTS `v_security_payment_types`;
+CREATE TABLE IF NOT EXISTS `v_security_payment_types` (
+`security_payment_type_id` int(11)
+,`type_name` varchar(200)
 );
 -- --------------------------------------------------------
 
@@ -2523,12 +2627,23 @@ CREATE TABLE IF NOT EXISTS `v_security_quote_types` (
 --
 -- Stand-in structure for view `v_security_triggers_open`
 --
+DROP VIEW IF EXISTS `v_security_triggers_open`;
 CREATE TABLE IF NOT EXISTS `v_security_triggers_open` (
 `security_trigger_id` int(11)
 ,`trigger_type_id` int(11)
+,`type_name` varchar(200)
+,`type_code_id` varchar(200)
 ,`trigger_status_id` int(11)
+,`status_text` varchar(200)
+,`status_code_id` varchar(200)
 ,`trigger_value` double
 ,`security_id` int(11)
+,`portfolio_id` int(11)
+,`sec_name` varchar(200)
+,`ISIN` varchar(20)
+,`bid` float
+,`ask` float
+,`last_price` float
 ,`symbol_mm` varchar(200)
 );
 -- --------------------------------------------------------
@@ -2564,9 +2679,124 @@ CREATE TABLE IF NOT EXISTS `v_security_types` (
 -- --------------------------------------------------------
 
 --
+-- Stand-in structure for view `v_test_price_link`
+--
+DROP VIEW IF EXISTS `v_test_price_link`;
+CREATE TABLE IF NOT EXISTS `v_test_price_link` (
+`portfolio_id` int(11)
+,`security_id` int(11)
+,`security_name` varchar(200)
+,`bid` float
+,`ask` float
+,`last` float
+);
+-- --------------------------------------------------------
+
+--
+-- Stand-in structure for view `v_trades_confirm_to_bank`
+--
+DROP VIEW IF EXISTS `v_trades_confirm_to_bank`;
+CREATE TABLE IF NOT EXISTS `v_trades_confirm_to_bank` (
+`portfolio_id` int(11)
+,`portfolio_name` varchar(200)
+,`trade_id` int(11)
+,`trade_type` varchar(200)
+,`size` double
+,`security_name` varchar(200)
+,`price` double
+,`valid_until` timestamp
+,`creation_time` timestamp
+,`confirmation_time_bank` timestamp
+,`person_name` varchar(501)
+,`portfolio_manager` varchar(501)
+);
+-- --------------------------------------------------------
+
+--
+-- Stand-in structure for view `v_trades_confirm_to_client`
+--
+DROP VIEW IF EXISTS `v_trades_confirm_to_client`;
+CREATE TABLE IF NOT EXISTS `v_trades_confirm_to_client` (
+`portfolio_id` int(11)
+,`portfolio_name` varchar(200)
+,`trade_id` int(11)
+,`trade_type` varchar(200)
+,`size` double
+,`security_name` varchar(200)
+,`price` double
+,`valid_until` timestamp
+,`creation_time` timestamp
+,`confirmation_time_client` timestamp
+,`person_name` varchar(12)
+,`portfolio_manager` varchar(501)
+);
+-- --------------------------------------------------------
+
+--
+-- Stand-in structure for view `v_trades_fx`
+--
+DROP VIEW IF EXISTS `v_trades_fx`;
+CREATE TABLE IF NOT EXISTS `v_trades_fx` (
+`trade_id` int(11)
+,`portfolio_id` int(11)
+,`trade_date` datetime
+,`valid_until` timestamp
+,`confirmation_time` timestamp
+,`trade_confirmation_type_id` int(11)
+,`trade_confirmation_person` varchar(300)
+,`internal_person_id` int(11)
+,`contact_type_id` int(11)
+,`currency_id` int(11)
+,`fx_rate` double
+,`settlement_currency_id` int(11)
+,`trade_type_id` int(11)
+,`trade_status_id` int(11)
+,`size` double
+,`premium_sett` double
+,`premium_netto` double
+,`premium_sett_netto` double
+,`rational` text
+,`settlement_date` date
+,`creation_time` timestamp
+,`bank_ref_id` varchar(100)
+,`counterparty_ref_id` varchar(100)
+,`bank_text_ins` text
+,`checked` tinyint(1)
+,`related_trade_id` int(11)
+,`scanned_bank_confirmation` text
+,`bo_status` int(11)
+,`comment` text
+);
+-- --------------------------------------------------------
+
+--
+-- Stand-in structure for view `v_trade_confirmation_types`
+--
+DROP VIEW IF EXISTS `v_trade_confirmation_types`;
+CREATE TABLE IF NOT EXISTS `v_trade_confirmation_types` (
+`trade_confirmation_type_id` int(11)
+,`type_name` varchar(200)
+);
+-- --------------------------------------------------------
+
+--
 -- Stand-in structure for view `v_trade_fifo_sum_size`
 --
 CREATE TABLE IF NOT EXISTS `v_trade_fifo_sum_size` (
+`portfolio_id` int(11)
+,`security_id` int(11)
+,`trade_date` datetime
+,`size_sum` double
+,`calc_premium_sum` double
+,`premium_sum` double
+);
+-- --------------------------------------------------------
+
+--
+-- Stand-in structure for view `v_trade_fifo_sum_size_test`
+--
+DROP VIEW IF EXISTS `v_trade_fifo_sum_size_test`;
+CREATE TABLE IF NOT EXISTS `v_trade_fifo_sum_size_test` (
 `portfolio_id` int(11)
 ,`security_id` int(11)
 ,`trade_date` datetime
@@ -2608,6 +2838,16 @@ CREATE TABLE IF NOT EXISTS `v_trade_fifo_upl` (
 -- --------------------------------------------------------
 
 --
+-- Stand-in structure for view `v_trade_payment_types`
+--
+DROP VIEW IF EXISTS `v_trade_payment_types`;
+CREATE TABLE IF NOT EXISTS `v_trade_payment_types` (
+`trade_payment_type_id` int(11)
+,`type_name` varchar(200)
+);
+-- --------------------------------------------------------
+
+--
 -- Stand-in structure for view `v_trade_pnl`
 --
 CREATE TABLE IF NOT EXISTS `v_trade_pnl` (
@@ -2636,6 +2876,7 @@ CREATE TABLE IF NOT EXISTS `v_trade_pnl` (
 ,`ask` float
 ,`last_price` double
 ,`sell_price` double
+,`update_time` datetime
 ,`pos_value` double
 ,`pos_value_ref` double
 ,`pos_value_ref_open` double
@@ -2662,6 +2903,7 @@ CREATE TABLE IF NOT EXISTS `v_trade_pnl_calc` (
 ,`security_name` varchar(200)
 ,`security_type_id` int(11)
 ,`asset_class` varchar(200)
+,`asset_code` varchar(100)
 ,`currency_id` int(11)
 ,`trade_curr` varchar(20)
 ,`sec_currency_id` int(11)
@@ -2682,6 +2924,7 @@ CREATE TABLE IF NOT EXISTS `v_trade_pnl_calc` (
 ,`ask` float
 ,`last_price` float
 ,`sell_price` double
+,`update_time` datetime
 ,`pos_value` double
 ,`pos_value_ref` double
 ,`pos_value_ref_open` double
