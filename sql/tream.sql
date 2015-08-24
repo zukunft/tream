@@ -49,7 +49,7 @@ CREATE TABLE IF NOT EXISTS `accounts` (
   KEY `bank_id` (`bank_id`),
   KEY `account_type_id` (`account_type_id`),
   KEY `account_mandat_id` (`account_mandat_id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=37 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
 
@@ -61,7 +61,7 @@ CREATE TABLE IF NOT EXISTS `account_mandates` (
   `account_mandat_id` int(11) NOT NULL AUTO_INCREMENT,
   `description` varchar(200) NOT NULL,
   PRIMARY KEY (`account_mandat_id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=13 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
 
@@ -104,7 +104,7 @@ CREATE TABLE IF NOT EXISTS `account_types` (
   `account_type_id` int(11) NOT NULL AUTO_INCREMENT,
   `description` varchar(200) NOT NULL,
   PRIMARY KEY (`account_type_id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=4 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
 
@@ -216,7 +216,7 @@ CREATE TABLE IF NOT EXISTS `banks` (
   `bank_id` int(11) NOT NULL AUTO_INCREMENT,
   `bank_name` varchar(200) NOT NULL,
   PRIMARY KEY (`bank_id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=8 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
 
@@ -368,7 +368,7 @@ CREATE TABLE IF NOT EXISTS `contact_types` (
   `contact_type_id` int(11) NOT NULL AUTO_INCREMENT,
   `type_name` varchar(200) NOT NULL,
   PRIMARY KEY (`contact_type_id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=8 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
 
@@ -422,7 +422,7 @@ CREATE TABLE IF NOT EXISTS `currencies` (
   `decimals_trading` int(11) DEFAULT '4' COMMENT 'number of decimals normally used for fx trading (4 for USD)',
   `comment` text,
   PRIMARY KEY (`currency_id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=14 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
 
@@ -541,7 +541,7 @@ CREATE TABLE IF NOT EXISTS `events` (
   KEY `portfolio_id` (`portfolio_id`),
   KEY `security_id` (`security_id`),
   KEY `event_status_id` (`event_status_id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=178 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
 
@@ -554,7 +554,7 @@ CREATE TABLE IF NOT EXISTS `event_stati` (
   `status_text` varchar(200) NOT NULL,
   `code_id` varchar(50) DEFAULT NULL,
   PRIMARY KEY (`event_status_id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=9 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
 
@@ -570,7 +570,7 @@ CREATE TABLE IF NOT EXISTS `event_types` (
   `code_id` varchar(50) DEFAULT NULL,
   `push_message` tinyint(1) DEFAULT NULL COMMENT 'send out a message like an email if a event of this type is created; on the person can be defined how the person wants to be informed',
   PRIMARY KEY (`event_type_id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=9 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
 
@@ -612,7 +612,7 @@ CREATE TABLE IF NOT EXISTS `exposure_items` (
   KEY `currency_id` (`currency_id`),
   KEY `security_type_id` (`security_type_id`),
   KEY `is_part_of` (`is_part_of`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=69 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
 
@@ -637,7 +637,7 @@ CREATE TABLE IF NOT EXISTS `exposure_item_values` (
   KEY `exposure_item_id` (`exposure_item_id`),
   KEY `ref_currency_id` (`ref_currency_id`),
   KEY `ref_security_id` (`ref_security_id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=2 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
 
@@ -674,7 +674,7 @@ CREATE TABLE IF NOT EXISTS `exposure_targets` (
   KEY `exposure_item_id` (`exposure_item_id`),
   KEY `account_mandat_id` (`account_mandat_id`),
   KEY `currency_id` (`currency_id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=2 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
 
@@ -703,7 +703,7 @@ CREATE TABLE IF NOT EXISTS `exposure_types` (
   `description` text,
   `comment` text,
   PRIMARY KEY (`exposure_type_id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=9 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
 
@@ -745,9 +745,52 @@ CREATE TABLE IF NOT EXISTS `log_users` (
   `user_id` int(11) NOT NULL,
   `username` varchar(200) NOT NULL,
   `password` varchar(200) DEFAULT NULL,
-  `code_id` varchar(50) NOT NULL,
+  `code_id` varchar(50) DEFAULT NULL,
+  `user_type_id` int(11) DEFAULT NULL,
+  `comment` text,
   PRIMARY KEY (`user_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `log_user_assigns`
+--
+
+CREATE TABLE IF NOT EXISTS `log_user_assigns` (
+  `user_assign_id` int(11) NOT NULL AUTO_INCREMENT,
+  `user_id` int(11) DEFAULT NULL,
+  `user_group_id` int(11) DEFAULT NULL,
+  `comment` text,
+  PRIMARY KEY (`user_assign_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `log_user_groups`
+--
+
+CREATE TABLE IF NOT EXISTS `log_user_groups` (
+  `user_group_id` int(11) NOT NULL AUTO_INCREMENT,
+  `group_name` varchar(300) DEFAULT NULL,
+  `comment` text,
+  PRIMARY KEY (`user_group_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `log_user_rights`
+--
+
+CREATE TABLE IF NOT EXISTS `log_user_rights` (
+  `user_right_id` int(11) NOT NULL AUTO_INCREMENT,
+  `right_name` varchar(200) DEFAULT NULL,
+  `comment` text,
+  `code_id` varchar(2) DEFAULT NULL,
+  PRIMARY KEY (`user_right_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
 
@@ -759,7 +802,38 @@ CREATE TABLE IF NOT EXISTS `log_user_types` (
   `user_type_id` int(11) NOT NULL AUTO_INCREMENT,
   `type_name` varchar(200) DEFAULT NULL,
   `comment` text,
+  `code_id` varchar(100) DEFAULT NULL COMMENT 'link to php code',
   PRIMARY KEY (`user_type_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `messages`
+--
+
+DROP TABLE IF EXISTS `messages`;
+CREATE TABLE IF NOT EXISTS `messages` (
+  `message_id` int(11) NOT NULL AUTO_INCREMENT,
+  `subject` text,
+  `body` text,
+  `message_type_id` int(11) DEFAULT NULL,
+  PRIMARY KEY (`message_id`),
+  KEY `message_type_id` (`message_type_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `message_types`
+--
+
+DROP TABLE IF EXISTS `message_types`;
+CREATE TABLE IF NOT EXISTS `message_types` (
+  `message_type_id` int(11) NOT NULL AUTO_INCREMENT,
+  `type_name` varchar(200) NOT NULL,
+  `code_id` varchar(200) DEFAULT NULL,
+  PRIMARY KEY (`message_type_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
@@ -797,6 +871,7 @@ CREATE TABLE IF NOT EXISTS `parameter_types` (
 
 CREATE TABLE IF NOT EXISTS `persons` (
   `person_id` int(11) NOT NULL AUTO_INCREMENT,
+  `title` varchar(200) DEFAULT NULL,
   `lastname` varchar(300) DEFAULT NULL,
   `firstname` varchar(300) DEFAULT NULL,
   `date_of_birth` date DEFAULT NULL,
@@ -804,9 +879,11 @@ CREATE TABLE IF NOT EXISTS `persons` (
   `display_name` varchar(400) DEFAULT NULL,
   `comment` text,
   `code_id` varchar(50) DEFAULT NULL,
+  `owner_id` int(11) DEFAULT NULL,
   PRIMARY KEY (`person_id`),
-  KEY `person_type_id` (`person_type_id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=32 ;
+  KEY `person_type_id` (`person_type_id`),
+  KEY `owner_id` (`owner_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
 
@@ -817,8 +894,10 @@ CREATE TABLE IF NOT EXISTS `persons` (
 CREATE TABLE IF NOT EXISTS `person_types` (
   `person_type_id` int(11) NOT NULL AUTO_INCREMENT,
   `description` varchar(200) NOT NULL,
+  `internal` tinyint(1) DEFAULT NULL,
+  `comment` text,
   PRIMARY KEY (`person_type_id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=9 ;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
 
@@ -829,16 +908,83 @@ CREATE TABLE IF NOT EXISTS `person_types` (
 CREATE TABLE IF NOT EXISTS `portfolios` (
   `portfolio_id` int(11) NOT NULL AUTO_INCREMENT,
   `account_id` int(11) NOT NULL,
-  `portfolio_name` varchar(200) NOT NULL,
+  `portfolio_name` varchar(200) DEFAULT NULL,
   `currency_id` int(11) NOT NULL,
   `bank_id` int(11) NOT NULL,
   `bank_portfolio_id` varchar(200) DEFAULT NULL COMMENT 'the depot ID at the bank',
   `inactive` tinyint(1) DEFAULT NULL,
+  `monitoring` tinyint(1) DEFAULT NULL,
+  `confirm_to_bank` tinyint(1) DEFAULT NULL,
+  `confirm_to_client` tinyint(1) DEFAULT NULL,
+  `monitoring_security_limit` double DEFAULT NULL COMMENT 'if one security of this portfolio moves more than x percent a message is send to the portfolio manager',
+  `portfolio_type_id` int(11) DEFAULT NULL,
+  `is_part_of` int(11) DEFAULT NULL,
+  `IBAN` varchar(100) DEFAULT NULL,
   PRIMARY KEY (`portfolio_id`),
   KEY `account_id` (`account_id`),
   KEY `currency_id` (`currency_id`),
-  KEY `bank_id` (`bank_id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=26 ;
+  KEY `bank_id` (`bank_id`),
+  KEY `portfolio_type_id` (`portfolio_type_id`),
+  KEY `is_part_of` (`is_part_of`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `portfolio_rights`
+--
+
+DROP TABLE IF EXISTS `portfolio_rights`;
+CREATE TABLE IF NOT EXISTS `portfolio_rights` (
+  `portfolio_right_id` int(11) NOT NULL AUTO_INCREMENT,
+  `portfolio_id` int(11) DEFAULT NULL,
+  `user_id` int(11) DEFAULT NULL,
+  `user_group_id` int(11) DEFAULT NULL,
+  `user_right_id` int(11) DEFAULT NULL,
+  `comment` text,
+  PRIMARY KEY (`portfolio_right_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `portfolio_security_fixings`
+--
+
+DROP TABLE IF EXISTS `portfolio_security_fixings`;
+CREATE TABLE IF NOT EXISTS `portfolio_security_fixings` (
+  `portfolio_security_fixing_id` int(11) NOT NULL AUTO_INCREMENT,
+  `portfolio_id` int(11) DEFAULT NULL,
+  `security_id` int(11) DEFAULT NULL,
+  `fixed_price` double DEFAULT NULL,
+  `fixing_date` timestamp NULL DEFAULT NULL COMMENT 'maybe used for not sending a warning too often or not too less',
+  `limit_overwrite` double DEFAULT NULL COMMENT 'overwrites the portfolio limit setting for this security',
+  `comment` text,
+  PRIMARY KEY (`portfolio_security_fixing_id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+
+--
+-- Dumping data for table `portfolio_security_fixings`
+--
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `portfolio_types`
+--
+
+DROP TABLE IF EXISTS `portfolio_types`;
+CREATE TABLE IF NOT EXISTS `portfolio_types` (
+  `portfolio_type_id` int(11) NOT NULL AUTO_INCREMENT,
+  `type_name` varchar(200) DEFAULT NULL,
+  `code_id` varchar(200) DEFAULT NULL,
+  `comment` text,
+  PRIMARY KEY (`portfolio_type_id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+
+--
+-- Dumping data for table `portfolio_types`
+--
 
 -- --------------------------------------------------------
 
@@ -855,6 +1001,7 @@ CREATE TABLE IF NOT EXISTS `recon_files` (
   `back_days` int(11) DEFAULT NULL COMMENT 'number of lookback days; used mainly for daily created files',
   `fixed_field_positions` text,
   `fixed_field_names` text,
+  `last_run` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`recon_file_id`),
   KEY `recon_file_type_id` (`recon_file_type_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
@@ -882,6 +1029,8 @@ CREATE TABLE IF NOT EXISTS `recon_file_entries` (
 CREATE TABLE IF NOT EXISTS `recon_file_types` (
   `recon_file_type_id` int(11) NOT NULL AUTO_INCREMENT,
   `type_name` varchar(200) DEFAULT NULL,
+  `comment` text,
+  `code_id` varchar(100) DEFAULT NULL,
   PRIMARY KEY (`recon_file_type_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
@@ -915,7 +1064,8 @@ CREATE TABLE IF NOT EXISTS `recon_steps` (
   PRIMARY KEY (`recon_step_id`),
   KEY `order_nbr` (`order_nbr`),
   KEY `recon_file_id` (`recon_file_id`),
-  KEY `recon_step_type_id` (`recon_step_type_id`)
+  KEY `recon_step_type_id` (`recon_step_type_id`),
+  KEY `recon_value_type_id` (`recon_value_type_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
@@ -970,15 +1120,21 @@ CREATE TABLE IF NOT EXISTS `securities` (
   `last_price` float DEFAULT NULL,
   `bid` float DEFAULT NULL,
   `ask` float DEFAULT NULL,
+  `update_time` datetime DEFAULT NULL,
+  `hist_update_time` datetime DEFAULT NULL,
   `currency_id` int(11) DEFAULT NULL,
   `security_type_id` int(11) DEFAULT NULL,
   `currency_pair_id` int(11) DEFAULT NULL,
   `bsi_id` int(11) DEFAULT NULL,
+  `symbol_bloomberg` varchar(200) DEFAULT NULL,
+  `symbol_reuters` varchar(200) DEFAULT NULL,
   `symbol_market_map` varchar(200) DEFAULT NULL,
-  `price_feed_type_id` int(11) DEFAULT '0',
+  `symbol_yahoo` varchar(200) DEFAULT NULL,
+  `price_feed_type_id` int(11) DEFAULT NULL,
   `valor` varchar(15) DEFAULT NULL COMMENT 'the swiss valor',
   `security_quote_type_id` int(11) DEFAULT NULL,
   `security_exposure_status_id` int(11) DEFAULT NULL,
+  `monitoring_security_limit` double DEFAULT NULL,
   PRIMARY KEY (`security_id`),
   KEY `currency_id` (`currency_id`),
   KEY `security_type_id` (`security_type_id`),
@@ -987,7 +1143,7 @@ CREATE TABLE IF NOT EXISTS `securities` (
   KEY `security_quote_type_id` (`security_quote_type_id`),
   KEY `security_exposure_status_id` (`security_exposure_status_id`),
   KEY `security_issuer_id` (`security_issuer_id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=481 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
 
