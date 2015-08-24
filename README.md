@@ -13,3 +13,9 @@ Install
 7. fill the database with default settings by executing /sql/tream_data.sql
 8. start the program with /yourserver/p4a/applications/tream
 
+Folder structure
+----------------
+
+/batch - the php code in this folder is used for the backend processing either for scheduled batch jobs or for the gui
+/p4a/applications/tream - the folder tream and the files below it should be dropped into the /p4a/applications folder created by p4a
+/sql - these sql files are just needed to create the database before the first start
