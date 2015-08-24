@@ -1148,6 +1148,37 @@ CREATE TABLE IF NOT EXISTS `securities` (
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `security_amount_types`
+--
+
+DROP TABLE IF EXISTS `security_amount_types`;
+CREATE TABLE IF NOT EXISTS `security_amount_types` (
+  `security_amount_type_id` int(11) NOT NULL AUTO_INCREMENT,
+  `type_name` varchar(200) DEFAULT NULL,
+  `comment` text,
+  PRIMARY KEY (`security_amount_type_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `security_daily_prices`
+--
+
+DROP TABLE IF EXISTS `security_daily_prices`;
+CREATE TABLE IF NOT EXISTS `security_daily_prices` (
+  `security_id` int(11) NOT NULL,
+  `quote_date` date NOT NULL,
+  `open` double DEFAULT NULL,
+  `high` double DEFAULT NULL,
+  `low` double DEFAULT NULL,
+  `close` double DEFAULT NULL,
+  UNIQUE KEY `security_id` (`security_id`,`quote_date`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `security_exposures`
 --
 
@@ -1187,8 +1218,24 @@ CREATE TABLE IF NOT EXISTS `security_exposure_stati` (
 CREATE TABLE IF NOT EXISTS `security_fields` (
   `security_field_id` int(11) NOT NULL AUTO_INCREMENT,
   `description` varchar(200) NOT NULL,
+  `security_field_source_type_id` int(11) DEFAULT NULL,
   `comment` text,
   PRIMARY KEY (`security_field_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `security_field_source_types`
+--
+
+DROP TABLE IF EXISTS `security_field_source_types`;
+CREATE TABLE IF NOT EXISTS `security_field_source_types` (
+  `security_field_source_type_id` int(11) NOT NULL AUTO_INCREMENT,
+  `type_name` varchar(200) DEFAULT NULL,
+  `code_id` varchar(200) DEFAULT NULL,
+  `comment` text,
+  PRIMARY KEY (`security_field_source_type_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
@@ -1219,6 +1266,45 @@ CREATE TABLE IF NOT EXISTS `security_issuers` (
   `issuer_name` varchar(200) DEFAULT NULL,
   `comment` text,
   PRIMARY KEY (`security_issuer_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `security_payments`
+--
+
+DROP TABLE IF EXISTS `security_payments`;
+CREATE TABLE IF NOT EXISTS `security_payments` (
+  `security_payment_id` int(11) NOT NULL AUTO_INCREMENT,
+  `security_id` int(11) DEFAULT NULL,
+  `record_date` datetime DEFAULT NULL,
+  `ex_date` datetime DEFAULT NULL,
+  `valuta_date` datetime DEFAULT NULL,
+  `security_payment_type_id` int(11) DEFAULT NULL,
+  `amount` float DEFAULT NULL,
+  `currency_id` int(11) DEFAULT NULL,
+  `amount_type_id` int(11) DEFAULT NULL,
+  `comment` text,
+  PRIMARY KEY (`security_payment_id`),
+  KEY `security_id` (`security_id`),
+  KEY `security_payment_type_id` (`security_payment_type_id`),
+  KEY `amount_type_id` (`amount_type_id`),
+  KEY `currency_id` (`currency_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `security_payment_types`
+--
+
+DROP TABLE IF EXISTS `security_payment_types`;
+CREATE TABLE IF NOT EXISTS `security_payment_types` (
+  `security_payment_type_id` int(11) NOT NULL AUTO_INCREMENT,
+  `type_name` varchar(200) DEFAULT NULL,
+  `comment` text,
+  PRIMARY KEY (`security_payment_type_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
@@ -1268,13 +1354,14 @@ CREATE TABLE IF NOT EXISTS `security_quote_types` (
 
 CREATE TABLE IF NOT EXISTS `security_triggers` (
   `security_trigger_id` int(11) NOT NULL AUTO_INCREMENT,
-  `trigger_type_id` int(11) NOT NULL,
+  `trigger_type_id` int(11) DEFAULT NULL,
   `trigger_value` double DEFAULT NULL,
   `comment` text,
   `start` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   `end` timestamp NULL DEFAULT NULL,
   `trigger_status_id` int(11) DEFAULT NULL,
   `security_id` int(11) DEFAULT NULL,
+  `portfolio_id` int(11) DEFAULT NULL,
   PRIMARY KEY (`security_trigger_id`),
   KEY `trigger_type_id` (`trigger_type_id`),
   KEY `trigger_status_id` (`trigger_status_id`),
@@ -1290,6 +1377,8 @@ CREATE TABLE IF NOT EXISTS `security_triggers` (
 CREATE TABLE IF NOT EXISTS `security_trigger_stati` (
   `trigger_status_id` int(11) NOT NULL AUTO_INCREMENT,
   `status_text` varchar(200) NOT NULL,
+  `code_id` varchar(200) DEFAULT NULL,
+  `comment` text,
   PRIMARY KEY (`trigger_status_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
@@ -1317,6 +1406,7 @@ CREATE TABLE IF NOT EXISTS `security_types` (
   `security_type_id` int(11) NOT NULL AUTO_INCREMENT,
   `description` varchar(200) NOT NULL,
   `security_quote_type_id` int(11) DEFAULT NULL,
+  `code_id` varchar(100) DEFAULT NULL COMMENT 'field to link predefined records to the code: cannot be changed by the users',
   PRIMARY KEY (`security_type_id`),
   KEY `security_quote_type_id` (`security_quote_type_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
@@ -1349,6 +1439,7 @@ CREATE TABLE IF NOT EXISTS `systems` (
   `system_id` int(11) NOT NULL AUTO_INCREMENT,
   `last_heartbeat` datetime DEFAULT NULL,
   `system_name` varchar(200) NOT NULL,
+  `code_id` varchar(200) NOT NULL,
   PRIMARY KEY (`system_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
@@ -1360,10 +1451,10 @@ CREATE TABLE IF NOT EXISTS `systems` (
 
 CREATE TABLE IF NOT EXISTS `trades` (
   `trade_id` int(11) NOT NULL AUTO_INCREMENT,
-  `account_id` int(11) NOT NULL,
+  `account_id` int(11) DEFAULT NULL,
   `creation_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `internal_person_id` int(11) DEFAULT NULL,
-  `security_id` int(11) NOT NULL,
+  `security_id` int(11) DEFAULT NULL,
   `currency_id` int(11) DEFAULT NULL,
   `price` double DEFAULT NULL,
   `size` double DEFAULT NULL,
@@ -1390,6 +1481,19 @@ CREATE TABLE IF NOT EXISTS `trades` (
   `date_placed` timestamp NULL DEFAULT NULL COMMENT 'time when the order has been placed at the markets',
   `date_client` timestamp NULL DEFAULT NULL COMMENT 'time when the decition to by was done or when the client has given the order, usually equal to creation time',
   `related_trade_id` int(11) DEFAULT NULL COMMENT 'to book several partial executions of one order',
+  `confirmation_time` timestamp NULL DEFAULT NULL,
+  `trade_confirmation_type_id` int(11) DEFAULT NULL,
+  `scanned_bank_confirmation` text,
+  `confirmation_time_bank` timestamp NULL DEFAULT NULL,
+  `confirmation_time_client` timestamp NULL DEFAULT NULL,
+  `bank_text_ins` text COMMENT 'comment given by the bank for the security booking',
+  `bank_text_cash` text COMMENT 'bank comment for the cash transaction',
+  `premium_netto` double DEFAULT NULL COMMENT 'fixed premium as saved by the user; can be used for example to by futures: just enter the premium to hedge and the price and the system can calculate the number of contracts',
+  `premium_sett` double DEFAULT NULL COMMENT 'brutto premium in settlement currency',
+  `premium_sett_netto` double DEFAULT NULL COMMENT 'netto premium in settlement currency',
+  `fee_text` text COMMENT 'a description of the fees as send by the bank',
+  `trade_confirmation_person` varchar(300) DEFAULT NULL,
+  `bo_status` int(11) DEFAULT NULL COMMENT 'used at the moment to subpress profolio message after entering or changing a trade trade',
   PRIMARY KEY (`trade_id`),
   KEY `account_id` (`account_id`),
   KEY `tp_person_id` (`internal_person_id`),
@@ -1400,8 +1504,54 @@ CREATE TABLE IF NOT EXISTS `trades` (
   KEY `trade_status_id` (`trade_status_id`),
   KEY `settlement_currency_id` (`settlement_currency_id`),
   KEY `related_trade_id` (`related_trade_id`),
-  KEY `contact_type_id` (`contact_type_id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=953 ;
+  KEY `contact_type_id` (`contact_type_id`),
+  KEY `trade_confirmation_type_id` (`trade_confirmation_type_id`),
+  KEY `counterparty_ref_id` (`counterparty_ref_id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `trade_confirmation_types`
+--
+
+DROP TABLE IF EXISTS `trade_confirmation_types`;
+CREATE TABLE IF NOT EXISTS `trade_confirmation_types` (
+  `trade_confirmation_type_id` int(11) NOT NULL AUTO_INCREMENT,
+  `type_name` varchar(200) DEFAULT NULL,
+  PRIMARY KEY (`trade_confirmation_type_id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `trade_payments`
+--
+
+DROP TABLE IF EXISTS `trade_payments`;
+CREATE TABLE IF NOT EXISTS `trade_payments` (
+  `trade_payment_id` int(11) NOT NULL AUTO_INCREMENT,
+  `trade_id` int(11) DEFAULT NULL,
+  `amount` double DEFAULT NULL,
+  `percent` double DEFAULT NULL,
+  `currency_id` int(11) DEFAULT NULL,
+  `trade_payment_type_id` int(11) DEFAULT NULL,
+  `comment` text,
+  PRIMARY KEY (`trade_payment_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `trade_payment_types`
+--
+
+DROP TABLE IF EXISTS `trade_payment_types`;
+CREATE TABLE IF NOT EXISTS `trade_payment_types` (
+  `trade_payment_type_id` int(11) NOT NULL AUTO_INCREMENT,
+  `type_name` varchar(200) DEFAULT NULL,
+  PRIMARY KEY (`trade_payment_type_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
 
@@ -1413,7 +1563,7 @@ CREATE TABLE IF NOT EXISTS `trade_stati` (
   `trade_status_id` int(11) NOT NULL AUTO_INCREMENT,
   `status_text` varchar(200) NOT NULL,
   PRIMARY KEY (`trade_status_id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=12 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
 
@@ -1432,6 +1582,25 @@ CREATE TABLE IF NOT EXISTS `trade_types` (
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `trade_type_bank_codes`
+--
+
+DROP TABLE IF EXISTS `trade_type_bank_codes`;
+CREATE TABLE IF NOT EXISTS `trade_type_bank_codes` (
+  `trade_type_bank_code_id` int(11) NOT NULL AUTO_INCREMENT,
+  `type_name` varchar(200) DEFAULT NULL,
+  `trade_type_id` int(11) DEFAULT NULL,
+  `bank_id` int(11) DEFAULT NULL,
+  `description` text,
+  `comment` text,
+  PRIMARY KEY (`trade_type_bank_code_id`),
+  KEY `trade_type_id` (`trade_type_id`),
+  KEY `bank_id` (`bank_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `values`
 --
 
@@ -1442,6 +1611,8 @@ CREATE TABLE IF NOT EXISTS `values` (
   `value_type_id` int(11) DEFAULT '0' COMMENT 'Asset under Management',
   `val_number` double DEFAULT NULL COMMENT 'the value itself',
   `value_date` datetime DEFAULT NULL,
+  `currency_id` int(11) DEFAULT NULL,
+  `security_id` int(11) DEFAULT NULL,
   `comment` text,
   PRIMARY KEY (`value_id`),
   KEY `account_id` (`account_id`),
@@ -1811,10 +1982,106 @@ CREATE TABLE IF NOT EXISTS `v_exposure_items` (
 -- --------------------------------------------------------
 
 --
+-- Stand-in structure for view `v_exposure_target_for_portfolios`
+--
+DROP VIEW IF EXISTS `v_exposure_target_for_portfolios`;
+CREATE TABLE IF NOT EXISTS `v_exposure_target_for_portfolios` (
+`exposure_target_id` int(11)
+,`exposure_item_id` int(11)
+,`portfolio_id` int(11)
+,`neutral` float
+);
+-- --------------------------------------------------------
+
+--
+-- Stand-in structure for view `v_exposure_target_values`
+--
+DROP VIEW IF EXISTS `v_exposure_target_values`;
+CREATE TABLE IF NOT EXISTS `v_exposure_target_values` (
+`exposure_target_value_id` int(11)
+,`exposure_target_id` int(11)
+,`portfolio_id` int(11)
+,`portfolio_name` varchar(200)
+,`item_name` varchar(200)
+,`calc_value` double(18,1)
+,`optimized` double(18,1)
+,`diff` double(18,1)
+,`neutral` double(18,1)
+,`limit_up` double(18,1)
+,`limit_down` double(18,1)
+,`exception` double(18,1)
+,`diff_neutral` double(18,1)
+);
+-- --------------------------------------------------------
+
+--
+-- Stand-in structure for view `v_exposure_target_with_exceptions`
+--
+DROP VIEW IF EXISTS `v_exposure_target_with_exceptions`;
+CREATE TABLE IF NOT EXISTS `v_exposure_target_with_exceptions` (
+`exposure_target_id` int(11)
+,`exposure_item_id` int(11)
+,`portfolio_id` int(11)
+,`neutral` float
+,`exception` float
+);
+-- --------------------------------------------------------
+
+--
 -- Stand-in structure for view `v_exposure_types`
 --
 CREATE TABLE IF NOT EXISTS `v_exposure_types` (
 `exposure_type_id` int(11)
+,`type_name` varchar(200)
+);
+-- --------------------------------------------------------
+
+--
+-- Stand-in structure for view `v_log_users`
+--
+DROP VIEW IF EXISTS `v_log_users`;
+CREATE TABLE IF NOT EXISTS `v_log_users` (
+`user_id` int(11)
+,`username` varchar(200)
+);
+-- --------------------------------------------------------
+
+--
+-- Stand-in structure for view `v_log_user_groups`
+--
+DROP VIEW IF EXISTS `v_log_user_groups`;
+CREATE TABLE IF NOT EXISTS `v_log_user_groups` (
+`user_group_id` int(11)
+,`group_name` varchar(300)
+);
+-- --------------------------------------------------------
+
+--
+-- Stand-in structure for view `v_log_user_rights`
+--
+DROP VIEW IF EXISTS `v_log_user_rights`;
+CREATE TABLE IF NOT EXISTS `v_log_user_rights` (
+`user_right_id` int(11)
+,`right_name` varchar(200)
+);
+-- --------------------------------------------------------
+
+--
+-- Stand-in structure for view `v_log_user_types`
+--
+DROP VIEW IF EXISTS `v_log_user_types`;
+CREATE TABLE IF NOT EXISTS `v_log_user_types` (
+`user_type_id` int(11)
+,`type_name` varchar(200)
+);
+-- --------------------------------------------------------
+
+--
+-- Stand-in structure for view `v_message_types`
+--
+DROP VIEW IF EXISTS `v_message_types`;
+CREATE TABLE IF NOT EXISTS `v_message_types` (
+`message_type_id` int(11)
 ,`type_name` varchar(200)
 );
 -- --------------------------------------------------------
@@ -1825,7 +2092,10 @@ CREATE TABLE IF NOT EXISTS `v_exposure_types` (
 CREATE TABLE IF NOT EXISTS `v_persons` (
 `person_id` int(11)
 ,`select_name` text
+,`display_name` varchar(501)
+,`contact_number` varchar(100)
 ,`person_type_id` int(11)
+,`internal` tinyint(4)
 );
 -- --------------------------------------------------------
 
@@ -1861,9 +2131,9 @@ CREATE TABLE IF NOT EXISTS `v_portfolio_allocation` (
 ,`sec_curr` varchar(20)
 ,`decimals` int(11)
 ,`ref_decimals` int(11)
-,`bid` double
-,`ask` double
-,`last` double
+,`bid` float
+,`ask` float
+,`last` float
 ,`open_value` double
 ,`buy_price` double
 ,`pos_value` double
@@ -1881,12 +2151,28 @@ CREATE TABLE IF NOT EXISTS `v_portfolio_allocation` (
 -- --------------------------------------------------------
 
 --
+-- Stand-in structure for view `v_portfolio_persons`
+--
+DROP VIEW IF EXISTS `v_portfolio_persons`;
+CREATE TABLE IF NOT EXISTS `v_portfolio_persons` (
+`portfolio_id` int(11)
+,`account_id` int(11)
+,`account_name` varchar(200)
+,`portfolio_function` varchar(200)
+,`portfolio_function_code_id` varchar(200)
+,`person_name` text
+,`contact_number` varchar(100)
+);
+-- --------------------------------------------------------
+
+--
 -- Stand-in structure for view `v_portfolio_pnl`
 --
 CREATE TABLE IF NOT EXISTS `v_portfolio_pnl` (
 `portfolio_id` int(11)
 ,`aum` double
 ,`pnl` double
+,`update_time` datetime
 );
 -- --------------------------------------------------------
 
@@ -1905,9 +2191,9 @@ CREATE TABLE IF NOT EXISTS `v_portfolio_pos` (
 ,`security_issuer_id` int(11)
 ,`decimals` int(11)
 ,`ref_decimals` int(11)
-,`bid` double
-,`ask` double
-,`last` double
+,`bid` float
+,`ask` float
+,`last` float
 ,`open_value` double
 ,`buy_price` double
 ,`pos_value` double
