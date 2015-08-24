@@ -90,6 +90,7 @@ CREATE TABLE IF NOT EXISTS `account_persons` (
 CREATE TABLE IF NOT EXISTS `account_person_types` (
   `account_person_type_id` int(11) NOT NULL AUTO_INCREMENT,
   `type_name` varchar(200) NOT NULL,
+  `code_id` varchar(200) DEFAULT NULL,
   PRIMARY KEY (`account_person_type_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
@@ -242,10 +243,10 @@ CREATE TABLE IF NOT EXISTS `contacts` (
   `start` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `contact_type_id` int(11) DEFAULT NULL,
   `description` text,
-  `contact_category_id` int(11) NOT NULL,
-  `account_id` int(11) NOT NULL,
+  `contact_category_id` int(11) DEFAULT NULL,
+  `account_id` int(11) DEFAULT NULL,
   `portfolio_id` int(11) DEFAULT NULL,
-  `person_id` int(11) NOT NULL,
+  `person_id` int(11) DEFAULT NULL,
   `main_action` text,
   `details` mediumtext,
   `action_status_id` int(11) DEFAULT NULL,
@@ -417,7 +418,8 @@ CREATE TABLE IF NOT EXISTS `countries` (
 CREATE TABLE IF NOT EXISTS `currencies` (
   `currency_id` int(11) NOT NULL AUTO_INCREMENT,
   `symbol` varchar(20) NOT NULL,
-  `decimals` int(11) DEFAULT '2',
+  `decimals` int(11) DEFAULT '2' COMMENT 'dicimals used when displaying a value in this currency',
+  `decimals_trading` int(11) DEFAULT '4' COMMENT 'number of decimals normally used for fx trading (4 for USD)',
   `comment` text,
   PRIMARY KEY (`currency_id`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=14 ;
@@ -462,6 +464,7 @@ CREATE TABLE IF NOT EXISTS `documents` (
   `document_id` int(11) NOT NULL AUTO_INCREMENT,
   `document_type_id` int(11) DEFAULT NULL,
   `internal_person_id` int(11) DEFAULT NULL,
+  `scanned_document` text,
   `date_to_account` datetime DEFAULT NULL,
   `account_id` int(11) DEFAULT NULL,
   `bank_id` int(11) DEFAULT NULL,
@@ -470,6 +473,7 @@ CREATE TABLE IF NOT EXISTS `documents` (
   `date_received` datetime DEFAULT NULL,
   `date_internal_sign` datetime DEFAULT NULL,
   `archive` varchar(200) DEFAULT NULL,
+  `keywords` text,
   `comment` text,
   PRIMARY KEY (`document_id`),
   KEY `document_type_id` (`document_type_id`),
@@ -519,8 +523,9 @@ CREATE TABLE IF NOT EXISTS `events` (
   `security_id` int(11) DEFAULT NULL,
   `description_unique` varchar(200) DEFAULT NULL COMMENT 'an shaort description to avoid "double" entries',
   `solution1_sql` text COMMENT 'a sql commant for the  a suggested solution',
-  `event_status_id` int(11) DEFAULT '0',
+  `event_status_id` int(11) DEFAULT NULL,
   `event_date` timestamp NULL DEFAULT NULL,
+  `persons_informed` text COMMENT 'ids of the persons that have been informed about the creation of this event',
   `created` timestamp NULL DEFAULT NULL,
   `updated` timestamp NULL DEFAULT NULL,
   `closed` timestamp NULL DEFAULT NULL,
@@ -547,7 +552,7 @@ CREATE TABLE IF NOT EXISTS `events` (
 CREATE TABLE IF NOT EXISTS `event_stati` (
   `event_status_id` int(11) NOT NULL AUTO_INCREMENT,
   `status_text` varchar(200) NOT NULL,
-  `code_id` varchar(50) NOT NULL,
+  `code_id` varchar(50) DEFAULT NULL,
   PRIMARY KEY (`event_status_id`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=9 ;
 
@@ -562,7 +567,8 @@ CREATE TABLE IF NOT EXISTS `event_types` (
   `type_name` varchar(200) NOT NULL,
   `user_type_id` int(11) DEFAULT NULL COMMENT 'only show the event to users of this type',
   `comment` text,
-  `code_id` varchar(50) NOT NULL,
+  `code_id` varchar(50) DEFAULT NULL,
+  `push_message` tinyint(1) DEFAULT NULL COMMENT 'send out a message like an email if a event of this type is created; on the person can be defined how the person wants to be informed',
   PRIMARY KEY (`event_type_id`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=9 ;
 
@@ -598,19 +604,55 @@ CREATE TABLE IF NOT EXISTS `exposure_items` (
   `description` varchar(200) NOT NULL,
   `currency_id` int(11) DEFAULT NULL COMMENT 'used only for currencies to link to the cash position',
   `is_part_of` int(11) DEFAULT NULL COMMENT 'self reference to create a tree',
+  `part_weight` double DEFAULT NULL COMMENT 'weight used for aggregation the single exposures',
   `security_type_id` int(11) DEFAULT NULL COMMENT 'only used for Asset class exposure types to set the default expore item',
-  `hist_volatility` double DEFAULT NULL COMMENT 'automatically calculated based on market prices',
-  `implied_volatility` double DEFAULT NULL COMMENT 'automatically calculated based on option prices',
-  `expected_volatility` double DEFAULT NULL COMMENT 'can be set manually to overwrite the implied volatity',
-  `hist_return` double DEFAULT NULL,
-  `expected_return` double DEFAULT NULL COMMENT 'can be set to overwrite the market return',
-  `market_return` double DEFAULT NULL COMMENT 'calculated which return the market expects',
+  `comment` text,
   PRIMARY KEY (`exposure_item_id`),
   KEY `exposure_type_id` (`exposure_type_id`),
   KEY `currency_id` (`currency_id`),
   KEY `security_type_id` (`security_type_id`),
   KEY `is_part_of` (`is_part_of`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=69 ;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `exposure_item_values`
+--
+
+DROP TABLE IF EXISTS `exposure_item_values`;
+CREATE TABLE IF NOT EXISTS `exposure_item_values` (
+  `exposure_item_value_id` int(11) NOT NULL AUTO_INCREMENT,
+  `exposure_item_id` int(11) NOT NULL,
+  `ref_currency_id` int(11) NOT NULL,
+  `ref_security_id` int(11) DEFAULT NULL,
+  `hist_volatility` double DEFAULT NULL 'automatically calculated based on market prices',
+  `implied_volatility` double DEFAULT NULL 'automatically calculated based on option prices',
+  `expected_volatility` double DEFAULT NULL 'can be set manually to overwrite the implied volatity',
+  `hist_return` double DEFAULT NULL,
+  `market_return` double DEFAULT NULL COMMENT 'if a market return exists; e.g. for bond markets the swap curve',
+  `expected_return` double DEFAULT NULL 'can be set to overwrite the market return', 
+  `comment` text,
+  PRIMARY KEY (`exposure_item_value_id`),
+  KEY `exposure_item_id` (`exposure_item_id`),
+  KEY `ref_currency_id` (`ref_currency_id`),
+  KEY `ref_security_id` (`ref_security_id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=2 ;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `exposure_item_value_correlations`
+--
+
+DROP TABLE IF EXISTS `exposure_item_value_correlations`;
+CREATE TABLE IF NOT EXISTS `exposure_item_value_correlations` (
+  `exposure_item_value_correlation_id` int(11) NOT NULL,
+  `exposure_item_value1_id` int(11) NOT NULL,
+  `exposure_item_value2_id` int(11) NOT NULL,
+  `correlation` double DEFAULT NULL,
+  PRIMARY KEY (`exposure_item_value_correlation_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -627,11 +669,27 @@ CREATE TABLE IF NOT EXISTS `exposure_targets` (
   `account_mandat_id` int(11) DEFAULT NULL,
   `currency_id` int(11) DEFAULT NULL,
   `comment` text,
+  `optimized` double DEFAULT NULL COMMENT 'updated by the optimizer',
   PRIMARY KEY (`exposure_target_id`),
   KEY `exposure_item_id` (`exposure_item_id`),
   KEY `account_mandat_id` (`account_mandat_id`),
   KEY `currency_id` (`currency_id`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=2 ;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `exposure_target_values`
+--
+
+DROP TABLE IF EXISTS `exposure_target_values`;
+CREATE TABLE IF NOT EXISTS `exposure_target_values` (
+  `exposure_target_value_id` int(11) NOT NULL AUTO_INCREMENT,
+  `exposure_target_id` int(11) DEFAULT NULL,
+  `portfolio_id` int(11) DEFAULT NULL,
+  `calc_value` double DEFAULT NULL,
+  PRIMARY KEY (`exposure_target_value_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
 
@@ -642,6 +700,8 @@ CREATE TABLE IF NOT EXISTS `exposure_targets` (
 CREATE TABLE IF NOT EXISTS `exposure_types` (
   `exposure_type_id` int(11) NOT NULL AUTO_INCREMENT,
   `type_name` varchar(200) NOT NULL,
+  `description` text,
+  `comment` text,
   PRIMARY KEY (`exposure_type_id`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=9 ;
 
@@ -658,7 +718,7 @@ CREATE TABLE IF NOT EXISTS `log_data` (
   `field_name` varchar(200) DEFAULT NULL,
   `log_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `user_id` int(11) NOT NULL,
-  `user_name` varchar(200) DEFAULT NULL,
+  `user_name` varchar(200) NOT NULL,
   `old_value` text,
   `new_value` text NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
