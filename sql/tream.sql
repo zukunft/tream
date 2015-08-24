@@ -2949,6 +2949,7 @@ CREATE TABLE IF NOT EXISTS `v_trade_pnl_calc_cash` (
 ,`security_name` varchar(20)
 ,`security_type_id` int(11)
 ,`asset_class` varchar(200)
+,`asset_code` varchar(100)
 ,`currency_id` int(11)
 ,`trade_curr` varchar(20)
 ,`sec_currency_id` int(11)
@@ -2969,6 +2970,7 @@ CREATE TABLE IF NOT EXISTS `v_trade_pnl_calc_cash` (
 ,`ask` float
 ,`last_price` double
 ,`sell_price` double
+,`update_time` datetime
 ,`pos_value` double
 ,`pos_value_ref` double
 ,`pos_value_ref_open` double
@@ -2993,6 +2995,7 @@ CREATE TABLE IF NOT EXISTS `v_trade_pnl_get_prices` (
 ,`security_name` varchar(200)
 ,`security_type_id` int(11)
 ,`asset_class` varchar(200)
+,`asset_code` varchar(100)
 ,`currency_id` int(11)
 ,`trade_curr` varchar(20)
 ,`sec_currency_id` int(11)
@@ -3013,6 +3016,7 @@ CREATE TABLE IF NOT EXISTS `v_trade_pnl_get_prices` (
 ,`ask` float
 ,`last_price` float
 ,`sell_price` double
+,`update_time` datetime
 ,`ref_currency_id` int(11)
 ,`decimals` int(11)
 ,`ref_decimals` int(11)
@@ -3201,6 +3205,16 @@ CREATE TABLE IF NOT EXISTS `v_trade_premium_ref_get_sec` (
 -- --------------------------------------------------------
 
 --
+-- Stand-in structure for view `v_trade_security`
+--
+DROP VIEW IF EXISTS `v_trade_security`;
+CREATE TABLE IF NOT EXISTS `v_trade_security` (
+`trade_id` int(11)
+,`security_name` varchar(200)
+);
+-- --------------------------------------------------------
+
+--
 -- Stand-in structure for view `v_trade_select`
 --
 CREATE TABLE IF NOT EXISTS `v_trade_select` (
@@ -3224,6 +3238,16 @@ CREATE TABLE IF NOT EXISTS `v_trade_stati` (
 CREATE TABLE IF NOT EXISTS `v_trade_types` (
 `trade_type_id` int(11)
 ,`description` varchar(200)
+);
+-- --------------------------------------------------------
+
+--
+-- Stand-in structure for view `v_trade_type_bank_codes`
+--
+DROP VIEW IF EXISTS `v_trade_type_bank_codes`;
+CREATE TABLE IF NOT EXISTS `v_trade_type_bank_codes` (
+`trade_type_bank_code_id` int(11)
+,`type_name` varchar(200)
 );
 -- --------------------------------------------------------
 
