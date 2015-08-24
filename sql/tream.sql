@@ -3567,6 +3567,33 @@ CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW 
 -- --------------------------------------------------------
 
 --
+-- Structure for view `v_exposure_target_for_portfolios`
+--
+DROP TABLE IF EXISTS `v_exposure_target_for_portfolios`;
+
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `v_exposure_target_for_portfolios` AS select `exposure_targets`.`exposure_target_id` AS `exposure_target_id`,`exposure_items`.`exposure_item_id` AS `exposure_item_id`,`portfolios`.`portfolio_id` AS `portfolio_id`,`exposure_targets`.`target` AS `neutral` from (((`portfolios` join `accounts`) join `exposure_targets`) join `exposure_items`) where ((`portfolios`.`account_id` = `accounts`.`account_id`) and (`accounts`.`account_mandat_id` = `exposure_targets`.`account_mandat_id`) and (`exposure_targets`.`exposure_item_id` = `exposure_items`.`exposure_item_id`));
+
+-- --------------------------------------------------------
+
+--
+-- Structure for view `v_exposure_target_values`
+--
+DROP TABLE IF EXISTS `v_exposure_target_values`;
+
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `v_exposure_target_values` AS select `exposure_target_values`.`exposure_target_value_id` AS `exposure_target_value_id`,`exposure_target_values`.`exposure_target_id` AS `exposure_target_id`,`exposure_target_values`.`portfolio_id` AS `portfolio_id`,`portfolios`.`portfolio_name` AS `portfolio_name`,`exposure_items`.`description` AS `item_name`,round(`exposure_target_values`.`calc_value`,1) AS `calc_value`,round(`exposure_targets`.`optimized`,1) AS `optimized`,round((`exposure_targets`.`optimized` - `exposure_target_values`.`calc_value`),1) AS `diff`,round(`exposure_targets`.`target`,1) AS `neutral`,round(`exposure_targets`.`limit_up`,1) AS `limit_up`,round(`exposure_targets`.`limit_down`,1) AS `limit_down`,round(`v_exposure_target_with_exceptions`.`exception`,1) AS `exception`,round((if((`v_exposure_target_with_exceptions`.`exception` > 0),`v_exposure_target_with_exceptions`.`exception`,`exposure_targets`.`target`) - `exposure_target_values`.`calc_value`),1) AS `diff_neutral` from ((((`exposure_target_values` join `exposure_targets`) join `exposure_items`) join `portfolios`) join `v_exposure_target_with_exceptions`) where ((`exposure_target_values`.`exposure_target_id` = `exposure_targets`.`exposure_target_id`) and (`exposure_targets`.`exposure_item_id` = `exposure_items`.`exposure_item_id`) and (`exposure_target_values`.`portfolio_id` = `portfolios`.`portfolio_id`) and (`portfolios`.`portfolio_id` = `v_exposure_target_with_exceptions`.`portfolio_id`) and (`exposure_items`.`exposure_item_id` = `v_exposure_target_with_exceptions`.`exposure_item_id`)) group by `exposure_target_values`.`exposure_target_value_id`,`exposure_target_values`.`portfolio_id`;
+
+-- --------------------------------------------------------
+
+--
+-- Structure for view `v_exposure_target_with_exceptions`
+--
+DROP TABLE IF EXISTS `v_exposure_target_with_exceptions`;
+
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `v_exposure_target_with_exceptions` AS select `v_exposure_target_for_portfolios`.`exposure_target_id` AS `exposure_target_id`,`v_exposure_target_for_portfolios`.`exposure_item_id` AS `exposure_item_id`,`v_exposure_target_for_portfolios`.`portfolio_id` AS `portfolio_id`,`v_exposure_target_for_portfolios`.`neutral` AS `neutral`,`exposure_exceptions`.`target` AS `exception` from (`v_exposure_target_for_portfolios` left join `exposure_exceptions` on(((`v_exposure_target_for_portfolios`.`exposure_item_id` = `exposure_exceptions`.`exposure_item_id`) and (`v_exposure_target_for_portfolios`.`portfolio_id` = `exposure_exceptions`.`portfolio_id`))));
+
+-- --------------------------------------------------------
+
+--
 -- Structure for view `v_exposure_types`
 --
 DROP TABLE IF EXISTS `v_exposure_types`;
@@ -3576,11 +3603,56 @@ CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW 
 -- --------------------------------------------------------
 
 --
+-- Structure for view `v_log_users`
+--
+DROP TABLE IF EXISTS `v_log_users`;
+
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `v_log_users` AS select NULL AS `user_id`,' not set' AS `username` union select `log_users`.`user_id` AS `user_id`,`log_users`.`username` AS `username` from `log_users`;
+
+-- --------------------------------------------------------
+
+--
+-- Structure for view `v_log_user_groups`
+--
+DROP TABLE IF EXISTS `v_log_user_groups`;
+
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `v_log_user_groups` AS select NULL AS `user_group_id`,' not set' AS `group_name` union select `log_user_groups`.`user_group_id` AS `user_group_id`,`log_user_groups`.`group_name` AS `group_name` from `log_user_groups`;
+
+-- --------------------------------------------------------
+
+--
+-- Structure for view `v_log_user_rights`
+--
+DROP TABLE IF EXISTS `v_log_user_rights`;
+
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `v_log_user_rights` AS select NULL AS `user_right_id`,' not set' AS `right_name` union select `log_user_rights`.`user_right_id` AS `user_right_id`,`log_user_rights`.`right_name` AS `right_name` from `log_user_rights`;
+
+-- --------------------------------------------------------
+
+--
+-- Structure for view `v_log_user_types`
+--
+DROP TABLE IF EXISTS `v_log_user_types`;
+
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `v_log_user_types` AS select NULL AS `user_type_id`,' not set' AS `type_name` union select `log_user_types`.`user_type_id` AS `user_type_id`,`log_user_types`.`type_name` AS `type_name` from `log_user_types`;
+
+-- --------------------------------------------------------
+
+--
+-- Structure for view `v_message_types`
+--
+DROP TABLE IF EXISTS `v_message_types`;
+
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `v_message_types` AS select NULL AS `message_type_id`,' not set' AS `type_name` union select `message_types`.`message_type_id` AS `message_type_id`,`message_types`.`type_name` AS `type_name` from `message_types`;
+
+-- --------------------------------------------------------
+
+--
 -- Structure for view `v_persons`
 --
 DROP TABLE IF EXISTS `v_persons`;
 
-CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `v_persons` AS select NULL AS `person_id`,' not set' AS `select_name`,NULL AS `person_type_id` union select `persons`.`person_id` AS `person_id`,if((`persons`.`display_name` <> ''),`persons`.`display_name`,concat_ws(' ',`persons`.`firstname`,`persons`.`lastname`)) AS `select_name`,`persons`.`person_type_id` AS `person_type_id` from `persons` order by cast(`select_name` as unsigned);
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `v_persons` AS select NULL AS `person_id`,' not set' AS `select_name`,' not set' AS `display_name`,'' AS `contact_number`,NULL AS `person_type_id`,NULL AS `internal` union select `persons`.`person_id` AS `person_id`,if((`persons`.`display_name` <> ''),`persons`.`display_name`,concat_ws(' ',`persons`.`firstname`,`persons`.`lastname`)) AS `select_name`,if((`persons`.`display_name` <> ''),`persons`.`display_name`,concat_ws(' ',`persons`.`title`,`persons`.`lastname`)) AS `display_name`,`contact_numbers`.`contact_number` AS `contact_number`,`persons`.`person_type_id` AS `person_type_id`,`person_types`.`internal` AS `internal` from ((`persons` left join `person_types` on((`persons`.`person_type_id` = `person_types`.`person_type_id`))) left join `contact_numbers` on(((`persons`.`person_id` = `contact_numbers`.`person_id`) and (`contact_numbers`.`contact_number_type_id` = 3)))) order by cast(`select_name` as unsigned);
 
 -- --------------------------------------------------------
 
@@ -3612,11 +3684,20 @@ CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW 
 -- --------------------------------------------------------
 
 --
+-- Structure for view `v_portfolio_persons`
+--
+DROP TABLE IF EXISTS `v_portfolio_persons`;
+
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `v_portfolio_persons` AS select `portfolios`.`portfolio_id` AS `portfolio_id`,`accounts`.`account_id` AS `account_id`,`accounts`.`account_name` AS `account_name`,`account_person_types`.`type_name` AS `portfolio_function`,`account_person_types`.`code_id` AS `portfolio_function_code_id`,`v_persons`.`select_name` AS `person_name`,`contact_numbers`.`contact_number` AS `contact_number` from (((((`portfolios` join `accounts`) join `account_persons`) join `account_person_types`) join `v_persons`) join `contact_numbers`) where ((`portfolios`.`account_id` = `accounts`.`account_id`) and (`accounts`.`account_id` = `account_persons`.`account_id`) and (`account_persons`.`account_person_type_id` = `account_person_types`.`account_person_type_id`) and (`account_persons`.`person_id` = `v_persons`.`person_id`) and (`v_persons`.`person_id` = `contact_numbers`.`person_id`) and (`contact_numbers`.`contact_number_type_id` = 3));
+
+-- --------------------------------------------------------
+
+--
 -- Structure for view `v_portfolio_pnl`
 --
 DROP TABLE IF EXISTS `v_portfolio_pnl`;
 
-CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `v_portfolio_pnl` AS select `v_trade_pnl`.`portfolio_id` AS `portfolio_id`,round(sum(`v_trade_pnl`.`pos_value_ref`),`v_trade_pnl`.`ref_decimals`) AS `aum`,round(sum(`v_trade_pnl`.`pnl_ref`),`v_trade_pnl`.`ref_decimals`) AS `pnl` from `v_trade_pnl` group by `v_trade_pnl`.`portfolio_id`;
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `v_portfolio_pnl` AS select `v_trade_pnl`.`portfolio_id` AS `portfolio_id`,round(sum(`v_trade_pnl`.`pos_value_ref`),`v_trade_pnl`.`ref_decimals`) AS `aum`,round(sum(`v_trade_pnl`.`pnl_ref`),`v_trade_pnl`.`ref_decimals`) AS `pnl`,min(`v_trade_pnl`.`update_time`) AS `update_time` from `v_trade_pnl` group by `v_trade_pnl`.`portfolio_id`;
 
 -- --------------------------------------------------------
 
@@ -3625,7 +3706,7 @@ CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW 
 --
 DROP TABLE IF EXISTS `v_portfolio_pos`;
 
-CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `v_portfolio_pos` AS select `v_portfolio_pos_calc`.`portfolio_id` AS `portfolio_id`,`v_portfolio_pos_calc`.`security_id` AS `security_id`,`v_portfolio_pos_calc`.`security_name` AS `security_name`,`v_portfolio_pos_calc`.`currency_id` AS `currency_id`,`v_portfolio_pos_calc`.`asset_class` AS `asset_class`,`v_portfolio_pos_calc`.`position` AS `position`,`v_portfolio_pos_calc`.`trade_curr` AS `trade_curr`,`v_portfolio_pos_calc`.`sec_curr` AS `sec_curr`,`v_portfolio_pos_calc`.`security_issuer_id` AS `security_issuer_id`,`v_portfolio_pos_calc`.`decimals` AS `decimals`,`v_portfolio_pos_calc`.`ref_decimals` AS `ref_decimals`,round(`v_portfolio_pos_calc`.`bid`,`v_portfolio_pos_calc`.`decimals`) AS `bid`,round(`v_portfolio_pos_calc`.`ask`,`v_portfolio_pos_calc`.`decimals`) AS `ask`,round(`v_portfolio_pos_calc`.`last`,`v_portfolio_pos_calc`.`decimals`) AS `last`,round(`v_portfolio_pos_calc`.`calc_premium_ref_open`,`v_portfolio_pos_calc`.`ref_decimals`) AS `open_value`,round(((`v_portfolio_pos_calc`.`calc_premium` / `v_portfolio_pos_calc`.`position`) * -(1)),`v_portfolio_pos_calc`.`ref_decimals`) AS `buy_price`,round(`v_portfolio_pos_calc`.`pos_value`,`v_portfolio_pos_calc`.`decimals`) AS `pos_value`,round(`v_portfolio_pos_calc`.`pos_value_ref`,`v_portfolio_pos_calc`.`ref_decimals`) AS `pos_value_ref`,round(`v_portfolio_pos_calc`.`pnl`,`v_portfolio_pos_calc`.`decimals`) AS `pnl`,round(`v_portfolio_pos_calc`.`pnl_last`,`v_portfolio_pos_calc`.`decimals`) AS `pnl_last`,round(`v_portfolio_pos_calc`.`pnl_ref`,`v_portfolio_pos_calc`.`ref_decimals`) AS `pnl_ref`,round(`v_portfolio_pos_calc`.`pnl_ref_open`,`v_portfolio_pos_calc`.`ref_decimals`) AS `pnl_ref_open`,round(((`v_portfolio_pos_calc`.`pnl_ref_open` / `v_portfolio_pos_calc`.`calc_premium_ref_open`) * -(100)),`v_portfolio_pos_calc`.`ref_decimals`) AS `pnl_pct`,round(((`v_portfolio_pos_calc`.`pnl_ref` / `v_portfolio_pos_calc`.`calc_premium_ref`) * -(100)),`v_portfolio_pos_calc`.`ref_decimals`) AS `pnl_market`,round((((`v_portfolio_pos_calc`.`pnl_ref_open` - `v_portfolio_pos_calc`.`pnl_ref`) / `v_portfolio_pos_calc`.`calc_premium_ref_open`) * -(100)),`v_portfolio_pos_calc`.`ref_decimals`) AS `pnl_fx` from `v_portfolio_pos_calc` where (`v_portfolio_pos_calc`.`position` <> 0);
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `v_portfolio_pos` AS select `v_portfolio_pos_calc`.`portfolio_id` AS `portfolio_id`,`v_portfolio_pos_calc`.`security_id` AS `security_id`,`v_portfolio_pos_calc`.`security_name` AS `security_name`,`v_portfolio_pos_calc`.`currency_id` AS `currency_id`,`v_portfolio_pos_calc`.`asset_class` AS `asset_class`,`v_portfolio_pos_calc`.`position` AS `position`,`v_portfolio_pos_calc`.`trade_curr` AS `trade_curr`,`v_portfolio_pos_calc`.`sec_curr` AS `sec_curr`,`v_portfolio_pos_calc`.`security_issuer_id` AS `security_issuer_id`,`v_portfolio_pos_calc`.`decimals` AS `decimals`,`v_portfolio_pos_calc`.`ref_decimals` AS `ref_decimals`,`v_portfolio_pos_get_prices`.`bid` AS `bid`,`v_portfolio_pos_get_prices`.`ask` AS `ask`,`v_portfolio_pos_get_prices`.`last_price` AS `last`,round(`v_portfolio_pos_calc`.`calc_premium_ref_open`,`v_portfolio_pos_calc`.`ref_decimals`) AS `open_value`,round(((`v_portfolio_pos_calc`.`calc_premium` / `v_portfolio_pos_calc`.`position`) * -(1)),`v_portfolio_pos_calc`.`ref_decimals`) AS `buy_price`,round(`v_portfolio_pos_calc`.`pos_value`,`v_portfolio_pos_calc`.`decimals`) AS `pos_value`,round(`v_portfolio_pos_calc`.`pos_value_ref`,`v_portfolio_pos_calc`.`ref_decimals`) AS `pos_value_ref`,round(`v_portfolio_pos_calc`.`pnl`,`v_portfolio_pos_calc`.`decimals`) AS `pnl`,round(`v_portfolio_pos_calc`.`pnl_last`,`v_portfolio_pos_calc`.`decimals`) AS `pnl_last`,round(`v_portfolio_pos_calc`.`pnl_ref`,`v_portfolio_pos_calc`.`ref_decimals`) AS `pnl_ref`,round(`v_portfolio_pos_calc`.`pnl_ref_open`,`v_portfolio_pos_calc`.`ref_decimals`) AS `pnl_ref_open`,round(((`v_portfolio_pos_calc`.`pnl_ref_open` / `v_portfolio_pos_calc`.`calc_premium_ref_open`) * -(100)),`v_portfolio_pos_calc`.`ref_decimals`) AS `pnl_pct`,round(((`v_portfolio_pos_calc`.`pnl_ref` / `v_portfolio_pos_calc`.`calc_premium_ref`) * -(100)),`v_portfolio_pos_calc`.`ref_decimals`) AS `pnl_market`,round((((`v_portfolio_pos_calc`.`pnl_ref_open` - `v_portfolio_pos_calc`.`pnl_ref`) / `v_portfolio_pos_calc`.`calc_premium_ref_open`) * -(100)),`v_portfolio_pos_calc`.`ref_decimals`) AS `pnl_fx` from (`v_portfolio_pos_calc` join `v_portfolio_pos_get_prices`) where ((`v_portfolio_pos_calc`.`position` <> 0) and (`v_portfolio_pos_calc`.`portfolio_id` = `v_portfolio_pos_get_prices`.`portfolio_id`) and (`v_portfolio_pos_calc`.`security_id` = `v_portfolio_pos_get_prices`.`security_id`));
 
 -- --------------------------------------------------------
 
@@ -3648,11 +3729,47 @@ CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW 
 -- --------------------------------------------------------
 
 --
+-- Structure for view `v_portfolio_pos_derivate`
+--
+DROP TABLE IF EXISTS `v_portfolio_pos_derivate`;
+
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `v_portfolio_pos_derivate` AS select `v_portfolio_pos`.`portfolio_id` AS `portfolio_id`,`v_portfolio_pos`.`security_id` AS `security_id`,`v_securities`.`security_type_id` AS `security_type_id`,`v_portfolio_pos`.`security_name` AS `security_name`,`v_portfolio_pos`.`currency_id` AS `currency_id`,`v_portfolio_pos`.`asset_class` AS `asset_class`,`v_portfolio_pos`.`position` AS `position`,`v_portfolio_pos`.`trade_curr` AS `trade_curr`,`v_portfolio_pos`.`sec_curr` AS `sec_curr`,`v_portfolio_pos`.`security_issuer_id` AS `security_issuer_id`,`v_portfolio_pos`.`decimals` AS `decimals`,`v_portfolio_pos`.`ref_decimals` AS `ref_decimals`,`v_portfolio_pos`.`bid` AS `bid`,`v_portfolio_pos`.`ask` AS `ask`,`v_portfolio_pos`.`last` AS `last`,`v_portfolio_pos`.`open_value` AS `open_value`,`v_portfolio_pos`.`buy_price` AS `buy_price`,`v_portfolio_pos`.`pos_value` AS `pos_value`,`v_portfolio_pos`.`pos_value_ref` AS `pos_value_ref`,`v_portfolio_pos`.`pnl` AS `pnl`,`v_portfolio_pos`.`pnl_last` AS `pnl_last`,`v_portfolio_pos`.`pnl_ref` AS `pnl_ref`,`v_portfolio_pos`.`pnl_ref_open` AS `pnl_ref_open`,`v_portfolio_pos`.`pnl_pct` AS `pnl_pct`,`v_portfolio_pos`.`pnl_market` AS `pnl_market`,`v_portfolio_pos`.`pnl_fx` AS `pnl_fx` from (`v_portfolio_pos` join `v_securities`) where ((`v_portfolio_pos`.`security_id` = `v_securities`.`security_id`) and ((`v_securities`.`security_type_id` = 5) or (`v_securities`.`security_type_id` = 6) or (`v_securities`.`security_type_id` = 18)));
+
+-- --------------------------------------------------------
+
+--
+-- Structure for view `v_portfolio_pos_get`
+--
+DROP TABLE IF EXISTS `v_portfolio_pos_get`;
+
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `v_portfolio_pos_get` AS select `trades`.`portfolio_id` AS `portfolio_id`,`trades`.`security_id` AS `security_id`,`trades`.`currency_id` AS `currency_id`,sum(`trades`.`size`) AS `position` from `trades` group by `trades`.`portfolio_id`,`trades`.`security_id`;
+
+-- --------------------------------------------------------
+
+--
+-- Structure for view `v_portfolio_pos_get_prices`
+--
+DROP TABLE IF EXISTS `v_portfolio_pos_get_prices`;
+
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `v_portfolio_pos_get_prices` AS select `v_portfolio_pos_get`.`portfolio_id` AS `portfolio_id`,`v_portfolio_pos_get`.`security_id` AS `security_id`,`v_portfolio_pos_get`.`currency_id` AS `currency_id`,`v_portfolio_pos_get`.`position` AS `position`,`securities`.`bid` AS `bid`,`securities`.`ask` AS `ask`,`securities`.`last_price` AS `last_price`,if(isnull(`securities`.`update_time`),str_to_date('2014-01-01 11:30:10','%Y-%m-%d %h:%i:%s'),`securities`.`update_time`) AS `update_time`,if((`v_portfolio_pos_get`.`position` > 0),if((`securities`.`bid` > 0),`securities`.`bid`,`securities`.`last_price`),if((`securities`.`ask` > 0),`securities`.`ask`,`securities`.`last_price`)) AS `used_price` from (`v_portfolio_pos_get` join `securities`) where (`v_portfolio_pos_get`.`security_id` = `securities`.`security_id`);
+
+-- --------------------------------------------------------
+
+--
+-- Structure for view `v_portfolio_types`
+--
+DROP TABLE IF EXISTS `v_portfolio_types`;
+
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `v_portfolio_types` AS select NULL AS `portfolio_type_id`,' not set' AS `type_name` union select `portfolio_types`.`portfolio_type_id` AS `portfolio_type_id`,`portfolio_types`.`type_name` AS `type_name` from `portfolio_types`;
+
+-- --------------------------------------------------------
+
+--
 -- Structure for view `v_position_pnl`
 --
 DROP TABLE IF EXISTS `v_position_pnl`;
 
-CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `v_position_pnl` AS select `v_trade_pnl`.`portfolio_id` AS `portfolio_id`,`v_trade_pnl`.`security_id` AS `security_id`,`v_trade_pnl`.`security_name` AS `security_name`,`v_trade_pnl`.`currency_id` AS `currency_id`,max(`v_trade_pnl`.`trade_date`) AS `trade_date`,max(`v_trade_pnl`.`price`) AS `price`,max(`v_trade_pnl`.`price_ref`) AS `price_ref`,max(`v_trade_pnl`.`price_ref_open`) AS `price_ref_open`,sum(`v_trade_pnl`.`size`) AS `size`,max(`v_trade_pnl`.`security_quote_type_id`) AS `security_quote_type_id`,max(`v_trade_pnl`.`quantity_factor`) AS `quantity_factor`,sum(`v_trade_pnl`.`calc_premium`) AS `calc_premium`,sum(`v_trade_pnl`.`calc_premium_ref`) AS `calc_premium_ref`,sum(`v_trade_pnl`.`calc_premium_ref_open`) AS `calc_premium_ref_open`,sum(`v_trade_pnl`.`premium`) AS `premium`,max(`v_trade_pnl`.`bid`) AS `bid`,max(`v_trade_pnl`.`ask`) AS `ask`,max(`v_trade_pnl`.`last_price`) AS `last_price`,max(`v_trade_pnl`.`sell_price`) AS `sell_price`,sum(`v_trade_pnl`.`pos_value`) AS `pos_value`,sum(`v_trade_pnl`.`pos_value_ref`) AS `pos_value_ref`,sum(`v_trade_pnl`.`pos_value_ref_open`) AS `pos_value_ref_open`,sum(`v_trade_pnl`.`pos_value_last`) AS `pos_value_last`,sum(`v_trade_pnl`.`pos_value_last_ref`) AS `pos_value_last_ref`,sum(`v_trade_pnl`.`pos_value_last_ref_open`) AS `pos_value_last_ref_open`,sum(`v_trade_pnl`.`pnl`) AS `pnl`,sum(`v_trade_pnl`.`pnl_ref`) AS `pnl_ref`,sum(`v_trade_pnl`.`pnl_ref_open`) AS `pnl_ref_open`,sum(`v_trade_pnl`.`pnl_last`) AS `pnl_last`,max(`v_trade_pnl`.`decimals`) AS `decimals` from `v_trade_pnl` group by `v_trade_pnl`.`portfolio_id`,`v_trade_pnl`.`security_id`;
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `v_position_pnl` AS select `v_trade_pnl`.`portfolio_id` AS `portfolio_id`,`v_trade_pnl`.`security_id` AS `security_id`,`v_trade_pnl`.`security_name` AS `security_name`,`v_trade_pnl`.`currency_id` AS `currency_id`,max(`v_trade_pnl`.`trade_date`) AS `trade_date`,max(`v_trade_pnl`.`price`) AS `price`,max(`v_trade_pnl`.`price_ref`) AS `price_ref`,max(`v_trade_pnl`.`price_ref_open`) AS `price_ref_open`,sum(`v_trade_pnl`.`size`) AS `size`,max(`v_trade_pnl`.`security_quote_type_id`) AS `security_quote_type_id`,max(`v_trade_pnl`.`quantity_factor`) AS `quantity_factor`,sum(`v_trade_pnl`.`calc_premium`) AS `calc_premium`,sum(`v_trade_pnl`.`calc_premium_ref`) AS `calc_premium_ref`,sum(`v_trade_pnl`.`calc_premium_ref_open`) AS `calc_premium_ref_open`,sum(`v_trade_pnl`.`premium`) AS `premium`,max(`v_trade_pnl`.`bid`) AS `bid`,max(`v_trade_pnl`.`ask`) AS `ask`,max(`v_trade_pnl`.`last_price`) AS `last_price`,max(`v_trade_pnl`.`sell_price`) AS `sell_price`,if((sum(`v_trade_pnl`.`size`) = 0),now(),min(`v_trade_pnl`.`update_time`)) AS `update_time`,sum(`v_trade_pnl`.`pos_value`) AS `pos_value`,sum(`v_trade_pnl`.`pos_value_ref`) AS `pos_value_ref`,sum(`v_trade_pnl`.`pos_value_ref_open`) AS `pos_value_ref_open`,sum(`v_trade_pnl`.`pos_value_last`) AS `pos_value_last`,sum(`v_trade_pnl`.`pos_value_last_ref`) AS `pos_value_last_ref`,sum(`v_trade_pnl`.`pos_value_last_ref_open`) AS `pos_value_last_ref_open`,sum(`v_trade_pnl`.`pnl`) AS `pnl`,sum(`v_trade_pnl`.`pnl_ref`) AS `pnl_ref`,sum(`v_trade_pnl`.`pnl_ref_open`) AS `pnl_ref_open`,sum(`v_trade_pnl`.`pnl_last`) AS `pnl_last`,max(`v_trade_pnl`.`decimals`) AS `decimals` from `v_trade_pnl` group by `v_trade_pnl`.`portfolio_id`,`v_trade_pnl`.`security_id`;
 
 -- --------------------------------------------------------
 
@@ -3720,6 +3837,15 @@ CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW 
 -- --------------------------------------------------------
 
 --
+-- Structure for view `v_security_amount_types`
+--
+DROP TABLE IF EXISTS `v_security_amount_types`;
+
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `v_security_amount_types` AS select NULL AS `security_amount_type_id`,' not set' AS `type_name` union select `security_amount_types`.`security_amount_type_id` AS `security_amount_type_id`,`security_amount_types`.`type_name` AS `type_name` from `security_amount_types`;
+
+-- --------------------------------------------------------
+
+--
 -- Structure for view `v_security_exposure_stati`
 --
 DROP TABLE IF EXISTS `v_security_exposure_stati`;
@@ -3738,11 +3864,29 @@ CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW 
 -- --------------------------------------------------------
 
 --
+-- Structure for view `v_security_field_source_types`
+--
+DROP TABLE IF EXISTS `v_security_field_source_types`;
+
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `v_security_field_source_types` AS select NULL AS `security_field_source_type_id`,' not set' AS `type_name` union select `security_field_source_types`.`security_field_source_type_id` AS `security_field_source_type_id`,`security_field_source_types`.`type_name` AS `type_name` from `security_field_source_types`;
+
+-- --------------------------------------------------------
+
+--
 -- Structure for view `v_security_issuers`
 --
 DROP TABLE IF EXISTS `v_security_issuers`;
 
 CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `v_security_issuers` AS select NULL AS `security_issuer_id`,' not set' AS `issuer_name` union select `security_issuers`.`security_issuer_id` AS `security_issuer_id`,`security_issuers`.`issuer_name` AS `issuer_name` from `security_issuers`;
+
+-- --------------------------------------------------------
+
+--
+-- Structure for view `v_security_payment_types`
+--
+DROP TABLE IF EXISTS `v_security_payment_types`;
+
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `v_security_payment_types` AS select NULL AS `security_payment_type_id`,' not set' AS `type_name` union select `security_payment_types`.`security_payment_type_id` AS `security_payment_type_id`,`security_payment_types`.`type_name` AS `type_name` from `security_payment_types`;
 
 -- --------------------------------------------------------
 
@@ -3753,14 +3897,6 @@ DROP TABLE IF EXISTS `v_security_pnl`;
 
 CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `v_security_pnl` AS select `v_trade_pnl`.`portfolio_id` AS `portfolio_id`,`v_trade_pnl`.`security_id` AS `security_id`,`v_trade_pnl`.`currency_id` AS `currency_id`,`v_trade_pnl`.`security_name` AS `security_name`,`v_trade_pnl`.`asset_class` AS `asset_class`,`v_trade_pnl`.`sec_curr` AS `sec_curr`,`v_trade_pnl`.`security_issuer_id` AS `security_issuer_id`,`v_trade_pnl`.`trade_curr` AS `trade_curr`,`v_trade_pnl`.`decimals` AS `decimals`,`v_trade_pnl`.`ref_decimals` AS `ref_decimals`,sum(`v_trade_pnl`.`size`) AS `position`,avg(`v_trade_pnl`.`bid`) AS `bid`,avg(`v_trade_pnl`.`ask`) AS `ask`,avg(`v_trade_pnl`.`last_price`) AS `last`,sum(`v_trade_pnl`.`calc_premium`) AS `calc_premium`,sum(`v_trade_pnl`.`calc_premium_ref`) AS `calc_premium_ref`,sum(`v_trade_pnl`.`calc_premium_ref_open`) AS `calc_premium_ref_open`,sum(`v_trade_pnl`.`pos_value`) AS `pos_value`,sum(`v_trade_pnl`.`pos_value_ref`) AS `pos_value_ref`,sum(`v_trade_pnl`.`pnl`) AS `pnl`,sum(`v_trade_pnl`.`pnl_last`) AS `pnl_last`,sum(`v_trade_pnl`.`pnl_ref`) AS `pnl_ref`,sum(`v_trade_pnl`.`pnl_ref_open`) AS `pnl_ref_open`,sum(`v_trade_pnl`.`pnl_fx`) AS `pnl_fx` from `v_trade_pnl` group by `v_trade_pnl`.`security_id`;
 
--- --------------------------------------------------------
-
---
--- Structure for view `v_security_pos`
---
-DROP TABLE IF EXISTS `v_security_pos`;
-
-CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `v_security_pos` AS select `v_security_pnl`.`security_id` AS `security_id`,`v_security_pnl`.`security_name` AS `security_name`,`securities`.`ISIN` AS `ISIN`,`v_security_pnl`.`currency_id` AS `currency_id`,`v_security_pnl`.`position` AS `position`,`v_security_pnl`.`trade_curr` AS `trade_curr`,`v_security_pnl`.`sec_curr` AS `sec_curr`,`v_security_pnl`.`security_issuer_id` AS `security_issuer_id`,`v_security_pnl`.`decimals` AS `decimals`,`v_security_pnl`.`ref_decimals` AS `ref_decimals`,round(`v_security_pnl`.`bid`,`v_security_pnl`.`decimals`) AS `bid`,round(`v_security_pnl`.`ask`,`v_security_pnl`.`decimals`) AS `ask`,round(`v_security_pnl`.`last`,`v_security_pnl`.`decimals`) AS `last`,round(`v_security_pnl`.`calc_premium_ref_open`,`v_security_pnl`.`ref_decimals`) AS `open_value`,round(((`v_security_pnl`.`calc_premium` / `v_security_pnl`.`position`) * -(1)),`v_security_pnl`.`ref_decimals`) AS `buy_price`,round(`v_security_pnl`.`pos_value`,`v_security_pnl`.`decimals`) AS `pos_value`,round(`v_security_pnl`.`pos_value_ref`,`v_security_pnl`.`ref_decimals`) AS `pos_value_ref`,round(`v_security_pnl`.`pnl`,`v_security_pnl`.`decimals`) AS `pnl`,round(`v_security_pnl`.`pnl_last`,`v_security_pnl`.`decimals`) AS `pnl_last`,round(`v_security_pnl`.`pnl_ref`,`v_security_pnl`.`ref_decimals`) AS `pnl_ref`,round(`v_security_pnl`.`pnl_ref_open`,`v_security_pnl`.`ref_decimals`) AS `pnl_ref_open`,round(((`v_security_pnl`.`pnl_ref_open` / `v_security_pnl`.`calc_premium_ref_open`) * -(100)),`v_security_pnl`.`ref_decimals`) AS `pnl_pct`,round(((`v_security_pnl`.`pnl_ref` / `v_security_pnl`.`calc_premium_ref`) * -(100)),`v_security_pnl`.`ref_decimals`) AS `pnl_market`,round((((`v_security_pnl`.`pnl_ref_open` - `v_security_pnl`.`pnl_ref`) / `v_security_pnl`.`calc_premium_ref_open`) * -(100)),`v_security_pnl`.`ref_decimals`) AS `pnl_fx` from (`v_security_pnl` join `securities`) where ((`v_security_pnl`.`position` <> 0) and (`v_security_pnl`.`security_id` = `securities`.`security_id`));
 
 -- --------------------------------------------------------
 
@@ -3796,7 +3932,7 @@ CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW 
 --
 DROP TABLE IF EXISTS `v_security_triggers_open`;
 
-CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `v_security_triggers_open` AS select `security_triggers`.`security_trigger_id` AS `security_trigger_id`,`security_triggers`.`trigger_type_id` AS `trigger_type_id`,`security_triggers`.`trigger_status_id` AS `trigger_status_id`,`security_triggers`.`trigger_value` AS `trigger_value`,`security_triggers`.`security_id` AS `security_id`,`securities`.`symbol_market_map` AS `symbol_mm` from (`security_triggers` join `securities`) where (`security_triggers`.`security_id` = `securities`.`security_id`);
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `v_security_triggers_open` AS select `security_triggers`.`security_trigger_id` AS `security_trigger_id`,`security_triggers`.`trigger_type_id` AS `trigger_type_id`,`security_trigger_types`.`type_name` AS `type_name`,`security_trigger_types`.`code_id` AS `type_code_id`,`security_triggers`.`trigger_status_id` AS `trigger_status_id`,`security_trigger_stati`.`status_text` AS `status_text`,`security_trigger_stati`.`code_id` AS `status_code_id`,`security_triggers`.`trigger_value` AS `trigger_value`,`security_triggers`.`security_id` AS `security_id`,`security_triggers`.`portfolio_id` AS `portfolio_id`,`securities`.`name` AS `sec_name`,`securities`.`ISIN` AS `ISIN`,`securities`.`bid` AS `bid`,`securities`.`ask` AS `ask`,`securities`.`last_price` AS `last_price`,`securities`.`symbol_market_map` AS `symbol_mm` from (((`security_triggers` left join `securities` on((`security_triggers`.`security_id` = `securities`.`security_id`))) left join `security_trigger_types` on((`security_triggers`.`trigger_type_id` = `security_trigger_types`.`trigger_type_id`))) left join `security_trigger_stati` on((`security_triggers`.`trigger_status_id` = `security_trigger_stati`.`trigger_status_id`)));
 
 -- --------------------------------------------------------
 
@@ -3828,11 +3964,65 @@ CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW 
 -- --------------------------------------------------------
 
 --
+-- Structure for view `v_test_price_link`
+--
+DROP TABLE IF EXISTS `v_test_price_link`;
+
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `v_test_price_link` AS select `v_portfolio_pos_calc`.`portfolio_id` AS `portfolio_id`,`v_portfolio_pos_calc`.`security_id` AS `security_id`,`v_portfolio_pos_calc`.`security_name` AS `security_name`,`v_portfolio_pos_get_prices`.`bid` AS `bid`,`v_portfolio_pos_get_prices`.`ask` AS `ask`,`v_portfolio_pos_get_prices`.`last_price` AS `last` from (`v_portfolio_pos_calc` join `v_portfolio_pos_get_prices`) where ((`v_portfolio_pos_calc`.`position` <> 0) and (`v_portfolio_pos_calc`.`portfolio_id` = `v_portfolio_pos_get_prices`.`portfolio_id`) and (`v_portfolio_pos_calc`.`security_id` = `v_portfolio_pos_get_prices`.`security_id`));
+
+-- --------------------------------------------------------
+
+--
+-- Structure for view `v_trades_confirm_to_bank`
+--
+DROP TABLE IF EXISTS `v_trades_confirm_to_bank`;
+
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `v_trades_confirm_to_bank` AS select `p`.`portfolio_id` AS `portfolio_id`,`p`.`portfolio_name` AS `portfolio_name`,`t`.`trade_id` AS `trade_id`,`tt`.`description` AS `trade_type`,`t`.`size` AS `size`,`s`.`name` AS `security_name`,`t`.`price` AS `price`,`t`.`valid_until` AS `valid_until`,`t`.`creation_time` AS `creation_time`,`t`.`confirmation_time_bank` AS `confirmation_time_bank`,`pb`.`display_name` AS `person_name`,`pi`.`display_name` AS `portfolio_manager` from ((((((((((`trades` `t` join `trade_types` `tt`) join `portfolios` `p`) join `v_securities` `s`) join `accounts` `a`) join `account_persons` `apb`) join `account_person_types` `apbt`) join `v_persons` `pb`) join `account_persons` `api`) join `account_person_types` `apit`) join `v_persons` `pi`) where ((`t`.`portfolio_id` = `p`.`portfolio_id`) and (`t`.`trade_type_id` = `tt`.`trade_type_id`) and (`t`.`security_id` = `s`.`security_id`) and (`p`.`confirm_to_bank` = 1) and isnull(`t`.`confirmation_time_bank`) and (`p`.`account_id` = `a`.`account_id`) and (`a`.`account_id` = `apb`.`account_id`) and (`apb`.`account_person_type_id` = `apbt`.`account_person_type_id`) and (`apbt`.`code_id` = 'bank_rm') and (`apb`.`person_id` = `pb`.`person_id`) and (`a`.`account_id` = `api`.`account_id`) and (`api`.`account_person_type_id` = `apit`.`account_person_type_id`) and (`apit`.`code_id` = 'pm') and (`api`.`person_id` = `pi`.`person_id`));
+
+-- --------------------------------------------------------
+
+--
+-- Structure for view `v_trades_confirm_to_client`
+--
+DROP TABLE IF EXISTS `v_trades_confirm_to_client`;
+
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `v_trades_confirm_to_client` AS select `p`.`portfolio_id` AS `portfolio_id`,`p`.`portfolio_name` AS `portfolio_name`,`t`.`trade_id` AS `trade_id`,`tt`.`description` AS `trade_type`,`t`.`size` AS `size`,`s`.`name` AS `security_name`,`t`.`price` AS `price`,`t`.`valid_until` AS `valid_until`,`t`.`creation_time` AS `creation_time`,`t`.`confirmation_time_client` AS `confirmation_time_client`,'Fritz Sample' AS `person_name`,`pi`.`display_name` AS `portfolio_manager` from ((((((((`trades` `t` join `trade_types` `tt`) join `portfolios` `p`) join `v_securities` `s`) join `accounts` `a`) join `v_persons` `pb`) join `account_persons` `api`) join `account_person_types` `apit`) join `v_persons` `pi`) where ((`t`.`portfolio_id` = `p`.`portfolio_id`) and (`t`.`trade_type_id` = `tt`.`trade_type_id`) and (`t`.`security_id` = `s`.`security_id`) and (`p`.`confirm_to_bank` = 1) and isnull(`t`.`confirmation_time_client`) and (`p`.`account_id` = `a`.`account_id`) and (`a`.`person_id` = `pb`.`person_id`) and (`a`.`account_id` = `api`.`account_id`) and (`api`.`account_person_type_id` = `apit`.`account_person_type_id`) and (`apit`.`code_id` = 'pm') and (`api`.`person_id` = `pi`.`person_id`));
+
+-- --------------------------------------------------------
+
+--
+-- Structure for view `v_trades_fx`
+--
+DROP TABLE IF EXISTS `v_trades_fx`;
+
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `v_trades_fx` AS select `trades`.`trade_id` AS `trade_id`,`trades`.`portfolio_id` AS `portfolio_id`,`trades`.`trade_date` AS `trade_date`,`trades`.`valid_until` AS `valid_until`,`trades`.`confirmation_time` AS `confirmation_time`,`trades`.`trade_confirmation_type_id` AS `trade_confirmation_type_id`,`trades`.`trade_confirmation_person` AS `trade_confirmation_person`,`trades`.`internal_person_id` AS `internal_person_id`,`trades`.`contact_type_id` AS `contact_type_id`,`trades`.`currency_id` AS `currency_id`,`trades`.`fx_rate` AS `fx_rate`,`trades`.`settlement_currency_id` AS `settlement_currency_id`,`trades`.`trade_type_id` AS `trade_type_id`,`trades`.`trade_status_id` AS `trade_status_id`,`trades`.`size` AS `size`,`trades`.`premium_sett` AS `premium_sett`,`trades`.`premium_netto` AS `premium_netto`,`trades`.`premium_sett_netto` AS `premium_sett_netto`,`trades`.`rational` AS `rational`,`trades`.`settlement_date` AS `settlement_date`,`trades`.`creation_time` AS `creation_time`,`trades`.`bank_ref_id` AS `bank_ref_id`,`trades`.`counterparty_ref_id` AS `counterparty_ref_id`,`trades`.`bank_text_ins` AS `bank_text_ins`,`trades`.`checked` AS `checked`,`trades`.`related_trade_id` AS `related_trade_id`,`trades`.`scanned_bank_confirmation` AS `scanned_bank_confirmation`,`trades`.`bo_status` AS `bo_status`,`trades`.`comment` AS `comment` from ((`trades` join `v_securities`) join `security_types`) where ((`trades`.`security_id` = `v_securities`.`security_id`) and (`v_securities`.`security_type_id` = `security_types`.`security_type_id`) and (`security_types`.`code_id` = 'FX'));
+
+-- --------------------------------------------------------
+
+--
+-- Structure for view `v_trade_confirmation_types`
+--
+DROP TABLE IF EXISTS `v_trade_confirmation_types`;
+
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `v_trade_confirmation_types` AS select NULL AS `trade_confirmation_type_id`,' not set' AS `type_name` union select `trade_confirmation_types`.`trade_confirmation_type_id` AS `trade_confirmation_type_id`,`trade_confirmation_types`.`type_name` AS `type_name` from `trade_confirmation_types`;
+
+-- --------------------------------------------------------
+
+--
 -- Structure for view `v_trade_fifo_sum_size`
 --
 DROP TABLE IF EXISTS `v_trade_fifo_sum_size`;
 
-CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `v_trade_fifo_sum_size` AS select `v_trade_premium`.`portfolio_id` AS `portfolio_id`,`v_trade_premium`.`security_id` AS `security_id`,max(`trades`.`trade_date`) AS `trade_date`,sum(`v_trade_premium`.`size`) AS `size_sum`,sum(`v_trade_premium`.`calc_premium`) AS `calc_premium_sum`,sum(`v_trade_premium`.`premium`) AS `premium_sum` from (`trades` join `v_trade_premium`) where ((`v_trade_premium`.`portfolio_id` = `trades`.`portfolio_id`) and (`v_trade_premium`.`security_id` = `trades`.`security_id`) and (`v_trade_premium`.`trade_date` < `trades`.`trade_date`)) group by `v_trade_premium`.`portfolio_id`,`v_trade_premium`.`security_id`,`v_trade_premium`.`trade_date`;
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `v_trade_fifo_sum_size` AS select `v_trade_premium`.`portfolio_id` AS `portfolio_id`,`v_trade_premium`.`security_id` AS `security_id`,max(`trades`.`trade_date`) AS `trade_date`,sum(`v_trade_premium`.`size`) AS `size_sum`,sum(`v_trade_premium`.`calc_premium`) AS `calc_premium_sum`,sum(`v_trade_premium`.`premium`) AS `premium_sum` from (`trades` join `v_trade_premium`) where ((`v_trade_premium`.`portfolio_id` = `trades`.`portfolio_id`) and (`v_trade_premium`.`security_id` = `trades`.`security_id`) and (`v_trade_premium`.`trade_date` < `trades`.`trade_date`)) group by `v_trade_premium`.`portfolio_id`,`v_trade_premium`.`security_id`,`trades`.`trade_date`;
+
+-- --------------------------------------------------------
+
+--
+-- Structure for view `v_trade_fifo_sum_size_test`
+--
+DROP TABLE IF EXISTS `v_trade_fifo_sum_size_test`;
+
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `v_trade_fifo_sum_size_test` AS select `v_trade_premium`.`portfolio_id` AS `portfolio_id`,`v_trade_premium`.`security_id` AS `security_id`,max(`trades`.`trade_date`) AS `trade_date`,sum(`v_trade_premium`.`size`) AS `size_sum`,sum(`v_trade_premium`.`calc_premium`) AS `calc_premium_sum`,sum(`v_trade_premium`.`premium`) AS `premium_sum` from (`trades` join `v_trade_premium`) where ((`v_trade_premium`.`portfolio_id` = `trades`.`portfolio_id`) and (`v_trade_premium`.`security_id` = `trades`.`security_id`) and (`v_trade_premium`.`trade_date` < `trades`.`trade_date`)) group by `v_trade_premium`.`portfolio_id`,`v_trade_premium`.`security_id`,`trades`.`trade_date`;
 
 -- --------------------------------------------------------
 
