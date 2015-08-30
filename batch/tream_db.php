@@ -38,6 +38,10 @@ http://tream.biz
 define("EVENT_STATUS_CREATED", 1); // move this const to two functions: get row id and create row if needed
 define("EVENT_STATUS_DONE", 3);    // move this const to two functions: get row id and create row if needed
 define("EVENT_STATUS_CLOSED", 4); 
+
+define("FILE_TYPE_FIXED", 1);
+define("FILE_TYPE_XML", 2);
+
 define("TRADE_TYPE_BUY", 1);
 define("TRADE_TYPE_SELL", 2);
 define("TRADE_TYPE_DELIVERY", 16);
@@ -69,12 +73,20 @@ function sql_get_event_description($event_id) {
   return sql_get_value('events', 'event_id', $event_id, 'description');
 }
 
+function sql_get_event_status($event_id) {
+  return sql_get_value('events', 'event_id', $event_id, 'event_status_id');
+}
+
 function sql_get_portfolio_name($portfolio_id) {
   return sql_get_value('portfolios', 'portfolio_id', $portfolio_id, 'portfolio_name');
 }
 
 function sql_get_portfolio_account($portfolio_id) {
   return sql_get_value('portfolios', 'portfolio_id', $portfolio_id, 'account_id');
+}
+
+function sql_get_exposure_type_name($type_id) {
+  return sql_get_value('exposure_types', 'exposure_type_id', $type_id, 'type_name');
 }
 
 function sql_get_curr_id($curr_symbol) {
@@ -446,32 +458,38 @@ function event_inform($event_key, $event_text, $event_type, $event_date, $soluti
 function event_add($event_key, $event_text, $event_type, $event_date, $solution1, $solution1_sql, $solution2, $solution2_sql, $account_id, $portfolio_id, $debug) {
   tream_debug ('event_add ... ', $debug);
   $result = '';
+  $debug_msg = '';
   $event_id = sql_find_event($event_key);
   if ($event_id <= 0 AND trim($event_key) <> '') {
-    $result .= ' -> event '.$event_key.' created ';
-    sql_add_event("description_unique", $event_key, "text");
-    // $result .= sql_add_event("description_unique", $event_key, "text");
     tream_debug ('event_add ... key '.$event_key.'', $debug);
+    $result .= ' -> event '.$event_key.' created ';
+    $debug_msg .= sql_add_event("description_unique", $event_key, "text");
+    // $result .= sql_add_event("description_unique", $event_key, "text");
     // create push messages if needed
-    $result .= event_inform($event_key, $event_text, $event_type, $event_date, $solution1, $solution1_sql, $solution2, $solution2_sql, $account_id, $portfolio_id) ;
-    //$result .= ' -> message send ';
+    $debug_msg .= event_inform($event_key, $event_text, $event_type, $event_date, $solution1, $solution1_sql, $solution2, $solution2_sql, $account_id, $portfolio_id) ;
+    tream_debug ('event_add ... '.$debug_msg, $debug);
   }
   $event_id = sql_find_event($event_key);
   if ($event_id > 0) {
-    $result .= sql_add_event_create       ($event_id);
-    $result .= sql_set_event_update       ($event_id);
-    $result .= sql_set_event_description  ($event_id, $event_text);
-    $result .= sql_set_event_account      ($event_id, $account_id);
-    $result .= sql_set_event_portfolio    ($event_id, $portfolio_id);
-    $result .= sql_set_event_date         ($event_id, $event_date);
-    $result .= sql_set_event_solution1    ($event_id, $solution1);
-    $result .= sql_set_event_solution1_sql($event_id, $solution1_sql);
-    $result .= sql_set_event_solution2    ($event_id, $solution2);
-    $result .= sql_set_event_solution2_sql($event_id, $solution2_sql);
+    $status = intval(sql_get_event_status($event_id));
+    if ($status > 0 AND $status <> 1) {
+      $result .= 'event '.$event_key.' with status '.$status.' ('.$event_id.') updated';
+    }
+    $debug_msg .= sql_add_event_create       ($event_id);
+    $debug_msg .= sql_set_event_update       ($event_id);
+    $debug_msg .= sql_set_event_description  ($event_id, $event_text);
+    $debug_msg .= sql_set_event_account      ($event_id, $account_id);
+    $debug_msg .= sql_set_event_portfolio    ($event_id, $portfolio_id);
+    $debug_msg .= sql_set_event_date         ($event_id, $event_date);
+    $debug_msg .= sql_set_event_solution1    ($event_id, $solution1);
+    $debug_msg .= sql_set_event_solution1_sql($event_id, $solution1_sql);
+    $debug_msg .= sql_set_event_solution2    ($event_id, $solution2);
+    $debug_msg .= sql_set_event_solution2_sql($event_id, $solution2_sql);
     // reopen the event, if it has been closed
-    $result .= sql_set_event_open         ($event_id);
-    $result .= sql_set_event_status       ($event_id, EVENT_STATUS_CREATED);
-    $result .= sql_set_event_type         ($event_id, sql_code_link($event_type));
+    $debug_msg .= sql_set_event_open         ($event_id);
+    $debug_msg .= sql_set_event_status       ($event_id, 1);
+    $debug_msg .= sql_set_event_type         ($event_id, sql_code_link($event_type));
+    tream_debug ('event_add ... filled '.$debug_msg, $debug);
   } else {
     $result .= 'Error: cannot create event';
   } 
@@ -480,14 +498,23 @@ function event_add($event_key, $event_text, $event_type, $event_date, $solution1
 }
  
 // closes an event if an open event exists
-function event_close($event_key) {
-  $result = ' -> '.$event_key.', ';
+function event_close($event_key, $debug) {
+  $result = '';
+  $debug_msg = '';
+  $status = 0;
+
+  tream_debug ('event_close '.$event_key.'', $debug);
   $event_id = sql_find_event($event_key);
   if ($event_id > 0) {
-    $result .= sql_set_event_closed($event_id);
-    $result .= sql_set_event_status($event_id, EVENT_STATUS_DONE);
+    $status = intval(sql_get_event_status($event_id));
+    if ($status > 0 AND $status <> 4) {
+      $result .= 'event '.$event_key.' with status '.$status.' ('.$event_id.') closed';
+    }
+    $debug_msg .= sql_set_event_closed($event_id);
+    $debug_msg .= sql_set_event_status($event_id, 4);
+    tream_debug ('event_close: '.$debug_msg.'', $debug);
   } else {
-    $result .= 'Error: cannot close event';
+    tream_debug ('event '.$event_key.' not found and not closed.', $debug);
   }
   return $result;
 }
