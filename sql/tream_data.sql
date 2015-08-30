@@ -92,16 +92,33 @@ INSERT INTO `event_types` (`event_type_id`, `type_name`, `user_type_id`, `commen
 -- Dumping data for table `exposure_items`
 --
 
-INSERT INTO `exposure_items` (`exposure_item_id`, `exposure_type_id`, `order_nbr`, `description`, `currency_id`, `is_part_of`, `security_type_id`, `hist_volatility`, `implied_volatility`, `expected_volatility`, `hist_return`, `expected_return`, `market_return`) VALUES
-(57, 8, NULL, 'EuropeStoxx600', NULL, NULL, NULL, 25, NULL, NULL, 4.8, NULL, NULL),
-(58, 8, NULL, 'US Equities', NULL, NULL, NULL, 22, NULL, NULL, 4.8, NULL, NULL),
-(59, 8, NULL, 'EU Bonds', NULL, NULL, NULL, 5, NULL, NULL, 6, NULL, NULL),
-(63, 8, NULL, 'EU Cash', NULL, NULL, NULL, 0.2, NULL, NULL, 4, NULL, NULL),
-(64, 8, NULL, 'World Equities', NULL, NULL, NULL, 18, NULL, NULL, 4.7, NULL, NULL),
-(65, 8, NULL, 'UK Equities', NULL, NULL, NULL, 17, NULL, NULL, 5, NULL, NULL),
-(66, 8, NULL, 'Asian Equities', NULL, NULL, NULL, 60, NULL, NULL, 4.9, NULL, NULL),
-(67, 8, NULL, 'Commodities', NULL, NULL, NULL, 22, NULL, NULL, 1, NULL, NULL),
-(68, 8, NULL, 'LatAM Equities', NULL, NULL, NULL, 48, NULL, NULL, 13, NULL, NULL);
+INSERT INTO `exposure_items` (`exposure_item_id`, `exposure_type_id`, `order_nbr`, `description`, `currency_id`, `is_part_of`, `part_weight`, `security_type_id`, `comment`) VALUES
+(1, 1, NULL, 'Equities', NULL, NULL, NULL, NULL, NULL),
+(2, 1, NULL, 'Equities direct', NULL, 1, NULL, 2, NULL),
+(3, 1, NULL, 'Equities ETF', NULL, 20, NULL, 3, NULL),
+(4, 1, NULL, 'Fixed Income', NULL, NULL, NULL, NULL, NULL),
+(5, 1, NULL, 'Bonds direct', NULL, 4, NULL, 1, NULL),
+(6, 1, NULL, 'other', NULL, NULL, NULL, NULL, NULL),
+(7, 1, NULL, 'Metals', NULL, 6, NULL, 4, NULL),
+(8, 2, NULL, 'EUR', 14, NULL, NULL, NULL, NULL),
+(9, 2, NULL, 'CHF', 13, NULL, NULL, NULL, NULL),
+(10, 2, NULL, 'GPB', 17, NULL, NULL, NULL, NULL),
+(11, 2, NULL, 'other currrencies', NULL, NULL, NULL, NULL, NULL),
+(12, 2, NULL, 'JPY', 16, 11, NULL, NULL, NULL),
+(13, 2, NULL, 'NOK', 18, 11, NULL, NULL, NULL),
+(14, 1, NULL, 'Alternative Investment', NULL, NULL, NULL, NULL, NULL),
+(15, 1, NULL, 'Commodities', NULL, 14, NULL, NULL, NULL),
+(16, 1, NULL, 'Hedge Funds', NULL, 14, NULL, 6, NULL),
+(17, 1, NULL, 'Cash', NULL, NULL, NULL, NULL, NULL),
+(18, 1, NULL, 'ADR GDR', NULL, 2, NULL, NULL, NULL),
+(19, 1, NULL, 'Subscription Right', NULL, 2, NULL, NULL, NULL);
+
+--
+-- Dumping data for table `exposure_item_values`
+--
+
+INSERT INTO `exposure_item_values` (`exposure_item_value_id`, `exposure_item_id`, `ref_currency_id`, `ref_security_id`, `hist_volatility`, `implied_volatility`, `expected_volatility`, `hist_return`, `market_return`, `expected_return`, `comment`) VALUES
+(1, 1, 13, NULL, 11, 12, 13, 6, 7, 8, NULL);
 
 --
 -- Dumping data for table `exposure_targets`
