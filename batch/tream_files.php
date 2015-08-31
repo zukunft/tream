@@ -2,7 +2,7 @@
  
 /* 
 
-tream_db.php - Link to saved files
+tream_files.php - Link to saved files
 
 TO DO: 
 This file is part of TREAM - Portfolio Management Software.
