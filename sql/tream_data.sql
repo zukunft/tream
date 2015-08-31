@@ -131,8 +131,9 @@ INSERT INTO `exposure_targets` (`exposure_target_id`, `exposure_item_id`, `targe
 -- Dumping data for table `exposure_types`
 --
 
-INSERT INTO `exposure_types` (`exposure_type_id`, `type_name`) VALUES
-(8, 'AssetClasses_EUR');
+INSERT INTO `exposure_types` (`exposure_type_id`, `type_name`, `description`, `comment`) VALUES
+(1, 'Asset Class', NULL, NULL),
+(2, 'Currencies', NULL, NULL);
 
 --
 -- Dumping data for table `log_data`
