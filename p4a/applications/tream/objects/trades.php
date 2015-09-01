@@ -77,13 +77,14 @@ class Trades extends P4A_Base_Mask
 			->addJoinLeft("trade_payment_types", "trade_payments.trade_payment_type_id  = trade_payment_types.trade_payment_type_id",
 					  array('type_name'=>'type'))
 			->load();
-
+		
 		$this->setSource($this->trades);
+		
 		$this->firstRow();
-
+        
 		// Customizing fields properties
 		$this->fields->date_placed
-			->setLabel("Placed at")
+			->setLabel("Place")
 			->setTooltip("time when the order has been placed at the markets");
 		$this->fields->date_client
 			->setLabel("Accounting date")
@@ -114,7 +115,7 @@ class Trades extends P4A_Base_Mask
 			->setSourceDescriptionField("symbol");
 
 		$this->fields->settlement_currency_id
-			->setLabel("Settlement curr")
+			->setLabel("Settlement")
 			->setType("select")
 			->setSource(P4A::singleton()->select_currencies)
 			->setSourceDescriptionField("symbol");
@@ -198,7 +199,7 @@ class Trades extends P4A_Base_Mask
 			->setVisibleCols(array("trade_date","portfolio","trade_type","size","security","ISIN","price","last","status","checked"))
 			->setWidth(1200)
 			->showNavigationBar();
-
+    
 		$this->build("p4a_table", "table_log")
 			->setSource($this->log_trades)
 			->setWidth(500)
@@ -214,7 +215,7 @@ class Trades extends P4A_Base_Mask
 		$this->trade_payments->addFilter("trade_id = ?", $this->trades->fields->trade_id); 
 
 		$this->build("p4a_fieldset", "fs_details") /* simular in open today, so please copy updates */
-			->setLabel("Trade detail")
+			->setLabel("Trade detail") 
 			->anchor($this->fields->portfolio_id)   /* preselect based on account */
 /*			->anchorLeft($this->fields->account_id) */  /* maybe not needed because already defined over portfolio id */
 			->anchor($this->fields->trade_date)
@@ -255,9 +256,13 @@ class Trades extends P4A_Base_Mask
 			->anchor($this->fields->scanned_bank_confirmation)
 			//->anchor($this->fields->bo_status)
 			->anchor($this->fields->comment);
-		
+			$this->table
+			   ->addActionCol('copy');
+			$this->table->cols->copy
+			->setWidth(50)                                       // set column width to 50
+			->setLabel('copy');                                    // set column content 
 		$this->frame
-			->anchor($this->fs_search)
+			->anchor($this->fs_search) 
 			->anchor($this->table)
  			->anchor($this->fs_details)
  			->anchorLeft($this->table_trade_payments)
@@ -271,10 +276,12 @@ class Trades extends P4A_Base_Mask
 	public function search()
 	{
 		$value = $this->txt_search->getSQLNewValue();
-		if ($value == '') {
+		if ($value == '') 
+		{
 			$this->trades->setWhere(null);
 			$this->trades->firstRow();
-		} else {	
+		} else 
+		{	
 			$this->trades
 				->setWhere(P4A_DB::singleton()->getCaseInsensitiveLikeSQL('securities.ISIN', "%{$value}%"))
 				->firstRow();
@@ -295,9 +302,22 @@ class Trades extends P4A_Base_Mask
 
 	function saveRow()
 	{
+     
+        
 		// save the new value
 		$this->fields->bo_status->setNewValue(1);
-		parent::saveRow();
+		
+		if(isset($_POST['param4']) && $_POST['param4']=='copy')
+		{ 
+		  $feilds = array('copy'=>'yes');	
+			 
+		}
+		else
+		{
+		  $feilds = array();	
+		}
+	
+		parent::saveRow($feilds);
 /*
 		// calc the new portfolio including the trade
 		$sql_sec_value = "SELECT pos.pos_value_ref FROM v_portfolio_pos pos WHERE pos.security_id = ".$this->fields->security_id->getNewValue()." AND pos.portfolio_id = ".$this->fields->portfolio_id->getNewValue().";";
@@ -314,5 +334,18 @@ class Trades extends P4A_Base_Mask
 		    $sql_update = "UPDATE portfolio_security_fixings SET fixed_price = '".$sec_value."' WHERE portfolio_id = ".$this->fields->portfolio_id->getNewValue()." AND security_id = ".$this->fields->security_id->getNewValue().";";
 		    mysql_query($sql_update);
 		} */
-	} 
+	}
+	/*****
+	*checking the values  for particular edit  values 
+	*****/
+   function editValue()
+   {
+	   
+	  echo "hello";
+	  die;
+	     
+	   
+   }
+   	
 }
+?>
