@@ -216,6 +216,38 @@ INSERT INTO `trade_stati` (`trade_status_id`, `status_text`) VALUES
 INSERT INTO `trades` (`trade_id`, `account_id`, `creation_time`, `internal_person_id`, `security_id`, `currency_id`, `price`, `size`, `rational`, `settlement_date`, `trade_type_id`, `trade_date`, `premium`, `fees`, `portfolio_id`, `trade_status_id`, `checked`, `comment`, `bank_ref_id`, `counterparty_ref_id`, `valid_until`, `fx_rate`, `premium_settlement_currency`, `settlement_currency_id`, `fees_internal`, `fees_bank`, `fees_extern`, `contact_type_id`, `date_placed`, `date_client`, `related_trade_id`) VALUES
 (1, 1, '2014-07-11 12:44:13', 3, 2, 1, 23, 100, 'test', NULL, 1, NULL, NULL, NULL, 1, 3, 0, NULL, NULL, NULL, NULL, NULL, NULL, 1, NULL, NULL, NULL, 1, NULL, NULL, NULL);
 
+--
+-- Dumping data for table `recon_file_types`
+--
+
+INSERT INTO `recon_file_types` (`recon_file_type_id`, `type_name`, `comment`, `code_id`) VALUES
+(1, 'fixed', 'text files with a fixed field length', 'fixed'),
+(2, 'xml', NULL, 'xml');
+
+--
+-- Dumping data for table `recon_step_types`
+--
+
+INSERT INTO `recon_step_types` (`recon_step_type_id`, `type_name`, `comment`) VALUES
+(1, 'unique subtable (add missing)', 'the field is a unique indentifier of a subtable; new values are added: e.g. the ISIN in a trade list'),
+(2, 'add missing (don''t suggest changes)', 'add values if the destination field in the database is empty; if the destination field is not empty no change is suggested because the internal data is supposed to be more correct'),
+(3, 'unique subtable (do not add missing)', 'this field is a unique identifier of a subtable, but no new values are added; e.g. used for portfolios; instead of adding the value create an event'),
+(4, 'unique subtable multi key (do not add missing)', 'like unique subtable, but the related record is selected by an array of fields'),
+(5, 'get field', 'load an additional field from a table to be able to include if for example into messages'),
+(6, 'unique subtable multi key (suggest to add missing)', 'like unique subtable multi key, but create a event so that the user can confirm the creation of the record');
+
+--
+-- Dumping data for table `recon_value_types`
+--
+
+INSERT INTO `recon_value_types` (`recon_value_type_id`, `type_name`, `comment`) VALUES
+(1, 'Text', 'Normal text, but leading spaces are ignored'),
+(2, 'Integer', 'Take only the number without decimals for compare'),
+(3, 'Reference', 'This field is a reference to a subtable, so use only positive integer values'),
+(4, 'Date (YYYYMMDD)', 'numerrical date without seperation');
+
+
+
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
