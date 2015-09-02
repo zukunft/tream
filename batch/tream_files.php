@@ -4,7 +4,6 @@
 
 tream_files.php - Link to saved files
 
-TO DO: 
 This file is part of TREAM - Portfolio Management Software.
 
 TREAM is free software: you can redistribute it and/or modify it
