@@ -115,7 +115,7 @@ class Trades extends P4A_Base_Mask
 			->setSourceDescriptionField("symbol");
 
 		$this->fields->settlement_currency_id
-			->setLabel("Settlement")
+			->setLabel("Settlement curr") 
 			->setType("select")
 			->setSource(P4A::singleton()->select_currencies)
 			->setSourceDescriptionField("symbol");
@@ -306,7 +306,6 @@ class Trades extends P4A_Base_Mask
         
 		// save the new value
 		$this->fields->bo_status->setNewValue(1);
-		
 		if(isset($_POST['param4']) && $_POST['param4']=='copy')
 		{ 
 		  $feilds = array('copy'=>'yes');	
@@ -318,34 +317,9 @@ class Trades extends P4A_Base_Mask
 		}
 	
 		parent::saveRow($feilds);
-/*
-		// calc the new portfolio including the trade
-		$sql_sec_value = "SELECT pos.pos_value_ref FROM v_portfolio_pos pos WHERE pos.security_id = ".$this->fields->security_id->getNewValue()." AND pos.portfolio_id = ".$this->fields->portfolio_id->getNewValue().";";
-		$sql_result = mysql_query($query) or die('Query failed: ' . mysql_error() . ', when executing the query ' . $query . '.');
-		$sql_array = mysql_fetch_array($sql_result, MYSQL_NUM);
-		if (is_null($sql_array['pos_value_ref'])) {
-		  $sec_value = 0;
-		} else {  
-		  $sec_value = $sql_array['pos_value_ref'];
-		}
-		
-		// reset the portfolio value
-		if ($sec_value <> 0) {
-		    $sql_update = "UPDATE portfolio_security_fixings SET fixed_price = '".$sec_value."' WHERE portfolio_id = ".$this->fields->portfolio_id->getNewValue()." AND security_id = ".$this->fields->security_id->getNewValue().";";
-		    mysql_query($sql_update);
-		} */
+
 	}
-	/*****
-	*checking the values  for particular edit  values 
-	*****/
-   function editValue()
-   {
-	   
-	  echo "hello";
-	  die;
-	     
-	   
-   }
+	
    	
 }
 ?>
