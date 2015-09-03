@@ -84,7 +84,7 @@ class Trades extends P4A_Base_Mask
         
 		// Customizing fields properties
 		$this->fields->date_placed
-			->setLabel("Place")
+			->setLabel("Placed at")
 			->setTooltip("time when the order has been placed at the markets");
 		$this->fields->date_client
 			->setLabel("Accounting date")
@@ -115,7 +115,8 @@ class Trades extends P4A_Base_Mask
 			->setSourceDescriptionField("symbol");
 
 		$this->fields->settlement_currency_id
-			->setLabel("Settlement curr") 
+
+			->setLabel("Settlement curr")  
 			->setType("select")
 			->setSource(P4A::singleton()->select_currencies)
 			->setSourceDescriptionField("symbol");
@@ -276,12 +277,10 @@ class Trades extends P4A_Base_Mask
 	public function search()
 	{
 		$value = $this->txt_search->getSQLNewValue();
-		if ($value == '') 
-		{
+		if ($value == '') {
 			$this->trades->setWhere(null);
 			$this->trades->firstRow();
-		} else 
-		{	
+		} else {	
 			$this->trades
 				->setWhere(P4A_DB::singleton()->getCaseInsensitiveLikeSQL('securities.ISIN', "%{$value}%"))
 				->firstRow();
