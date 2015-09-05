@@ -290,12 +290,13 @@ class Tream extends P4A
 		$this->build("p4a_db_source", "accounts")
 			->setTable("accounts")
 			->addOrder("account_name")
-			->addJoinLeft("persons", "accounts.person_id  = persons.person_id",
+			->addJoinLeft("v_persons", "accounts.person_id  = v_persons.person_id",
 					  array('display_name'=>'client'))
 			->addJoinLeft("currencies", "accounts.currency_id  = currencies.currency_id",
 					  array('symbol'=>'fx'))
 			->addJoinLeft("banks", "accounts.bank_id = banks.bank_id",
 					  array('bank_name'=>'bank'))
+			->setPageLimit(30)
 			->setPK("account_id")
 			->load();
 
@@ -317,6 +318,7 @@ class Tream extends P4A
 		$this->build("p4a_db_source", "select_portfolios")
 			->setTable("v_portfolios")
 			->addOrder("portfolio_select_name")
+			->setWhere("v_portfolios.inactive <> 1") 
 			->setPK("portfolio_id")
 			->load();
 
@@ -407,6 +409,7 @@ class Tream extends P4A
 			->addOrder("lastname")
 			->addJoinLeft("person_types", "persons.person_type_id  = person_types.person_type_id",
 					  array('description'=>'type'))
+			->setPageLimit(30)
 			->load();
 
 		$this->build("p4a_db_source", "select_persons")
@@ -846,9 +849,66 @@ class Tream extends P4A
 			->addOrder("issuer_name")
 			->load();
 
+		$this->build("p4a_db_source", "portfolio_rights")
+			->setTable("portfolio_rights")
+			->addJoinLeft("portfolios", "portfolio_rights.portfolio_id  = portfolios.portfolio_id",
+					  array('portfolio_name'=>'portfolio'))
+			->addJoinLeft("log_users", "portfolio_rights.user_id  = log_users.user_id",
+					  array('username'=>'user'))
+			->addJoinLeft("log_user_groups", "portfolio_rights.user_group_id  = log_user_groups.user_group_id",
+					  array('group_name'=>'group'))
+			->addJoinLeft("log_user_rights", "portfolio_rights.user_right_id  = log_user_rights.user_right_id",
+					  array('right_name'=>'right'))
+			->addOrder("portfolio_id")
+			->load();
+
+		$this->build("p4a_db_source", "users")
+			->setTable("log_users")
+			->addJoinLeft("log_user_types", "log_users.user_type_id  = log_user_types.user_type_id",
+					  array('type_name'=>'type'))
+			->addOrder("username")
+			->load();
+
+		$this->build("p4a_db_source", "user_select")
+			->setTable("v_log_users")
+			->setPK("user_id")
+			->addOrder("username")
+			->load();
+
 		$this->build("p4a_db_source", "user_types")
 			->setTable("log_user_types")
 			->addOrder("type_name")
+			->load();
+
+		$this->build("p4a_db_source", "user_group_select")
+			->setTable("v_log_user_groups")
+			->setPK("user_group_id")
+			->addOrder("group_name")
+			->load();
+
+		$this->build("p4a_db_source", "user_groups")
+			->setTable("log_user_groups")
+			->addOrder("group_name")
+			->load();
+
+		$this->build("p4a_db_source", "user_assigns")
+			->setTable("log_user_assigns")
+			->addJoinLeft("log_users", "log_user_assigns.user_id  = log_users.user_id",
+					  array('username'=>'user'))
+			->addJoinLeft("log_user_groups", "log_user_assigns.user_group_id  = log_user_groups.user_group_id",
+					  array('group_name'=>'group'))
+			->addOrder("user_id")
+			->load();
+
+		$this->build("p4a_db_source", "user_right_select")
+			->setTable("v_log_user_rights")
+			->setPK("user_right_id")
+			->addOrder("right_name")
+			->load();
+
+		$this->build("p4a_db_source", "user_rights")
+			->setTable("log_user_rights")
+			->addOrder("right_name")
 			->load();
 
 		$this->build("p4a_db_source", "user_type_select")
@@ -872,6 +932,17 @@ class Tream extends P4A
 			->setTable("v_recon_files")
 			->setPK("recon_file_id")
 			->addOrder("file_name")
+			->load();
+
+		$this->build("p4a_db_source", "recon_file_types")
+			->setTable("recon_file_types")
+			->addOrder("type_name")
+			->load();
+
+		$this->build("p4a_db_source", "recon_file_type_select")
+			->setTable("v_recon_file_types")
+			->setPK("recon_file_type_id")
+			->addOrder("type_name")
 			->load();
 
 		$this->build("p4a_db_source", "recon_step_types")
@@ -1086,6 +1157,12 @@ class Tream extends P4A
 			->load();
 
 		$this->build("p4a_db_source", "select_countries")
+			->setTable("v_countries")
+			->addOrder("name")
+			->setPK("country_id")
+			->load();
+
+		$this->build("p4a_db_source", "select_countries2")
 			->setTable("v_countries")
 			->addOrder("name")
 			->setPK("country_id")
