@@ -55,6 +55,12 @@ class Recon_files extends P4A_Base_Mask
 		$this->fields->fixed_field_names->setWidth(800);
 		$this->fields->comment->setWidth(500);
 
+		$this->fields->recon_file_type_id
+			->setLabel("File type")
+			->setType("select")
+			->setSource(P4A::singleton()->recon_file_type_select)
+			->setSourceDescriptionField("type_name");
+
 		$this->build("p4a_full_toolbar", "toolbar")
 			->setMask($this);
 
@@ -78,8 +84,10 @@ class Recon_files extends P4A_Base_Mask
 		$this->build("p4a_fieldset", "fs_details")
 			->setLabel("Trade type detail")
 			->anchor($this->fields->file_name)
+			->anchor($this->fields->recon_file_type_id)
 			->anchor($this->fields->file_path)
 			->anchor($this->fields->back_days)
+			->anchor($this->fields->max_messages)
 			->anchor($this->fields->fixed_field_positions)
 			->anchor($this->fields->fixed_field_names)
 			->anchor($this->fields->last_run)
@@ -99,7 +107,7 @@ class Recon_files extends P4A_Base_Mask
 
 	public function do_recon()
 	{
-		$this->recon_result->setLabel(http_parse_message(http_get("https://192.168.2.3/crm/batch/tream_recon_file.php?file_id=3"))->body); 
+		$this->recon_result->setLabel(http_parse_message(http_get("/batch/tream_recon_file.php?file_id=3"))->body); 
 		//$this->recon_result->setLabel("test"); 
 		$this->fields->last_run->setNewValue(date("Y-m-d H:i:s"));
 	}
