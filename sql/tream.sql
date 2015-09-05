@@ -2115,6 +2115,7 @@ CREATE TABLE IF NOT EXISTS `v_portfolios` (
 `portfolio_id` int(11)
 ,`portfolio_select_name` varchar(422)
 ,`account_name` varchar(20)
+,`inactive` tinyint(1)
 );
 -- --------------------------------------------------------
 
