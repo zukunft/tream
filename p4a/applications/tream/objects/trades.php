@@ -257,11 +257,13 @@ class Trades extends P4A_Base_Mask
 			->anchor($this->fields->scanned_bank_confirmation)
 			//->anchor($this->fields->bo_status)
 			->anchor($this->fields->comment);
+
 			$this->table
-			   ->addActionCol('copy');
+				->addActionCol('copy');
 			$this->table->cols->copy
-			->setWidth(50)                                       // set column width to 50
-			->setLabel('copy');                                    // set column content 
+				->setWidth(50)			// set column width to 50
+				->setLabel('copy')		// set column content 
+				
 		$this->frame
 			->anchor($this->fs_search) 
 			->anchor($this->table)
