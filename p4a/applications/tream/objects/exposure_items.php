@@ -86,7 +86,7 @@ class Exposure_items extends P4A_Base_Mask
 
 		$this->build("p4a_table", "table")
 			->setSource($p4a->exposure_items)
-			->setVisibleCols(array("type","description")) 
+			->setVisibleCols(array("type","description","part_weight")) 
 			->setWidth(500)
 			->showNavigationBar();
 
