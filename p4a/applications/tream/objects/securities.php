@@ -176,7 +176,8 @@ class Securities extends P4A_Base_Mask
 			->anchor($this->fields->price_feed_type_id)
 			->anchor($this->fields->security_exposure_status_id)
 			->anchor($this->fields->monitoring_security_limit)
-			->anchor($this->fields->security_issuer_id);
+			->anchor($this->fields->security_issuer_id)
+			->anchor($this->fields->archiv);
 			
 		
 		$this->frame
