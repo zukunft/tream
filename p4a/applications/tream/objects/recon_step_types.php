@@ -53,11 +53,18 @@ class Recon_step_types extends P4A_Base_Mask
 		$this->build("p4a_full_toolbar", "toolbar")
 			->setMask($this);
 
+		$this->fields->type_name->setWidth(400);
+		$this->fields->comment
+			->setType("textarea")
+			->setWidth(400)
+			->setHeight(80);
+
 		/* usually a record does not need to be deleted */
 		$this->toolbar->buttons->delete->disable();
 
 		$this->build("p4a_table", "table")
 			->setSource($p4a->recon_step_types)
+			->setVisibleCols(array("type_name","comment")) 
 			->setWidth(500)
 			->showNavigationBar();
 
