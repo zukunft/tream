@@ -76,7 +76,7 @@ class Links extends P4A_Base_Mask
 		
 		$this->frame
 			->anchor($this->table)
- 			->anchor($this->fs_details);
+ 			->anchorLeft($this->fs_details);
 
 		$this
 			->display("menu", $p4a->menu)
