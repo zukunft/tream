@@ -18,10 +18,11 @@ SET time_zone = "+00:00";
 INSERT INTO `log_user_types` (`user_type_id`, `type_name`, `comment`, `code_id`) VALUES
 (1, 'root', 'this user can do everything, but this role should not be used in daily work', 'root'),
 (2, 'power user', 'this user can change to all setting', 'power_user'),
-(3, 'client advisor', 'this user can see and manage only his clienst and not change settings that may have an influence on other users', 'user'),
+(3, 'client advisor', 'this user can see and manage only his clients and not change settings that may have an influence on other users or the asset allocation monitoring', 'user'),
 (4, 'administrator', 'can change setting and setup new users, but cannot enter trades or other business relevant data', 'admin'),
 (5, 'system batch', 'this user is used by the tream batch jobs and cannot be assigned to a real person', 'system'),
-(6, 'read only', 'can just see to some portfolios', 'read_only');
+(6, 'read only', 'can just see to some portfolios', 'read_only')
+(7, 'risk manager', 'the risk manager can set the asset allocation limits which the client advisor cannot', 'risk');
 
 --
 -- Database: `tream`
