@@ -50,10 +50,14 @@ class Portfolios extends P4A_Base_Mask
 		$this->build("p4a_db_source", "portfolios")
 			->setTable("portfolios")
 			->addOrder("portfolio_name")
-			->addJoinLeft("currencies", "portfolios.currency_id  = currencies.currency_id",
+			->addJoin("v_portfolios_u", "portfolios.portfolio_id  = v_portfolios_u.portfolio_id",
+					  array('user_name'=>'user_name'))
+			->addJoinLeft("currencies", "v_portfolios_u.currency_id  = currencies.currency_id",
 					  array('symbol'=>'fx'))
 			->addJoinLeft("banks", "portfolios.bank_id = banks.bank_id",
 					  array('bank_name'=>'bank'))
+// 			needs to be replaced with the correct user indentification once the tream internal user login is switched on
+//			->setWhere(P4A_DB::singleton()->getCaseInsensitiveLikeSQL('v_portfolios_u.user_name', $_SERVER['REMOTE_USER']))
 			->load();
 
 		$this->build("p4a_db_source", "trades")
@@ -75,7 +79,7 @@ class Portfolios extends P4A_Base_Mask
 		$this->build("p4a_db_source", "portfolio_pos")
 			->setTable("v_portfolio_allocation")
 			->addOrder("portfolio_id")
-			->setPageLimit(20)
+			->setPageLimit(100)
 			->load();
 
 		$this->build("p4a_db_source", "portfolio_pos_closed")
@@ -128,6 +132,18 @@ class Portfolios extends P4A_Base_Mask
 			->setSource(P4A::singleton()->select_portfolios)
 			->setSourceDescriptionField("portfolio_select_name"); 
 
+		$this->fields->domicile
+			->setLabel("Domicile")
+			->setType("select")
+			->setSource(P4A::singleton()->select_countries)
+			->setSourceDescriptionField("name");
+
+		$this->fields->nationality
+			->setLabel("Nationality")
+			->setType("select")
+			->setSource(P4A::singleton()->select_countries2)
+			->setSourceDescriptionField("name");
+
 		$this->fields->currency_id->setTooltip("for cash portfolios that are part of a main portfolio, this field is the account currency");
 		$this->fields->monitoring_security_limit->setTooltip("if one security of this portfolio moves more than x percent a message is send to the portfolio manager");
 
@@ -153,7 +169,7 @@ class Portfolios extends P4A_Base_Mask
 		$this->build("p4a_table", "table_portfolio_pos")
 			->setSource($this->portfolio_pos)
 			->setWidth(900)
-			->setVisibleCols(array("asset_class","security_name","position","trade_curr","buy_price","sec_curr","bid","ask","last","pos_value_ref","pnl_ref","pnl_pct","pnl_market","pnl_fx","aum_pct"))
+			->setVisibleCols(array("asset_class","security_name","ISIN","position","trade_curr","buy_price","sec_curr","bid","ask","last","pos_value_ref","pnl_ref","pnl_pct","pnl_market","pnl_fx","aum_pct"))
 			->showNavigationBar();
 		$this->portfolio_pos->addFilter("portfolio_id = ?", $this->portfolios->fields->portfolio_id); 
 
@@ -174,7 +190,7 @@ class Portfolios extends P4A_Base_Mask
 		$this->build("p4a_table", "table_target_values")
 			->setSource($this->exposure_target_values)
 			->setWidth(600)
-			->setVisibleCols(array("item_name","neutral","calc_value","diff_neutral")) 
+			->setVisibleCols(array("item_name","limit_up","limit_down","neutral","calc_value","diff_neutral")) 
 			->showNavigationBar();
 		$this->exposure_target_values->addFilter("portfolio_id = ?", $this->portfolios->fields->portfolio_id);  
 
@@ -187,6 +203,9 @@ class Portfolios extends P4A_Base_Mask
 			->anchor($this->fields->currency_id)
 			->anchor($this->fields->bank_id)
 			->anchor($this->fields->bank_portfolio_id)
+			->anchor($this->fields->IBAN)
+			->anchor($this->fields->domicile)
+			->anchorLeft($this->fields->nationality)
 			->anchor($this->fields->monitoring)
 			->anchorLeft($this->fields->monitoring_security_limit)
 			->anchor($this->fields->inactive)
