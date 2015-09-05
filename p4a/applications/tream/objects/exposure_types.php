@@ -69,7 +69,7 @@ class Exposure_types extends P4A_Base_Mask
 
 		$this->setRequiredField("type_name");
 
-		//$this->build("p4a_image", "chart","https://192.168.2.3/crm/batch/tream_chart_xy.php?title=Assets&xaxis=risk&yaxis=return&labels=CHF,EUR,USD&xvalues=40,30,10&yvalues=2,3,4");
+		//$this->build("p4a_image", "chart","/batch/tream_chart_xy.php?title=Assets&xaxis=risk&yaxis=return&labels=CHF,EUR,USD&xvalues=40,30,10&yvalues=2,3,4");
 
 		$this->build("p4a_image", "chart","chart");
 		$this->build('p4a_button','show_chart_btn')
@@ -84,9 +84,7 @@ class Exposure_types extends P4A_Base_Mask
 			->setSource(P4A::singleton()->select_currencies)
 			->setSourceDescriptionField("symbol");
 		//$this->chart->setIcon("chart");
-		//$this->chart->setIcon("https://192.168.2.3/crm/batch/tream_chart_xy.php?title=Assets&xaxis=risk&yaxis=return&labels=CHF,EUR,USD&xvalues=40,20,10&yvalues=2,3,4");
-		//$this->chart->setIcon("https://192.168.2.3/crm/batch/tream_chart_exposure_type.php?type_id=".$this->exposure_types->fields->exposure_type_id."");
-		$this->chart->setIcon("https://192.168.2.3/crm/batch/tream_chart_exposure_type.php?type_id=".$this->exposure_types->fields->exposure_type_id->getValue()."&ref_fx=".$this->ref_fx->getNewValue()."");
+		$this->chart->setIcon("/batch/tream_chart_exposure_type.php?type_id=".$this->exposure_types->fields->exposure_type_id->getValue()."&ref_fx=".$this->ref_fx->getNewValue()."");
 		
 		//$this->build("p4a_label", "testl","type_id=".$this->exposure_types->fields->exposure_type_id->getValue()."");
 
@@ -111,12 +109,12 @@ class Exposure_types extends P4A_Base_Mask
 	}
 	public function show_chart()
 	{
-		$this->chart->setIcon("https://192.168.2.3/crm/batch/tream_chart_exposure_type.php?type_id=".$this->exposure_types->fields->exposure_type_id->getValue()."&ref_fx=".$this->ref_fx->getNewValue()."");
+		$this->chart->setIcon("/batch/tream_chart_exposure_type.php?type_id=".$this->exposure_types->fields->exposure_type_id->getValue()."&ref_fx=".$this->ref_fx->getNewValue()."");
 	}
 	function main()
 	{
 		parent::main();
-		$this->chart->setIcon("https://192.168.2.3/crm/batch/tream_chart_exposure_type.php?type_id=".$this->exposure_types->fields->exposure_type_id->getValue()."&ref_fx=".$this->ref_fx->getNewValue()."");
+		$this->chart->setIcon("/batch/tream_chart_exposure_type.php?type_id=".$this->exposure_types->fields->exposure_type_id->getValue()."&ref_fx=".$this->ref_fx->getNewValue()."");
 		
 	}
 /*	function prevRow()
