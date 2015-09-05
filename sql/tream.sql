@@ -920,6 +920,8 @@ CREATE TABLE IF NOT EXISTS `portfolios` (
   `portfolio_type_id` int(11) DEFAULT NULL,
   `is_part_of` int(11) DEFAULT NULL,
   `IBAN` varchar(100) DEFAULT NULL,
+  `domicile` int(11) DEFAULT NULL,
+  `nationality` int(11) DEFAULT NULL,
   PRIMARY KEY (`portfolio_id`),
   KEY `account_id` (`account_id`),
   KEY `currency_id` (`currency_id`),
