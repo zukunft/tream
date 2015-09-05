@@ -1138,6 +1138,7 @@ CREATE TABLE IF NOT EXISTS `securities` (
   `security_quote_type_id` int(11) DEFAULT NULL,
   `security_exposure_status_id` int(11) DEFAULT NULL,
   `monitoring_security_limit` double DEFAULT NULL,
+  `archiv` tinyint(1) DEFAULT NULL,
   PRIMARY KEY (`security_id`),
   KEY `currency_id` (`currency_id`),
   KEY `security_type_id` (`security_type_id`),
