@@ -52,6 +52,7 @@ class Persons extends P4A_Base_Mask
 			->addOrder("lastname")
 			->addJoinLeft("person_types", "persons.person_type_id  = person_types.person_type_id",
 					  array('description'=>'type'))
+			->setPageLimit(30)
 			->load();
 
 		$this->build("p4a_db_source", "contact_numbers")
@@ -116,21 +117,21 @@ class Persons extends P4A_Base_Mask
 
 		$this->build("p4a_fieldset", "fs_details")
 			->setLabel("Person detail")
-			->anchor($this->fields->person_id)
+/*			->anchor($this->fields->person_id) */
 			->anchor($this->fields->title)
-			->anchorLeft($this->fields->firstname)
-			->anchorLeft($this->fields->lastname)
-			->anchor($this->fields->display_name)
-			->anchorLeft($this->fields->person_type_id)
-			->anchorLeft($this->fields->date_of_birth)
+			->anchor($this->fields->firstname)
+			->anchor($this->fields->lastname)
+			->anchor($this->fields->display_name) 
+			->anchor($this->fields->person_type_id)
+			->anchor($this->fields->date_of_birth)
 			->anchor($this->fields->owner_id)
 			->anchor($this->fields->comment);
 		
 		$this->frame
 			->anchor($this->table)
- 			->anchor($this->fs_details)
+ 			->anchorLeft($this->fs_details)
  			->anchorLeft($this->table_numbers)
- 			->anchor($this->table_addresses);
+ 			->anchorLeft($this->table_addresses);
 
 		$this
 			->display("menu", $p4a->menu)
