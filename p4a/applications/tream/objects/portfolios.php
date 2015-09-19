@@ -49,7 +49,7 @@ class Portfolios extends P4A_Base_Mask
 
 		$this->build("p4a_db_source", "portfolios")
 			->setTable("portfolios")
-			->addOrder("portfolio_name")
+			->addOrder("portfolio_number")
 			->addJoin("v_portfolios_u", "portfolios.portfolio_id  = v_portfolios_u.portfolio_id",
 					  array('user_name'=>'user_name'))
 			->addJoinLeft("currencies", "v_portfolios_u.currency_id  = currencies.currency_id",
@@ -144,6 +144,10 @@ class Portfolios extends P4A_Base_Mask
 			->setSource(P4A::singleton()->select_countries2)
 			->setSourceDescriptionField("name");
 
+		$this->setRequiredField("currency_id");
+		$this->setRequiredField("account_id");
+		$this->setRequiredField("bank_id");
+
 		$this->fields->currency_id->setTooltip("for cash portfolios that are part of a main portfolio, this field is the account currency");
 		$this->fields->monitoring_security_limit->setTooltip("if one security of this portfolio moves more than x percent a message is send to the portfolio manager");
 
@@ -156,8 +160,12 @@ class Portfolios extends P4A_Base_Mask
 		$this->build("p4a_table", "table")
 			->setSource($this->portfolios)
 			->setWidth(500)
-			->setVisibleCols(array("portfolio_name","fx","bank"))
+			->setVisibleCols(array("portfolio_number","portfolio_name","fx","bank"))
 			->showNavigationBar();
+
+		$this->table->cols->portfolio_number
+			->setWidth(30)
+			->setLabel('nbr');
 
 		$this->build("p4a_table", "table_trades")
 			->setSource($this->trades)
@@ -197,6 +205,7 @@ class Portfolios extends P4A_Base_Mask
 		$this->build("p4a_fieldset", "fs_details")
 			->setLabel("Account detail")
 			->anchor($this->fields->account_id)
+			->anchor($this->fields->portfolio_number)
 			->anchor($this->fields->portfolio_name)
 			->anchor($this->fields->portfolio_type_id)
 			->anchor($this->fields->is_part_of)
