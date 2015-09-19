@@ -908,6 +908,7 @@ CREATE TABLE IF NOT EXISTS `person_types` (
 CREATE TABLE IF NOT EXISTS `portfolios` (
   `portfolio_id` int(11) NOT NULL AUTO_INCREMENT,
   `account_id` int(11) NOT NULL,
+  `portfolio_number` int(11) DEFAULT NULL,
   `portfolio_name` varchar(200) DEFAULT NULL,
   `currency_id` int(11) NOT NULL,
   `bank_id` int(11) NOT NULL,
