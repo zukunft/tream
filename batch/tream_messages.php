@@ -51,10 +51,10 @@ function tream_debug($msg, $debug) {
 // replace vars in a trade related message text
 function msg_text_trade($msg_text, $trade_row) {
   $result = $msg_text;
-  $result = str_replace(MSG_VAR_START.'portfolio_id'.          MSG_VAR_END, $trade_row['portfolio_id'],               $result);
-  $result = str_replace(MSG_VAR_START.'portfolio_name'.        MSG_VAR_END, $trade_row['portfolio_name'],               $result);
+  $result = str_replace(MSG_VAR_START.'portfolio_id'.          MSG_VAR_END, $trade_row['portfolio_id'],           $result);
+  $result = str_replace(MSG_VAR_START.'portfolio_name'.        MSG_VAR_END, $trade_row['portfolio_name'],         $result);
   $result = str_replace(MSG_VAR_START.'trade_id'.              MSG_VAR_END, $trade_row['trade_id'],               $result);
-  $result = str_replace(MSG_VAR_START.'trade_type'.            MSG_VAR_END, $trade_row['trade_type'],               $result);
+  $result = str_replace(MSG_VAR_START.'trade_type'.            MSG_VAR_END, $trade_row['trade_type'],             $result);
   $result = str_replace(MSG_VAR_START.'size'.                  MSG_VAR_END, $trade_row['size'],                   $result);
   $result = str_replace(MSG_VAR_START.'security_name'.         MSG_VAR_END, $trade_row['security_name'],          $result);
   $result = str_replace(MSG_VAR_START.'price'.                 MSG_VAR_END, $trade_row['price'],                  $result);
@@ -62,7 +62,7 @@ function msg_text_trade($msg_text, $trade_row) {
   $result = str_replace(MSG_VAR_START.'creation_time'.         MSG_VAR_END, $trade_row['creation_time'],          $result);
   $result = str_replace(MSG_VAR_START.'confirmation_time_bank'.MSG_VAR_END, $trade_row['confirmation_time_bank'], $result);
   $result = str_replace(MSG_VAR_START.'person_name'.           MSG_VAR_END, $trade_row['person_name'],            $result);
-  $result = str_replace(MSG_VAR_START.'portfolio_manager'.     MSG_VAR_END, $trade_row['portfolio_manager'],           $result);
+  $result = str_replace(MSG_VAR_START.'portfolio_manager'.     MSG_VAR_END, $trade_row['portfolio_manager'],      $result);
   return $result;
 }
 
