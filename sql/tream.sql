@@ -1567,6 +1567,9 @@ CREATE TABLE IF NOT EXISTS `trade_payment_types` (
 CREATE TABLE IF NOT EXISTS `trade_stati` (
   `trade_status_id` int(11) NOT NULL AUTO_INCREMENT,
   `status_text` varchar(200) NOT NULL,
+  `use_for_position` tinyint(1) DEFAULT NULL,
+  `use_for_simulation` tinyint(1) DEFAULT NULL,
+  `use_for_reconciliation` tinyint(1) DEFAULT NULL,
   PRIMARY KEY (`trade_status_id`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
