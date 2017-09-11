@@ -4147,7 +4147,34 @@ CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW 
 --
 DROP TABLE IF EXISTS `v_trade_premium`;
 
-CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `v_trade_premium` AS select `trades`.`portfolio_id` AS `portfolio_id`,`trades`.`security_id` AS `security_id`,`trades`.`currency_id` AS `currency_id`,`currencies`.`symbol` AS `trade_curr`,`trades`.`trade_date` AS `trade_date`,`trades`.`price` AS `price`,(`trades`.`size` * `trade_types`.`factor`) AS `size`,`v_securities`.`security_quote_type_id` AS `security_quote_type_id`,`v_securities`.`quantity_factor` AS `quantity_factor`,`v_securities`.`currency_id` AS `sec_currency_id`,`v_securities`.`security_issuer_id` AS `security_issuer_id`,((((`trades`.`price` * `trades`.`size`) * `v_securities`.`quantity_factor`) * -(1)) * `trade_types`.`factor`) AS `calc_premium`,`trades`.`premium` AS `premium`,if(((`trades`.`currency_id` = `trades`.`settlement_currency_id`) or (`trades`.`settlement_currency_id` = 0) or isnull(`trades`.`settlement_currency_id`)),1,`trades`.`fx_rate`) AS `fx_rate_open`,`portfolios`.`currency_id` AS `ref_currency_id`,`currencies`.`decimals` AS `decimals` from ((((`trades` left join `trade_types` on((`trades`.`trade_type_id` = `trade_types`.`trade_type_id`))) left join `v_securities` on((`trades`.`security_id` = `v_securities`.`security_id`))) left join `portfolios` on((`trades`.`portfolio_id` = `portfolios`.`portfolio_id`))) left join `currencies` on((`trades`.`currency_id` = `currencies`.`currency_id`))) where ((`trades`.`trade_status_id` = 4) or (`trades`.`trade_status_id` = 10));
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `v_trade_premium` AS 
+select 
+`trades`.`portfolio_id` AS `portfolio_id`,
+`trades`.`security_id` AS `security_id`,
+`trades`.`currency_id` AS `currency_id`,
+`currencies`.`symbol` AS `trade_curr`,
+`trades`.`trade_date` AS `trade_date`,
+`trades`.`price` AS `price`,
+(`trades`.`size` * `trade_types`.`factor`) AS `size`,
+`v_securities`.`security_quote_type_id` AS `security_quote_type_id`,
+`v_securities`.`quantity_factor` AS `quantity_factor`,
+`v_securities`.`currency_id` AS `sec_currency_id`,
+`v_securities`.`security_issuer_id` AS `security_issuer_id`,
+(((`trades`.`price` * `trades`.`size` * `v_securities`.`quantity_factor`) * -(1)) * `trade_types`.`factor`) AS `calc_premium`,
+`trades`.`premium` AS `premium`,
+if(((`trades`.`currency_id` = `trades`.`settlement_currency_id`) 
+ or (`trades`.`settlement_currency_id` = 0) 
+ or isnull(`trades`.`settlement_currency_id`)),1,`trades`.`fx_rate`) AS `fx_rate_open`,
+`portfolios`.`currency_id` AS `ref_currency_id`,
+`currencies`.`decimals` AS `decimals` 
+from (((((`trades` left join `trade_stati`  on((`trades`.`trade_status_id`            = `trade_stati`.`trade_status_id`))) 
+                   left join `trade_types`  on((`trades`.`trade_type_id`              = `trade_types`.`trade_type_id`))) 
+                   left join `v_securities` on((`trades`.`security_id`                = `v_securities`.`security_id`))) 
+                   left join `portfolios`   on((`trades`.`portfolio_id`               = `portfolios`.`portfolio_id`))) 
+                   left join `currencies`   on((`trades`.`currency_id`                = `currencies`.`currency_id`))) 
+WHERE `trade_stati`.`use_for_position` = 1
+  AND (`trade_types`.`do_not_use_size` is Null or `trade_types`.`do_not_use_size` = 0)
+  AND `trades`.`security_id` is NOT Null;
 
 -- --------------------------------------------------------
 
