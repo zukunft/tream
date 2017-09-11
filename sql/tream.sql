@@ -3717,6 +3717,46 @@ CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW 
 -- --------------------------------------------------------
 
 --
+-- Structure for view `v_portfolio_pos_named`
+--
+DROP TABLE IF EXISTS `v_portfolio_pos_named`;
+
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `v_portfolio_pos_named` AS 
+select 
+  `v_portfolios`.`portfolio_select_name`    AS `portfolio`,
+  `v_portfolio_pos`.`position`              AS `position`,
+  `v_portfolio_pos`.`decimals`              AS `decimals`,
+  `v_portfolio_pos`.`ref_decimals`          AS `ref_decimals`,
+  `v_portfolio_pos`.`security_name`         AS `security`,
+  `v_portfolio_pos`.`portfolio_id`          AS `portfolio_id`,
+  `v_portfolio_pos`.`security_id`           AS `security_id`,
+  `v_portfolio_pos`.`currency_id`           AS `currency_id`,
+  `v_portfolio_pos`.`asset_class`           AS `asset_class`,
+  `v_portfolio_pos`.`trade_curr`            AS `trade_curr`,
+  `v_portfolio_pos`.`sec_curr`              AS `sec_curr`,
+  `v_portfolio_pos`.`security_issuer_id`    AS `security_issuer_id`, 
+  `v_portfolio_pos`.`bid`                   AS `bid`,
+  `v_portfolio_pos`.`ask`                   AS `ask`,
+  `v_portfolio_pos`.`last`                  AS `last`,
+  `v_portfolio_pos`.`open_value`            AS `open_value`,
+  `v_portfolio_pos`.`buy_price`             AS `buy_price`,
+  `v_portfolio_pos`.`pos_value`             AS `pos_value`,
+  `v_portfolio_pos`.`pos_value_ref`         AS `pos_value_ref`,
+  `v_portfolio_pos`.`pnl`                   AS `pnl`,
+  `v_portfolio_pos`.`pnl_last`              AS `pnl_last`,
+  `v_portfolio_pos`.`pnl_ref`               AS `pnl_ref`, 
+  `v_portfolio_pos`.`pnl_ref_open`          AS `pnl_ref_open`, 
+  `v_portfolio_pos`.`pnl_pct`               AS `pnl_pct`,
+  `v_portfolio_pos`.`pnl_market`            AS `pnl_market`,
+  `v_portfolio_pos`.`pnl_fx`                AS `pnl_fx` 
+from 
+  `v_portfolio_pos`, `v_portfolios`
+where 
+  `v_portfolio_pos`.`portfolio_id` = `v_portfolios`.`portfolio_id`;
+
+-- --------------------------------------------------------
+
+--
 -- Structure for view `v_portfolio_pos_calc`
 --
 DROP TABLE IF EXISTS `v_portfolio_pos_calc`;
