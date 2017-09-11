@@ -74,6 +74,11 @@ class Securities extends P4A_Base_Mask
 					  array('description'=>'trade_type'))
 			->load();
 
+		$this->build("p4a_db_source", "v_portfolio_pos_named")
+			->setTable("v_portfolio_pos_named")
+			->addOrder("portfolio")
+			->load();
+
 		$this->setSource($this->securities);
 		$this->firstRow();
 
@@ -142,8 +147,8 @@ class Securities extends P4A_Base_Mask
 
 		$this->build("p4a_table", "table")
 			->setSource($this->securities)
-			->setVisibleCols(array("name","ISIN","valor","symbol_market_map","symbol_yahoo","type","fx","last_price","quote_type"))
-			->setWidth(800)
+			->setVisibleCols(array("name","ISIN","valor","symbol_market_map","symbol_yahoo","type","fx","last_price","quote_type","update_time"))
+			->setWidth(900)
 			->showNavigationBar();
 
 		$this->build("p4a_table", "table_trades")
@@ -152,6 +157,13 @@ class Securities extends P4A_Base_Mask
 			->setVisibleCols(array("trade_date","account","trade_type","size","price")) 
 			->showNavigationBar();
 		$this->trades->addFilter("security_id = ?", $this->securities->fields->security_id);  
+
+		$this->build("p4a_table", "table_pos")
+			->setSource($this->v_portfolio_pos_named)
+			->setWidth(600)
+			->setVisibleCols(array("portfolio","position","buy_price","trade_curr")) 
+			->showNavigationBar();
+		$this->v_portfolio_pos_named->addFilter("security_id = ?", $this->securities->fields->security_id);  
 
 		$this->setRequiredField("name");
 
@@ -184,7 +196,8 @@ class Securities extends P4A_Base_Mask
 			->anchor($this->fs_search)
 			->anchor($this->table)
  			->anchorLeft($this->fs_details)
- 			->anchor($this->table_trades); 
+ 			->anchor($this->table_trades)
+ 			->anchorLeft($this->table_pos); 
 
 		$this
 			->display("menu", $p4a->menu)
