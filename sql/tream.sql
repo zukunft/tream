@@ -1583,6 +1583,10 @@ CREATE TABLE IF NOT EXISTS `trade_types` (
   `trade_type_id` int(11) NOT NULL AUTO_INCREMENT,
   `description` varchar(200) NOT NULL,
   `factor` double DEFAULT NULL,
+  `use_fx` tinyint(1) DEFAULT NULL,
+  `use_cash` tinyint(1) DEFAULT NULL,
+  `use_fx_swap` tinyint(1) DEFAULT NULL,
+  `do_not_use_size` tinyint(1) DEFAULT NULL,
   `comment` text,
   PRIMARY KEY (`trade_type_id`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=24 ;
