@@ -65,7 +65,11 @@ class Trade_stati extends P4A_Base_Mask
 
 		$this->build("p4a_fieldset", "fs_details")
 			->setLabel("Trade stati detail")
-			->anchor($this->fields->status_text);
+			->anchor($this->fields->status_text)
+			->anchor($this->fields->use_for_position)
+			->anchor($this->fields->use_for_simulation)
+			->anchor($this->fields->use_for_reconciliation)
+			->anchor($this->fields->comment);
 		
 		$this->frame
 			->anchor($this->table)
