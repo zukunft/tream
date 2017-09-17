@@ -29,11 +29,13 @@ along with TREAM. If not, see <http://www.gnu.org/licenses/gpl.html>.
 To contact the authors write to: 
 Timon Zielonka <timon@zukunft.com>
 
-Copyright (c) 2013-2015 zukunft.com AG, Zurich
+Copyright (c) 2013-2017 zukunft.com AG, Zurich
 Heang Lor <heang@zukunft.com>
 
 http://tream.biz
 */ 
+
+// Do to: filter single high quote in sql text before updating the db
 
 define("EVENT_STATUS_CREATED", 1); // move this const to two functions: get row id and create row if needed
 define("EVENT_STATUS_DONE", 3);    // move this const to two functions: get row id and create row if needed
@@ -462,7 +464,7 @@ function event_add($event_key, $event_text, $event_type, $event_date, $solution1
   $event_id = sql_find_event($event_key);
   if ($event_id <= 0 AND trim($event_key) <> '') {
     tream_debug ('event_add ... key '.$event_key.'', $debug);
-    $result .= ' -> event '.$event_key.' created ';
+    $result .= 'event '.$event_key.' created ';
     $debug_msg .= sql_add_event("description_unique", $event_key, "text");
     // $result .= sql_add_event("description_unique", $event_key, "text");
     // create push messages if needed
@@ -475,21 +477,21 @@ function event_add($event_key, $event_text, $event_type, $event_date, $solution1
     if ($status > 0 AND $status <> 1) {
       $result .= 'event '.$event_key.' with status '.$status.' ('.$event_id.') updated';
     }
-    $debug_msg .= sql_add_event_create       ($event_id);
-    $debug_msg .= sql_set_event_update       ($event_id);
-    $debug_msg .= sql_set_event_description  ($event_id, $event_text);
-    $debug_msg .= sql_set_event_account      ($event_id, $account_id);
-    $debug_msg .= sql_set_event_portfolio    ($event_id, $portfolio_id);
-    $debug_msg .= sql_set_event_date         ($event_id, $event_date);
-    $debug_msg .= sql_set_event_solution1    ($event_id, $solution1);
-    $debug_msg .= sql_set_event_solution1_sql($event_id, $solution1_sql);
-    $debug_msg .= sql_set_event_solution2    ($event_id, $solution2);
-    $debug_msg .= sql_set_event_solution2_sql($event_id, $solution2_sql);
+    $debug_msg .= sql_add_event_create       ($event_id).'<br>';
+    $debug_msg .= sql_set_event_update       ($event_id).'<br>';
+    $debug_msg .= sql_set_event_description  ($event_id, $event_text).'<br>';
+    $debug_msg .= sql_set_event_account      ($event_id, $account_id).'<br>';
+    $debug_msg .= sql_set_event_portfolio    ($event_id, $portfolio_id).'<br>';
+    $debug_msg .= sql_set_event_date         ($event_id, $event_date).'<br>';
+    $debug_msg .= sql_set_event_solution1    ($event_id, $solution1).'<br>';
+    $debug_msg .= sql_set_event_solution1_sql($event_id, $solution1_sql).'<br>';
+    $debug_msg .= sql_set_event_solution2    ($event_id, $solution2).'<br>';
+    $debug_msg .= sql_set_event_solution2_sql($event_id, $solution2_sql).'<br>';
     // reopen the event, if it has been closed
     $debug_msg .= sql_set_event_open         ($event_id);
     $debug_msg .= sql_set_event_status       ($event_id, 1);
     $debug_msg .= sql_set_event_type         ($event_id, sql_code_link($event_type));
-    tream_debug ('event_add ... filled '.$debug_msg, $debug);
+    tream_debug ('event_add ... update '.$event_text.': '.$debug_msg.'<br>', $debug);
   } else {
     $result .= 'Error: cannot create event';
   } 
@@ -539,7 +541,7 @@ function exposure_save($portfolio_id, $target_id, $usage) {
 // check get the exposure limit and create a event if outside the limit
 // the portfolio is used to check exceptions
 // and save the value in the database for faster reuse
-function check_exposure($exposure_id, $portfolio_id, $usage_in_pct) {
+function check_exposure($exposure_id, $portfolio_id, $usage_in_pct, $debug) {
   $result = '';
   $exposure_name = sql_get_value("exposure_items", "exposure_item_id", $exposure_id, "description");
   $ref_currency_id = sql_get_value("portfolios", "portfolio_id", $portfolio_id, "currency_id");
@@ -559,28 +561,28 @@ function check_exposure($exposure_id, $portfolio_id, $usage_in_pct) {
   if ($limit_up > 0) {
     if ($limit_up <= $usage_in_pct) {
       $event_key = $exposure_name." above limit ".$limit_up; // include the limit up in the id to create a new event if the limit is changed
-      $event_name = "In portfolio '".trim($portfolio_name)."' the ".$exposure_name." is at ".round($usage_in_pct,2)."%, which is above limit of ".$limit_up.", target id ".$target.""; 
+      $event_name = "In portfolio ".trim($portfolio_name)." the ".$exposure_name." is at ".round($usage_in_pct,2)."pct, which is above limit of ".$limit_up.", target id ".$target.""; 
       $solution1     = "";
       $solution1_sql = "";
       $solution2     = "";
       $solution2_sql = "";
       $result .= '-> event ';
 
-      $result .= event_add($event_key, $event_name, EVENT_TYPE_EXPOSURE_LIMIT, date('Y-m-d'), $solution1, $solution1_sql, $solution2, $solution2_sql, $account_id, $portfolio_id);
+      $result .= event_add($event_key, $event_name, EVENT_TYPE_EXPOSURE_LIMIT, date('Y-m-d'), $solution1, $solution1_sql, $solution2, $solution2_sql, $account_id, $portfolio_id, $debug);
       $result .= '-> event checked ';
     }
   }
   if ($limit_down > 0) {
     if ($limit_down >= $usage_in_pct) {
       $event_key = $exposure_name." below limit ".$limit_down; // include the limit up in the id to create a new event if the limit is changed
-      $event_name = "In portfolio '".trim($portfolio_name)."' the ".$exposure_name." is at ".round($usage_in_pct,2)."%, which is below limit of ".$limit_down.", target id ".$target.""; 
+      $event_name = "In portfolio ".trim($portfolio_name)." the ".$exposure_name." is at ".round($usage_in_pct,2)."pct, which is below limit of ".$limit_down.", target id ".$target.""; 
       $solution1     = "";
       $solution1_sql = "";
       $solution2     = "";
       $solution2_sql = "";
       $result .= '-> event ';
 
-      $result .= event_add($event_key, $event_name, EVENT_TYPE_EXPOSURE_LIMIT, date('Y-m-d'), $solution1, $solution1_sql, $solution2, $solution2_sql, $account_id, $portfolio_id);
+      $result .= event_add($event_key, $event_name, EVENT_TYPE_EXPOSURE_LIMIT, date('Y-m-d'), $solution1, $solution1_sql, $solution2, $solution2_sql, $account_id, $portfolio_id, $debug);
       $result .= '-> event checked ';
     }
   }

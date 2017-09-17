@@ -19,7 +19,7 @@ along with TREAM. If not, see <http://www.gnu.org/licenses/gpl.html>.
 To contact the authors write to: 
 Timon Zielonka <timon@zukunft.com>
 
-Copyright (c) 2013-2015 zukunft.com AG, Zurich
+Copyright (c) 2013-2017 zukunft.com AG, Zurich
 Heang Lor <heang@zukunft.com>
 
 http://tream.biz
@@ -33,7 +33,7 @@ http://tream.biz
  * https://github.com/fballiano/p4a
  *
  * @author Timon Zielonka <timon@zukunft.com>
- * @copyright Copyright (c) 2013-2015 zukunft.com AG, Zurich
+ * @copyright Copyright (c) 2013-2017 zukunft.com AG, Zurich
 
 */
 class Trades extends P4A_Base_Mask
@@ -58,10 +58,13 @@ class Trades extends P4A_Base_Mask
 					  array('lastname'=>'internal_person')) */
 			->addJoinLeft("securities", "trades.security_id  = securities.security_id",
 					  array('name'=>'security','ISIN'=>'ISIN','last_price'=>'last'))
+			->addJoinLeft("v_trade_security", "trades.trade_id  = v_trade_security.trade_id",
+					  array('security_name'=>'security_name')) 
 			->addJoinLeft("trade_types", "trades.trade_type_id  = trade_types.trade_type_id",
 					  array('description'=>'trade_type'))
 			->addJoinLeft("trade_stati", "trades.trade_status_id  = trade_stati.trade_status_id",
 					  array('status_text'=>'status'))
+			->setWhere('trades.security_id is Not Null') 
 			->setPageLimit(20)
 			->load();
 
@@ -115,10 +118,10 @@ class Trades extends P4A_Base_Mask
 			->setSourceDescriptionField("symbol");
 
 		$this->fields->settlement_currency_id
-
 			->setLabel("Settlement curr")  
 			->setType("select")
-			->setSource(P4A::singleton()->select_currencies)
+			->setSource(P4A::singleton()->select_settle_currencies)
+/*			->setSource(P4A::singleton()->select_settle_currencies) */
 			->setSourceDescriptionField("symbol");
 
 		$this->fields->security_id
@@ -170,6 +173,8 @@ class Trades extends P4A_Base_Mask
 		$this->fields->rational->setWidth(500);
 		$this->fields->comment->setWidth(500);
 
+/*		$this->build("p4a_field", "loguser")->setLabel($p4a->menu->items->loguser->getLabel()); */
+
 		$this->fields->creation_time->enable(false);
 
 		// set default values
@@ -197,7 +202,7 @@ class Trades extends P4A_Base_Mask
 
 		$this->build("p4a_table", "table")
 			->setSource($this->trades)
-			->setVisibleCols(array("trade_date","portfolio","trade_type","size","security","ISIN","price","last","status","checked"))
+			->setVisibleCols(array("trade_date","portfolio","trade_type","size","security_name","ISIN","price","last","status","checked")) 
 			->setWidth(1200)
 			->showNavigationBar();
     
@@ -257,13 +262,13 @@ class Trades extends P4A_Base_Mask
 			->anchor($this->fields->scanned_bank_confirmation)
 			//->anchor($this->fields->bo_status)
 			->anchor($this->fields->comment);
-
+/*
 			$this->table
 				->addActionCol('copy');
 			$this->table->cols->copy
 				->setWidth(50)			// set column width to 50
 				->setLabel('copy')		// set column content 
-				
+*/				
 		$this->frame
 			->anchor($this->fs_search) 
 			->anchor($this->table)
@@ -303,7 +308,6 @@ class Trades extends P4A_Base_Mask
 
 	function saveRow()
 	{
-     
 /*
 		// calc the new portfolio including the trade
 		$sql_sec_value = "SELECT pos.pos_value_ref FROM v_portfolio_pos pos WHERE pos.security_id = ".$this->fields->security_id->getNewValue()." AND pos.portfolio_id = ".$this->fields->portfolio_id->getNewValue().";";
@@ -324,17 +328,16 @@ class Trades extends P4A_Base_Mask
 		
 		// save the new value
 		$this->fields->bo_status->setNewValue(1);
-		if(isset($_POST['param4']) && $_POST['param4']=='copy')
-		{ 
+		//$local_log_user_mask = $p4a->menu->items->loguser->getLabel();
+/*		if(isset($_POST['param4']) && $_POST['param4']=='copy') { 
 		  $feilds = array('copy'=>'yes');	
-			 
-		}
-		else
-		{
+		} else {
 		  $feilds = array();	
-		}
-	
-		parent::saveRow($feilds);
+		} 
+
+		parent::saveRow($feilds); 
+*/
+		parent::saveRow(); 
 
 	}
 	

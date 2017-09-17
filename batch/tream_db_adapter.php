@@ -27,12 +27,13 @@ along with TREAM. If not, see <http://www.gnu.org/licenses/gpl.html>.
 To contact the authors write to: 
 Timon Zielonka <timon@zukunft.com>
 
-Copyright (c) 2013-2015 zukunft.com AG, Zurich
+Copyright (c) 2013-2017 zukunft.com AG, Zurich
 Heang Lor <heang@zukunft.com>
 
 http://tream.biz
 */ 
 
+// do do: replace ' with /' before writing a text to the sql db
  
 // the technical login into the database
 define("SQL_HOST", "localhost");
@@ -170,6 +171,7 @@ function sql_log($table, $id_field, $id_value, $value_field, $old_value, $new_va
 
 // set a value in an sql table and report the changes
 function sql_set($table, $id_field, $id_value, $value_field, $new_value, $value_type) {
+  $result = '';
   // get the existing value
   $db_value = sql_get_value($table, $id_field, $id_value, $value_field); 
   if ($value_type == 'date') {
@@ -187,8 +189,11 @@ function sql_set($table, $id_field, $id_value, $value_field, $new_value, $value_
   if ($db_value <> $new_value) {
     mysql_query("UPDATE `".$table."` SET `".$value_field."` = '".$new_value."' WHERE `".$id_field."` = '".$id_value."';");
     sql_log($table, $id_field, $id_value, $value_field, $db_value, $new_value);
+    $result = 'db updated to '.$new_value.'<br>';
+  } else {
+    $result = 'db is '.$db_value.'<br>';
   }
-  return $new_value;
+  return $result;
 }
 
 // set a value in an sql table and without saving the changes (only used to update the last checked time of events)

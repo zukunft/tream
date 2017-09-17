@@ -23,7 +23,7 @@ along with TREAM. If not, see <http://www.gnu.org/licenses/gpl.html>.
 To contact the authors write to: 
 Timon Zielonka <timon@zukunft.com>
 
-Copyright (c) 2013-2015 zukunft.com AG, Zurich
+Copyright (c) 2013-2017 zukunft.com AG, Zurich
 Heang Lor <heang@zukunft.com>
 
 http://tream.biz
@@ -422,6 +422,7 @@ function file_read($file_id, $file_name, $file_positions_all, $file_names_all, $
   $fh = fopen($file_name,'r');
   while ($file_line = fgets($fh)) {
     $line[] = $file_line;
+    tream_debug ('file_read ... load line ...'.$file_line, $debug);
     //$result .= 'get line '.$file_line.'<br>';
     //$ref_values[] = 0; // add a dummy value to create the array ( maybe this be be removed later)
     $line_status[] = 0;

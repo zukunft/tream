@@ -594,6 +594,23 @@ CREATE TABLE IF NOT EXISTS `exposure_exceptions` (
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `exposure_references`
+--
+
+CREATE TABLE IF NOT EXISTS `exposure_references` (
+  `exposure_reference_id` int(11) NOT NULL AUTO_INCREMENT,
+  `account_mandate_id` int(11) DEFAULT NULL,
+  `currency_id` int(11) DEFAULT NULL,
+  `sec_ref_neutral_id` int(11) DEFAULT NULL,
+  `sec_ref_taa_id` int(11) DEFAULT NULL,
+  `sec_benchmark_id` int(11) DEFAULT NULL,
+  `comment` text,
+  PRIMARY KEY (`exposure_reference_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `exposure_items`
 --
 
@@ -3359,7 +3376,20 @@ CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW 
 --
 DROP TABLE IF EXISTS `v_bill`;
 
-CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `v_bill` AS select `v_bill_calc`.`account_id` AS `account_id`,`v_bill_calc`.`account_name` AS `account_name`,`v_bill_calc`.`aum` AS `aum`,`v_bill_calc`.`fee_tp` AS `fee_tp`,`v_bill_calc`.`start` AS `start`,`v_bill_calc`.`end` AS `end`,`v_bill_calc`.`days` AS `days`,`v_bill_calc`.`fees` AS `fees`,`v_bill_calc`.`mwst` AS `mwst`,(`v_bill_calc`.`fees` + `v_bill_calc`.`mwst`) AS `total` from `v_bill_calc`;
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `v_bill` AS 
+select 
+  `v_bill_calc`.`account_id` AS `account_id`,
+  `v_bill_calc`.`account_name` AS `account_name`,
+  `v_bill_calc`.`aum` AS `aum`,
+  `v_bill_calc`.`fee_tp` AS `fee_tp`,
+  `v_bill_calc`.`start` AS `start`,
+  `v_bill_calc`.`end` AS `end`,
+  `v_bill_calc`.`days` AS `days`,
+  `v_bill_calc`.`fees` AS `fees`,
+  `v_bill_calc`.`mwst` AS `mwst`,
+  `v_bill_calc`.`fees` + `v_bill_calc`.`mwst` AS `total` 
+from 
+  `v_bill_calc`;
 
 -- --------------------------------------------------------
 
@@ -3683,7 +3713,28 @@ CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW 
 --
 DROP TABLE IF EXISTS `v_portfolios`;
 
-CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `v_portfolios` AS select NULL AS `portfolio_id`,' not set' AS `portfolio_select_name`,' not set' AS `account_name` union select `portfolios`.`portfolio_id` AS `portfolio_id`,concat_ws(' ',`portfolios`.`portfolio_name`,`banks`.`bank_name`,`currencies`.`symbol`) AS `portfolio_select_name`,cast(`accounts`.`account_name` as unsigned) AS `account_name` from (((`portfolios` join `accounts`) join `currencies`) join `banks`) where ((`portfolios`.`account_id` = `accounts`.`account_id`) and (`portfolios`.`currency_id` = `currencies`.`currency_id`) and (`portfolios`.`bank_id` = `banks`.`bank_id`)) order by cast(`account_name` as unsigned);
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `v_portfolios` AS 
+select 
+  NULL       AS `portfolio_id`,
+  ' not set' AS `portfolio_select_name`,
+  ' not set' AS `account_name`,
+  0          AS `portfolio_number`,
+  0          AS `inactive` 
+
+union select 
+  `portfolios`.`portfolio_id` AS `portfolio_id`,
+  concat_ws(' ',`portfolios`.`portfolio_name`,`banks`.`bank_name`,`currencies`.`symbol`) AS `portfolio_select_name`,
+  cast(`accounts`.`account_name` as unsigned) AS `account_name`,
+  `portfolios`.`portfolio_number` AS `portfolio_number`,
+  `portfolios`.`inactive` AS `inactive` 
+        from  (((`portfolios` 
+        join `accounts`) 
+        join `currencies`) 
+        join `banks`) 
+       where ((`portfolios`.`account_id` = `accounts`.`account_id`) 
+         and (`portfolios`.`currency_id` = `currencies`.`currency_id`) 
+         and (`portfolios`.`bank_id` = `banks`.`bank_id`)) 
+    order by cast(`account_name` as unsigned);
 
 -- --------------------------------------------------------
 
@@ -3692,7 +3743,41 @@ CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW 
 --
 DROP TABLE IF EXISTS `v_portfolio_allocation`;
 
-CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `v_portfolio_allocation` AS select `v_portfolio_pos`.`portfolio_id` AS `portfolio_id`,`v_portfolio_pos`.`security_id` AS `security_id`,`v_portfolio_pos`.`security_name` AS `security_name`,`v_portfolio_pos`.`asset_class` AS `asset_class`,`v_portfolio_pos`.`position` AS `position`,`v_portfolio_pos`.`trade_curr` AS `trade_curr`,`v_portfolio_pos`.`sec_curr` AS `sec_curr`,`v_portfolio_pos`.`decimals` AS `decimals`,`v_portfolio_pos`.`ref_decimals` AS `ref_decimals`,`v_portfolio_pos`.`bid` AS `bid`,`v_portfolio_pos`.`ask` AS `ask`,`v_portfolio_pos`.`last` AS `last`,`v_portfolio_pos`.`open_value` AS `open_value`,`v_portfolio_pos`.`buy_price` AS `buy_price`,`v_portfolio_pos`.`pos_value` AS `pos_value`,`v_portfolio_pos`.`pos_value_ref` AS `pos_value_ref`,`v_portfolio_pos`.`pnl` AS `pnl`,`v_portfolio_pos`.`pnl_last` AS `pnl_last`,`v_portfolio_pos`.`pnl_ref` AS `pnl_ref`,`v_portfolio_pos`.`pnl_ref_open` AS `pnl_ref_open`,`v_portfolio_pos`.`pnl_pct` AS `pnl_pct`,`v_portfolio_pos`.`pnl_market` AS `pnl_market`,`v_portfolio_pos`.`pnl_fx` AS `pnl_fx`,`v_portfolio_pnl`.`aum` AS `aum`,round(((`v_portfolio_pos`.`pos_value_ref` / `v_portfolio_pnl`.`aum`) * 100),1) AS `aum_pct` from (`v_portfolio_pos` join `v_portfolio_pnl`) where (`v_portfolio_pos`.`portfolio_id` = `v_portfolio_pnl`.`portfolio_id`);
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `v_portfolio_allocation` AS 
+SELECT 
+  `v_portfolio_pos`.`portfolio_id` AS `portfolio_id`,
+  `v_portfolio_pos`.`security_id` AS `security_id`,
+  `v_portfolio_pos`.`security_name` AS `security_name`,
+  `securities`.`ISIN` AS `ISIN`,
+  `v_portfolio_pos`.`asset_class` AS `asset_class`,
+  `v_portfolio_pos`.`position` AS `position`,
+  `v_portfolio_pos`.`trade_curr` AS `trade_curr`,
+  `v_portfolio_pos`.`sec_curr` AS `sec_curr`,
+  `v_portfolio_pos`.`decimals` AS `decimals`,
+  `v_portfolio_pos`.`ref_decimals` AS `ref_decimals`,
+  `v_portfolio_pos`.`bid` AS `bid`,
+  `v_portfolio_pos`.`ask` AS `ask`,
+  `v_portfolio_pos`.`last` AS `last`,
+  `v_portfolio_pos`.`open_value` AS `open_value`,
+  `v_portfolio_pos`.`buy_price` AS `buy_price`,
+  `v_portfolio_pos`.`pos_value` AS `pos_value`,
+  `v_portfolio_pos`.`pos_value_ref` AS `pos_value_ref`,
+  `v_portfolio_pos`.`pnl` AS `pnl`,
+  `v_portfolio_pos`.`pnl_last` AS `pnl_last`,
+  `v_portfolio_pos`.`pnl_ref` AS `pnl_ref`, 
+  `v_portfolio_pos`.`pnl_ref_open` AS `pnl_ref_open`, 
+  `v_portfolio_pos`.`pnl_pct` AS `pnl_pct`,
+  `v_portfolio_pos`.`pnl_market` AS `pnl_market`,
+  `v_portfolio_pos`.`pnl_fx` AS `pnl_fx`,  
+  `v_portfolio_pnl`.`aum` AS `aum`, 
+  round(`v_portfolio_pos`.`pos_value_ref`/`v_portfolio_pnl`.`aum` * 100,1) AS `aum_pct` 
+FROM 
+  `v_portfolio_pos`, 
+  `v_portfolio_pnl`, 
+  `securities`
+WHERE 
+      `v_portfolio_pos`.`portfolio_id` = `v_portfolio_pnl`.`portfolio_id`
+  AND `v_portfolio_pos`.`security_id`  = `securities`.`security_id`;
 
 -- --------------------------------------------------------
 
@@ -4053,6 +4138,66 @@ CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW 
 -- --------------------------------------------------------
 
 --
+-- Structure for view `v_trade_types_cash`
+--
+DROP TABLE IF EXISTS `v_trade_types_cash`;
+
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `v_trade_types_cash` AS 
+  select 
+    NULL AS `trade_type_id`,
+    ' not set' AS `description` 
+union 
+  select 
+    `trade_types`.`trade_type_id` AS `trade_type_id`,
+    `trade_types`.`description` AS `description` 
+  from 
+    `trade_types`
+  where
+    `trade_types`.`use_cash` = 1;
+
+-- --------------------------------------------------------
+
+--
+-- Structure for view `v_trade_types_fx`
+--
+DROP TABLE IF EXISTS `v_trade_types_fx`;
+
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `v_trade_types_fx` AS 
+  select 
+    NULL AS `trade_type_id`,
+    ' not set' AS `description` 
+union 
+  select 
+    `trade_types`.`trade_type_id` AS `trade_type_id`,
+    `trade_types`.`description` AS `description` 
+  from 
+    `trade_types`
+  where
+    `trade_types`.`use_fx` = 1;
+
+-- --------------------------------------------------------
+
+--
+-- Structure for view `v_trade_types_fx_swap`
+--
+DROP TABLE IF EXISTS `v_trade_types_fx_swap`;
+
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `v_trade_types_fx_swap` AS 
+  select 
+    NULL AS `trade_type_id`,
+    ' not set' AS `description` 
+union 
+  select 
+    `trade_types`.`trade_type_id` AS `trade_type_id`,
+    `trade_types`.`description` AS `description` 
+  from 
+    `trade_types`
+  where
+    `trade_types`.`use_fx_swap` = 1;
+
+-- --------------------------------------------------------
+
+--
 -- Structure for view `v_trade_confirmation_types`
 --
 DROP TABLE IF EXISTS `v_trade_confirmation_types`;
@@ -4111,7 +4256,135 @@ CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW 
 --
 DROP TABLE IF EXISTS `v_trade_pnl`;
 
-CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `v_trade_pnl` AS select `v_trade_pnl_calc`.`portfolio_id` AS `portfolio_id`,`v_trade_pnl_calc`.`security_id` AS `security_id`,`v_trade_pnl_calc`.`security_name` AS `security_name`,`v_trade_pnl_calc`.`security_type_id` AS `security_type_id`,`v_trade_pnl_calc`.`asset_class` AS `asset_class`,`v_trade_pnl_calc`.`currency_id` AS `currency_id`,`v_trade_pnl_calc`.`trade_curr` AS `trade_curr`,`v_trade_pnl_calc`.`sec_currency_id` AS `sec_currency_id`,`v_trade_pnl_calc`.`security_issuer_id` AS `security_issuer_id`,`v_trade_pnl_calc`.`sec_curr` AS `sec_curr`,`v_trade_pnl_calc`.`trade_date` AS `trade_date`,`v_trade_pnl_calc`.`price` AS `price`,`v_trade_pnl_calc`.`price_ref` AS `price_ref`,`v_trade_pnl_calc`.`price_ref_open` AS `price_ref_open`,`v_trade_pnl_calc`.`size` AS `size`,`v_trade_pnl_calc`.`security_quote_type_id` AS `security_quote_type_id`,`v_trade_pnl_calc`.`quantity_factor` AS `quantity_factor`,`v_trade_pnl_calc`.`calc_premium` AS `calc_premium`,`v_trade_pnl_calc`.`calc_premium_ref` AS `calc_premium_ref`,`v_trade_pnl_calc`.`calc_premium_ref_open` AS `calc_premium_ref_open`,`v_trade_pnl_calc`.`premium` AS `premium`,`v_trade_pnl_calc`.`bid` AS `bid`,`v_trade_pnl_calc`.`ask` AS `ask`,`v_trade_pnl_calc`.`last_price` AS `last_price`,`v_trade_pnl_calc`.`sell_price` AS `sell_price`,`v_trade_pnl_calc`.`update_time` AS `update_time`,`v_trade_pnl_calc`.`pos_value` AS `pos_value`,`v_trade_pnl_calc`.`pos_value_ref` AS `pos_value_ref`,`v_trade_pnl_calc`.`pos_value_ref_open` AS `pos_value_ref_open`,`v_trade_pnl_calc`.`pos_value_last` AS `pos_value_last`,`v_trade_pnl_calc`.`pos_value_last_ref` AS `pos_value_last_ref`,`v_trade_pnl_calc`.`pos_value_last_ref_open` AS `pos_value_last_ref_open`,`v_trade_pnl_calc`.`pnl` AS `pnl`,`v_trade_pnl_calc`.`pnl_ref` AS `pnl_ref`,`v_trade_pnl_calc`.`pnl_ref_open` AS `pnl_ref_open`,`v_trade_pnl_calc`.`pnl_last` AS `pnl_last`,(`v_trade_pnl_calc`.`pos_value` - `v_trade_pnl_calc`.`pos_value_ref`) AS `pnl_fx`,((`v_trade_pnl_calc`.`pos_value` - `v_trade_pnl_calc`.`pos_value_ref`) / `v_trade_pnl_calc`.`pos_value_ref`) AS `pnl_fx_pct`,`v_trade_pnl_calc`.`decimals` AS `decimals`,`v_trade_pnl_calc`.`ref_decimals` AS `ref_decimals` from `v_trade_pnl_calc` union select `v_trade_pnl_calc_cash`.`portfolio_id` AS `portfolio_id`,`v_trade_pnl_calc_cash`.`security_id` AS `security_id`,`v_trade_pnl_calc_cash`.`security_name` AS `security_name`,`v_trade_pnl_calc_cash`.`security_type_id` AS `security_type_id`,`v_trade_pnl_calc_cash`.`asset_class` AS `asset_class`,`v_trade_pnl_calc_cash`.`currency_id` AS `currency_id`,`v_trade_pnl_calc_cash`.`trade_curr` AS `trade_curr`,`v_trade_pnl_calc_cash`.`sec_currency_id` AS `sec_currency_id`,`v_trade_pnl_calc_cash`.`security_issuer_id` AS `security_issuer_id`,`v_trade_pnl_calc_cash`.`sec_curr` AS `sec_curr`,`v_trade_pnl_calc_cash`.`trade_date` AS `trade_date`,`v_trade_pnl_calc_cash`.`price` AS `price`,`v_trade_pnl_calc_cash`.`price_ref` AS `price_ref`,`v_trade_pnl_calc_cash`.`price_ref_open` AS `price_ref_open`,`v_trade_pnl_calc_cash`.`size` AS `size`,`v_trade_pnl_calc_cash`.`security_quote_type_id` AS `security_quote_type_id`,`v_trade_pnl_calc_cash`.`quantity_factor` AS `quantity_factor`,`v_trade_pnl_calc_cash`.`calc_premium` AS `calc_premium`,`v_trade_pnl_calc_cash`.`calc_premium_ref` AS `calc_premium_ref`,`v_trade_pnl_calc_cash`.`calc_premium_ref_open` AS `calc_premium_ref_open`,`v_trade_pnl_calc_cash`.`premium` AS `premium`,`v_trade_pnl_calc_cash`.`bid` AS `bid`,`v_trade_pnl_calc_cash`.`ask` AS `ask`,`v_trade_pnl_calc_cash`.`last_price` AS `last_price`,`v_trade_pnl_calc_cash`.`sell_price` AS `sell_price`,`v_trade_pnl_calc_cash`.`update_time` AS `update_time`,`v_trade_pnl_calc_cash`.`pos_value` AS `pos_value`,`v_trade_pnl_calc_cash`.`pos_value_ref` AS `pos_value_ref`,`v_trade_pnl_calc_cash`.`pos_value_ref_open` AS `pos_value_ref_open`,`v_trade_pnl_calc_cash`.`pos_value_last` AS `pos_value_last`,`v_trade_pnl_calc_cash`.`pos_value_last_ref` AS `pos_value_last_ref`,`v_trade_pnl_calc_cash`.`pos_value_last_ref_open` AS `pos_value_last_ref_open`,`v_trade_pnl_calc_cash`.`pnl` AS `pnl`,`v_trade_pnl_calc_cash`.`pnl_ref` AS `pnl_ref`,`v_trade_pnl_calc_cash`.`pnl_ref_open` AS `pnl_ref_open`,`v_trade_pnl_calc_cash`.`pnl_last` AS `pnl_last`,(`v_trade_pnl_calc_cash`.`pos_value` - `v_trade_pnl_calc_cash`.`pos_value_ref`) AS `pnl_fx`,((`v_trade_pnl_calc_cash`.`pos_value` - `v_trade_pnl_calc_cash`.`pos_value_ref`) / `v_trade_pnl_calc_cash`.`pos_value_ref`) AS `pnl_fx_pct`,`v_trade_pnl_calc_cash`.`decimals` AS `decimals`,`v_trade_pnl_calc_cash`.`ref_decimals` AS `ref_decimals` from `v_trade_pnl_calc_cash`;
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `v_trade_pnl` AS 
+select 
+`v_trade_pnl_calc`.`portfolio_id` AS `portfolio_id`, 
+`v_trade_pnl_calc`.`security_id` AS `security_id`, 
+`v_trade_pnl_calc`.`security_name` AS `security_name`, 
+`v_trade_pnl_calc`.`security_type_id` AS `security_type_id`,
+`v_trade_pnl_calc`.`asset_class` AS `asset_class`,
+`v_trade_pnl_calc`.`currency_id` AS `currency_id`, 
+`v_trade_pnl_calc`.`trade_curr` AS `trade_curr`, 
+`v_trade_pnl_calc`.`sec_currency_id` AS `sec_currency_id`, 
+`v_trade_pnl_calc`.`security_issuer_id` AS `security_issuer_id`, 
+`v_trade_pnl_calc`.`sec_curr` AS `sec_curr`, 
+`v_trade_pnl_calc`.`trade_date` AS `trade_date`, 
+`v_trade_pnl_calc`.`price` AS `price`, 
+`v_trade_pnl_calc`.`price_ref` AS `price_ref`, 
+`v_trade_pnl_calc`.`price_ref_open` AS `price_ref_open`, 
+`v_trade_pnl_calc`.`size` AS `size`, 
+`v_trade_pnl_calc`.`security_quote_type_id` AS `security_quote_type_id`, 
+`v_trade_pnl_calc`.`quantity_factor` AS `quantity_factor`, 
+`v_trade_pnl_calc`.`calc_premium` AS `calc_premium`, 
+`v_trade_pnl_calc`.`calc_premium_ref` AS `calc_premium_ref`, 
+`v_trade_pnl_calc`.`calc_premium_ref_open` AS `calc_premium_ref_open`, 
+`v_trade_pnl_calc`.`premium` AS `premium`, 
+`v_trade_pnl_calc`.`bid` AS `bid`, 
+`v_trade_pnl_calc`.`ask` AS `ask`, 
+`v_trade_pnl_calc`.`last_price` AS `last_price`, 
+`v_trade_pnl_calc`.`sell_price` AS `sell_price`, 
+`v_trade_pnl_calc`.`update_time` AS `update_time`, 
+`v_trade_pnl_calc`.`pos_value` AS `pos_value`, 
+`v_trade_pnl_calc`.`pos_value_ref` AS `pos_value_ref`, 
+`v_trade_pnl_calc`.`pos_value_ref_open` AS `pos_value_ref_open`, 
+`v_trade_pnl_calc`.`pos_value_last` AS `pos_value_last`, 
+`v_trade_pnl_calc`.`pos_value_last_ref` AS `pos_value_last_ref`, 
+`v_trade_pnl_calc`.`pos_value_last_ref_open` AS `pos_value_last_ref_open`, 
+`v_trade_pnl_calc`.`pnl` AS `pnl`, 
+`v_trade_pnl_calc`.`pnl_ref` AS `pnl_ref`, 
+`v_trade_pnl_calc`.`pnl_ref_open` AS `pnl_ref_open`, 
+`v_trade_pnl_calc`.`pnl_last` AS `pnl_last`, 
+`v_trade_pnl_calc`.`pos_value` - `v_trade_pnl_calc`.`pos_value_ref` AS `pnl_fx`, 
+(`v_trade_pnl_calc`.`pos_value` - `v_trade_pnl_calc`.`pos_value_ref`) / `v_trade_pnl_calc`.`pos_value_ref` AS `pnl_fx_pct`, 
+`v_trade_pnl_calc`.`decimals` AS `decimals`, 
+`v_trade_pnl_calc`.`ref_decimals` AS `ref_decimals` 
+from `v_trade_pnl_calc`
+
+union select 
+`v_trade_pnl_calc_cash`.`portfolio_id` AS `portfolio_id`, 
+`v_trade_pnl_calc_cash`.`security_id` AS `security_id`, 
+`v_trade_pnl_calc_cash`.`security_name` AS `security_name`, 
+`v_trade_pnl_calc_cash`.`security_type_id` AS `security_type_id`,
+`v_trade_pnl_calc_cash`.`asset_class` AS `asset_class`,
+`v_trade_pnl_calc_cash`.`currency_id` AS `currency_id`, 
+`v_trade_pnl_calc_cash`.`trade_curr` AS `trade_curr`, 
+`v_trade_pnl_calc_cash`.`sec_currency_id` AS `sec_currency_id`, 
+`v_trade_pnl_calc_cash`.`security_issuer_id` AS `security_issuer_id`, 
+`v_trade_pnl_calc_cash`.`sec_curr` AS `sec_curr`, 
+`v_trade_pnl_calc_cash`.`trade_date` AS `trade_date`, 
+`v_trade_pnl_calc_cash`.`price` AS `price`, 
+`v_trade_pnl_calc_cash`.`price_ref` AS `price_ref`, 
+`v_trade_pnl_calc_cash`.`price_ref_open` AS `price_ref_open`, 
+`v_trade_pnl_calc_cash`.`size` AS `size`, 
+`v_trade_pnl_calc_cash`.`security_quote_type_id` AS `security_quote_type_id`, 
+`v_trade_pnl_calc_cash`.`quantity_factor` AS `quantity_factor`, 
+`v_trade_pnl_calc_cash`.`calc_premium` AS `calc_premium`, 
+`v_trade_pnl_calc_cash`.`calc_premium_ref` AS `calc_premium_ref`, 
+`v_trade_pnl_calc_cash`.`calc_premium_ref_open` AS `calc_premium_ref_open`, 
+`v_trade_pnl_calc_cash`.`premium` AS `premium`, 
+`v_trade_pnl_calc_cash`.`bid` AS `bid`, 
+`v_trade_pnl_calc_cash`.`ask` AS `ask`, 
+`v_trade_pnl_calc_cash`.`last_price` AS `last_price`, 
+`v_trade_pnl_calc_cash`.`sell_price` AS `sell_price`, 
+`v_trade_pnl_calc_cash`.`update_time` AS `update_time`, 
+`v_trade_pnl_calc_cash`.`pos_value` AS `pos_value`, 
+`v_trade_pnl_calc_cash`.`pos_value_ref` AS `pos_value_ref`, 
+`v_trade_pnl_calc_cash`.`pos_value_ref_open` AS `pos_value_ref_open`, 
+`v_trade_pnl_calc_cash`.`pos_value_last` AS `pos_value_last`, 
+`v_trade_pnl_calc_cash`.`pos_value_last_ref` AS `pos_value_last_ref`, 
+`v_trade_pnl_calc_cash`.`pos_value_last_ref_open` AS `pos_value_last_ref_open`, 
+`v_trade_pnl_calc_cash`.`pnl` AS `pnl`, 
+`v_trade_pnl_calc_cash`.`pnl_ref` AS `pnl_ref`, 
+`v_trade_pnl_calc_cash`.`pnl_ref_open` AS `pnl_ref_open`, 
+`v_trade_pnl_calc_cash`.`pnl_last` AS `pnl_last`, 
+`v_trade_pnl_calc_cash`.`pos_value` - `v_trade_pnl_calc_cash`.`pos_value_ref` AS `pnl_fx`, 
+(`v_trade_pnl_calc_cash`.`pos_value` - `v_trade_pnl_calc_cash`.`pos_value_ref`) / `v_trade_pnl_calc_cash`.`pos_value_ref` AS `pnl_fx_pct`, 
+`v_trade_pnl_calc_cash`.`decimals` AS `decimals`, 
+`v_trade_pnl_calc_cash`.`ref_decimals` AS `ref_decimals` 
+from `v_trade_pnl_calc_cash`
+
+union select 
+`v_trade_pnl_calc_cash_direct`.`portfolio_id` AS `portfolio_id`, 
+`v_trade_pnl_calc_cash_direct`.`security_id` AS `security_id`, 
+`v_trade_pnl_calc_cash_direct`.`security_name` AS `security_name`, 
+`v_trade_pnl_calc_cash_direct`.`security_type_id` AS `security_type_id`,
+`v_trade_pnl_calc_cash_direct`.`asset_class` AS `asset_class`,
+`v_trade_pnl_calc_cash_direct`.`currency_id` AS `currency_id`, 
+`v_trade_pnl_calc_cash_direct`.`trade_curr` AS `trade_curr`, 
+`v_trade_pnl_calc_cash_direct`.`sec_currency_id` AS `sec_currency_id`, 
+`v_trade_pnl_calc_cash_direct`.`security_issuer_id` AS `security_issuer_id`, 
+`v_trade_pnl_calc_cash_direct`.`sec_curr` AS `sec_curr`, 
+`v_trade_pnl_calc_cash_direct`.`trade_date` AS `trade_date`, 
+`v_trade_pnl_calc_cash_direct`.`price` AS `price`, 
+`v_trade_pnl_calc_cash_direct`.`price_ref` AS `price_ref`, 
+`v_trade_pnl_calc_cash_direct`.`price_ref_open` AS `price_ref_open`, 
+`v_trade_pnl_calc_cash_direct`.`size` AS `size`, 
+`v_trade_pnl_calc_cash_direct`.`security_quote_type_id` AS `security_quote_type_id`, 
+`v_trade_pnl_calc_cash_direct`.`quantity_factor` AS `quantity_factor`, 
+`v_trade_pnl_calc_cash_direct`.`calc_premium` AS `calc_premium`, 
+`v_trade_pnl_calc_cash_direct`.`calc_premium_ref` AS `calc_premium_ref`, 
+`v_trade_pnl_calc_cash_direct`.`calc_premium_ref_open` AS `calc_premium_ref_open`, 
+`v_trade_pnl_calc_cash_direct`.`premium` AS `premium`, 
+`v_trade_pnl_calc_cash_direct`.`bid` AS `bid`, 
+`v_trade_pnl_calc_cash_direct`.`ask` AS `ask`, 
+`v_trade_pnl_calc_cash_direct`.`last_price` AS `last_price`, 
+`v_trade_pnl_calc_cash_direct`.`sell_price` AS `sell_price`, 
+`v_trade_pnl_calc_cash_direct`.`update_time` AS `update_time`, 
+`v_trade_pnl_calc_cash_direct`.`pos_value` AS `pos_value`, 
+`v_trade_pnl_calc_cash_direct`.`pos_value_ref` AS `pos_value_ref`, 
+`v_trade_pnl_calc_cash_direct`.`pos_value_ref_open` AS `pos_value_ref_open`, 
+`v_trade_pnl_calc_cash_direct`.`pos_value_last` AS `pos_value_last`, 
+`v_trade_pnl_calc_cash_direct`.`pos_value_last_ref` AS `pos_value_last_ref`, 
+`v_trade_pnl_calc_cash_direct`.`pos_value_last_ref_open` AS `pos_value_last_ref_open`, 
+`v_trade_pnl_calc_cash_direct`.`pnl` AS `pnl`, 
+`v_trade_pnl_calc_cash_direct`.`pnl_ref` AS `pnl_ref`, 
+`v_trade_pnl_calc_cash_direct`.`pnl_ref_open` AS `pnl_ref_open`, 
+`v_trade_pnl_calc_cash_direct`.`pnl_last` AS `pnl_last`, 
+`v_trade_pnl_calc_cash_direct`.`pos_value` - `v_trade_pnl_calc_cash_direct`.`pos_value_ref` AS `pnl_fx`, 
+(`v_trade_pnl_calc_cash_direct`.`pos_value` - `v_trade_pnl_calc_cash_direct`.`pos_value_ref`) / `v_trade_pnl_calc_cash_direct`.`pos_value_ref` AS `pnl_fx_pct`, 
+`v_trade_pnl_calc_cash_direct`.`decimals` AS `decimals`, 
+`v_trade_pnl_calc_cash_direct`.`ref_decimals` AS `ref_decimals` 
+from `v_trade_pnl_calc_cash_direct`;
 
 -- --------------------------------------------------------
 
@@ -4134,11 +4407,108 @@ CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW 
 -- --------------------------------------------------------
 
 --
+-- Structure for view `v_trade_pnl_calc_cash_direct`
+--
+DROP TABLE IF EXISTS `v_trade_pnl_calc_cash_direct`;
+
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `v_trade_pnl_calc_cash_direct` AS 
+select 
+  `v_trade_pnl_get_prices_cash`.`portfolio_id` AS `portfolio_id`,
+  `v_trade_pnl_get_prices_cash`.`security_id` AS `security_id`,
+  `v_trade_pnl_get_prices_cash`.`security_name` AS `security_name`,
+  `v_trade_pnl_get_prices_cash`.`security_type_id` AS `security_type_id`,
+  `v_trade_pnl_get_prices_cash`.`asset_class` AS `asset_class`,
+  `v_trade_pnl_get_prices_cash`.`asset_code` AS `asset_code`,
+  `v_trade_pnl_get_prices_cash`.`currency_id` AS `currency_id`,
+  `v_trade_pnl_get_prices_cash`.`trade_curr` AS `trade_curr`,
+  `v_trade_pnl_get_prices_cash`.`sec_currency_id` AS `sec_currency_id`,
+  `v_trade_pnl_get_prices_cash`.`security_issuer_id` AS `security_issuer_id`,
+  `v_trade_pnl_get_prices_cash`.`sec_curr` AS `sec_curr`,
+  `v_trade_pnl_get_prices_cash`.`trade_date` AS `trade_date`,
+  `v_trade_pnl_get_prices_cash`.`price` AS `price`,
+  `v_trade_pnl_get_prices_cash`.`last_price` AS `price_ref`,
+  `v_trade_pnl_get_prices_cash`.`price_ref_open` AS `price_ref_open`,
+  `v_trade_pnl_get_prices_cash`.`size` AS `size`,
+  `v_trade_pnl_get_prices_cash`.`security_quote_type_id` AS `security_quote_type_id`,
+  `v_trade_pnl_get_prices_cash`.`quantity_factor` AS `quantity_factor`,
+  `v_trade_pnl_get_prices_cash`.`calc_premium` AS `calc_premium`,
+  `v_trade_pnl_get_prices_cash`.`size` * `v_trade_pnl_get_prices_cash`.`last_price` AS `calc_premium_ref`,
+  `v_trade_pnl_get_prices_cash`.`calc_premium_ref_open` AS `calc_premium_ref_open`,
+  `v_trade_pnl_get_prices_cash`.`premium` AS `premium`,
+  `v_trade_pnl_get_prices_cash`.`update_time` AS `update_time`,
+  `v_trade_pnl_get_prices_cash`.`bid` AS `bid`,
+  `v_trade_pnl_get_prices_cash`.`ask` AS `ask`,
+  if(`v_trade_pnl_get_prices_cash`.`last_price` IS NULL,1,`v_trade_pnl_get_prices_cash`.`last_price`) AS `last_price`,
+  if(`v_trade_pnl_get_prices_cash`.`sell_price` IS NULL,1,`v_trade_pnl_get_prices_cash`.`sell_price`) AS `sell_price`,
+ (if(`v_trade_pnl_get_prices_cash`.`sell_price` IS NULL,1,`v_trade_pnl_get_prices_cash`.`sell_price`) * `v_trade_pnl_get_prices_cash`.`size` * `v_trade_pnl_get_prices_cash`.`quantity_factor`) AS `pos_value`,
+ (if(`v_trade_pnl_get_prices_cash`.`sell_price` IS NULL,1,`v_trade_pnl_get_prices_cash`.`sell_price`) * `v_trade_pnl_get_prices_cash`.`size` * `v_trade_pnl_get_prices_cash`.`quantity_factor`) AS `pos_value_ref`,
+ (if(`v_trade_pnl_get_prices_cash`.`sell_price` IS NULL,1,`v_trade_pnl_get_prices_cash`.`sell_price`) * `v_trade_pnl_get_prices_cash`.`size` * `v_trade_pnl_get_prices_cash`.`quantity_factor`) AS `pos_value_ref_open`,
+ (if(`v_trade_pnl_get_prices_cash`.`last_price` IS NULL,1,`v_trade_pnl_get_prices_cash`.`last_price`) * `v_trade_pnl_get_prices_cash`.`size`                                             ) AS `pos_value_last`,
+ (if(`v_trade_pnl_get_prices_cash`.`last_price` IS NULL,1,`v_trade_pnl_get_prices_cash`.`last_price`) * `v_trade_pnl_get_prices_cash`.`size` * `v_trade_pnl_get_prices_cash`.`quantity_factor`) AS `pos_value_last_ref`,
+ (if(`v_trade_pnl_get_prices_cash`.`last_price` IS NULL,1,`v_trade_pnl_get_prices_cash`.`last_price`) * `v_trade_pnl_get_prices_cash`.`size` * `v_trade_pnl_get_prices_cash`.`quantity_factor`) AS `pos_value_last_ref_open`,
+((if(`v_trade_pnl_get_prices_cash`.`sell_price` IS NULL,1,`v_trade_pnl_get_prices_cash`.`sell_price`) * `v_trade_pnl_get_prices_cash`.`size` * `v_trade_pnl_get_prices_cash`.`quantity_factor`) + `v_trade_pnl_get_prices_cash`.`calc_premium`) AS `pnl`,
+((if(`v_trade_pnl_get_prices_cash`.`sell_price` IS NULL,1,`v_trade_pnl_get_prices_cash`.`sell_price`) * `v_trade_pnl_get_prices_cash`.`size` * `v_trade_pnl_get_prices_cash`.`quantity_factor`) + `v_trade_pnl_get_prices_cash`.`calc_premium`) AS `pnl_ref`,
+((if(`v_trade_pnl_get_prices_cash`.`sell_price` IS NULL,1,`v_trade_pnl_get_prices_cash`.`sell_price`) * `v_trade_pnl_get_prices_cash`.`size` * `v_trade_pnl_get_prices_cash`.`quantity_factor`) + `v_trade_pnl_get_prices_cash`.`calc_premium`) AS `pnl_ref_open`,
+((if(`v_trade_pnl_get_prices_cash`.`last_price` IS NULL,1,`v_trade_pnl_get_prices_cash`.`last_price`) * `v_trade_pnl_get_prices_cash`.`size` * `v_trade_pnl_get_prices_cash`.`quantity_factor`) + `v_trade_pnl_get_prices_cash`.`calc_premium`) AS `pnl_last`,
+`v_trade_pnl_get_prices_cash`.`decimals` AS `decimals`,
+`v_trade_pnl_get_prices_cash`.`ref_decimals` AS `ref_decimals` 
+from `v_trade_pnl_get_prices_cash`
+WHERE `v_trade_pnl_get_prices_cash`.`asset_code` = 'FX';
+
+-- --------------------------------------------------------
+
+--
 -- Structure for view `v_trade_pnl_get_prices`
 --
 DROP TABLE IF EXISTS `v_trade_pnl_get_prices`;
 
 CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `v_trade_pnl_get_prices` AS select `v_trade_premium_ref`.`portfolio_id` AS `portfolio_id`,`v_trade_premium_ref`.`security_id` AS `security_id`,`securities`.`name` AS `security_name`,`securities`.`security_type_id` AS `security_type_id`,`security_types`.`description` AS `asset_class`,if(isnull(`security_types`.`code_id`),'',`security_types`.`code_id`) AS `asset_code`,`v_trade_premium_ref`.`currency_id` AS `currency_id`,`v_trade_premium_ref`.`trade_curr` AS `trade_curr`,`v_trade_premium_ref`.`sec_currency_id` AS `sec_currency_id`,`v_trade_premium_ref`.`security_issuer_id` AS `security_issuer_id`,`v_trade_premium_ref`.`sec_curr` AS `sec_curr`,`v_trade_premium_ref`.`trade_date` AS `trade_date`,`v_trade_premium_ref`.`price` AS `price`,`v_trade_premium_ref`.`price_ref` AS `price_ref`,`v_trade_premium_ref`.`price_ref_open` AS `price_ref_open`,`v_trade_premium_ref`.`size` AS `size`,`v_trade_premium_ref`.`security_quote_type_id` AS `security_quote_type_id`,`v_trade_premium_ref`.`quantity_factor` AS `quantity_factor`,`v_trade_premium_ref`.`calc_premium` AS `calc_premium`,`v_trade_premium_ref`.`calc_premium_ref` AS `calc_premium_ref`,`v_trade_premium_ref`.`calc_premium_ref_open` AS `calc_premium_ref_open`,`v_trade_premium_ref`.`premium` AS `premium`,`v_portfolio_pos_get_prices`.`bid` AS `bid`,`v_portfolio_pos_get_prices`.`ask` AS `ask`,`v_portfolio_pos_get_prices`.`last_price` AS `last_price`,`v_portfolio_pos_get_prices`.`used_price` AS `sell_price`,if(isnull(`v_portfolio_pos_get_prices`.`update_time`),str_to_date('2014-01-01 11:30:10','%Y-%m-%d %h:%i:%s'),`v_portfolio_pos_get_prices`.`update_time`) AS `update_time`,`v_trade_premium_ref`.`ref_currency_id` AS `ref_currency_id`,`v_trade_premium_ref`.`decimals` AS `decimals`,`v_trade_premium_ref`.`ref_decimals` AS `ref_decimals`,`v_trade_premium_ref`.`fx_rate` AS `fx_rate`,`v_trade_premium_ref`.`fx_rate_open` AS `fx_rate_open` from (((`v_trade_premium_ref` left join `securities` on((`v_trade_premium_ref`.`security_id` = `securities`.`security_id`))) left join `security_types` on((`securities`.`security_type_id` = `security_types`.`security_type_id`))) left join `v_portfolio_pos_get_prices` on(((`v_trade_premium_ref`.`portfolio_id` = `v_portfolio_pos_get_prices`.`portfolio_id`) and (`v_trade_premium_ref`.`security_id` = `v_portfolio_pos_get_prices`.`security_id`))));
+
+-- --------------------------------------------------------
+
+--
+-- Structure for view `v_trade_pnl_get_prices_cash`
+--
+DROP TABLE IF EXISTS `v_trade_pnl_get_prices_cash`;
+
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `v_trade_pnl_get_prices_cash` AS 
+select 
+`v_trade_premium_ref_cash`.`portfolio_id` AS `portfolio_id`,
+`securities`.`security_id` AS `security_id`,
+`securities`.`name` AS `security_name`,
+`security_types`.`security_type_id` AS `security_type_id`,
+`security_types`.`description` AS `asset_class`,
+'FX' AS `asset_code`,
+`v_trade_premium_ref_cash`.`currency_id` AS `currency_id`,
+`v_trade_premium_ref_cash`.`trade_curr` AS `trade_curr`,
+`v_trade_premium_ref_cash`.`sec_currency_id` AS `sec_currency_id`,
+`v_trade_premium_ref_cash`.`security_issuer_id` AS `security_issuer_id`,
+`v_trade_premium_ref_cash`.`sec_curr` AS `sec_curr`,
+`v_trade_premium_ref_cash`.`trade_date` AS `trade_date`,
+`v_trade_premium_ref_cash`.`price` AS `price`,
+`v_trade_premium_ref_cash`.`price_ref` AS `price_ref`,
+`v_trade_premium_ref_cash`.`price_ref_open` AS `price_ref_open`,
+`v_trade_premium_ref_cash`.`size` AS `size`,
+`v_trade_premium_ref_cash`.`security_quote_type_id` AS `security_quote_type_id`,
+`v_trade_premium_ref_cash`.`quantity_factor` AS `quantity_factor`,
+`v_trade_premium_ref_cash`.`calc_premium` AS `calc_premium`,
+`v_trade_premium_ref_cash`.`calc_premium_ref` AS `calc_premium_ref`,
+`v_trade_premium_ref_cash`.`calc_premium_ref_open` AS `calc_premium_ref_open`,
+`v_trade_premium_ref_cash`.`premium` AS `premium`,
+1 AS `bid`,
+1 AS `ask`,
+1 AS `last_price`,
+1 AS `sell_price`, 
+STR_TO_DATE( '2014-01-01 11:30:10', '%Y-%m-%d %h:%i:%s' ) AS `update_time`, 
+`v_trade_premium_ref_cash`.`ref_currency_id` AS `ref_currency_id`,
+`v_trade_premium_ref_cash`.`decimals` AS `decimals`,
+`v_trade_premium_ref_cash`.`ref_decimals` AS `ref_decimals`,
+`v_trade_premium_ref_cash`.`fx_rate` AS `fx_rate` ,
+`v_trade_premium_ref_cash`.`fx_rate_open` AS `fx_rate_open` 
+from 
+  `v_trade_premium_ref_cash` 
+  left join `security_types` on (`security_types`.`code_id` = 'FX')
+  left join `securities` on (`v_trade_premium_ref_cash`.`trade_curr` = `securities`.`name`);
 
 -- --------------------------------------------------------
 
@@ -4179,6 +4549,35 @@ WHERE `trade_stati`.`use_for_position` = 1
 -- --------------------------------------------------------
 
 --
+-- Structure for view `v_trade_premium_cash`
+--
+DROP TABLE IF EXISTS `v_trade_premium_cash`;
+
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `v_trade_premium_cash` AS 
+select 
+  `trades`.`portfolio_id`                                                   AS `portfolio_id`,
+  `trades`.`currency_id`                                                    AS `currency_id`,
+  `currencies`.`symbol`                                                     AS `trade_curr`,
+  `trades`.`trade_date`                                                     AS `trade_date`,
+  `trades`.`price`                                                          AS `price`,
+  (`trades`.`size` * `trade_types`.`factor`)                                AS `size`,
+  (((`trades`.`price` * `trades`.`size` ) * -(1)) * `trade_types`.`factor`) AS `calc_premium`,
+  `trades`.`premium`                                                        AS `premium`,
+  if(((`trades`.`currency_id` = `trades`.`settlement_currency_id`) 
+   or (`trades`.`settlement_currency_id` = 0) 
+   or isnull(`trades`.`settlement_currency_id`)),1,`trades`.`fx_rate`)      AS `fx_rate_open`,
+  `portfolios`.`currency_id`                                                AS `ref_currency_id`,
+  `currencies`.`decimals`                                                   AS `decimals` 
+from 
+  (((`trades` left join `trade_types`  on((`trades`.`trade_type_id`              = `trade_types`.`trade_type_id`))) 
+              left join `portfolios`   on((`trades`.`portfolio_id`               = `portfolios`.`portfolio_id`))) 
+              left join `currencies`   on((`trades`.`currency_id`                = `currencies`.`currency_id`))) 
+where (`trades`.`trade_status_id` = 4 or `trades`.`trade_status_id` = 5) 
+  AND `trades`.`security_id` is Null;
+
+-- --------------------------------------------------------
+
+--
 -- Structure for view `v_trade_premium_fifo`
 --
 DROP TABLE IF EXISTS `v_trade_premium_fifo`;
@@ -4201,7 +4600,135 @@ CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW 
 --
 DROP TABLE IF EXISTS `v_trade_premium_ref`;
 
-CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `v_trade_premium_ref` AS select `v_trade_premium_ref_get_fx`.`portfolio_id` AS `portfolio_id`,`v_trade_premium_ref_get_fx`.`security_id` AS `security_id`,`v_trade_premium_ref_get_fx`.`currency_id` AS `currency_id`,`v_trade_premium_ref_get_fx`.`trade_curr` AS `trade_curr`,`v_trade_premium_ref_get_fx`.`sec_currency_id` AS `sec_currency_id`,`v_trade_premium_ref_get_fx`.`security_issuer_id` AS `security_issuer_id`,`v_trade_premium_ref_get_fx`.`sec_curr` AS `sec_curr`,`v_trade_premium_ref_get_fx`.`decimals` AS `decimals`,`v_trade_premium_ref_get_fx`.`trade_date` AS `trade_date`,`v_trade_premium_ref_get_fx`.`price` AS `price`,(`v_trade_premium_ref_get_fx`.`price` * `v_trade_premium_ref_get_fx`.`fx_rate`) AS `price_ref`,`v_trade_premium_ref_get_fx`.`price_trade_ref` AS `price_trade_ref`,`v_trade_premium_ref_get_fx`.`price_ref_open` AS `price_ref_open`,`v_trade_premium_ref_get_fx`.`size` AS `size`,`v_trade_premium_ref_get_fx`.`security_quote_type_id` AS `security_quote_type_id`,`v_trade_premium_ref_get_fx`.`quantity_factor` AS `quantity_factor`,`v_trade_premium_ref_get_fx`.`calc_premium` AS `calc_premium`,(`v_trade_premium_ref_get_fx`.`calc_premium` * `v_trade_premium_ref_get_fx`.`fx_rate`) AS `calc_premium_ref`,`v_trade_premium_ref_get_fx`.`calc_premium_trade_ref` AS `calc_premium_trade_ref`,`v_trade_premium_ref_get_fx`.`calc_premium_ref_open` AS `calc_premium_ref_open`,`v_trade_premium_ref_get_fx`.`premium` AS `premium`,`v_trade_premium_ref_get_fx`.`ref_currency_id` AS `ref_currency_id`,`v_trade_premium_ref_get_fx`.`ref_decimals` AS `ref_decimals`,`v_trade_premium_ref_get_fx`.`fx_rate` AS `fx_rate`,`v_trade_premium_ref_get_fx`.`fx_rate_open` AS `fx_rate_open` from (`v_trade_premium_ref_get_fx` left join `currencies` on((`v_trade_premium_ref_get_fx`.`ref_currency_id` = `currencies`.`currency_id`)));
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `v_trade_premium_ref` AS 
+select 
+`v_trade_premium_ref_get_fx`.`portfolio_id` AS `portfolio_id`,
+`v_trade_premium_ref_get_fx`.`security_id` AS `security_id`,
+`v_trade_premium_ref_get_fx`.`currency_id` AS `currency_id`,
+`v_trade_premium_ref_get_fx`.`trade_curr` AS `trade_curr`,
+`v_trade_premium_ref_get_fx`.`sec_currency_id` AS `sec_currency_id`,
+`v_trade_premium_ref_get_fx`.`security_issuer_id` AS `security_issuer_id`,
+`v_trade_premium_ref_get_fx`.`sec_curr` AS `sec_curr`,
+`v_trade_premium_ref_get_fx`.`decimals` AS `decimals`,
+`v_trade_premium_ref_get_fx`.`trade_date` AS `trade_date`,
+`v_trade_premium_ref_get_fx`.`price` AS `price`,
+(`v_trade_premium_ref_get_fx`.`price` * `v_trade_premium_ref_get_fx`.`fx_rate`) AS `price_ref`,
+`v_trade_premium_ref_get_fx`.`price_trade_ref` AS `price_trade_ref`,
+`v_trade_premium_ref_get_fx`.`price_ref_open` AS `price_ref_open`,
+`v_trade_premium_ref_get_fx`.`size` AS `size`,
+`v_trade_premium_ref_get_fx`.`security_quote_type_id` AS `security_quote_type_id`,
+`v_trade_premium_ref_get_fx`.`quantity_factor` AS `quantity_factor`,
+`v_trade_premium_ref_get_fx`.`calc_premium` AS `calc_premium`,
+(`v_trade_premium_ref_get_fx`.`calc_premium` * `v_trade_premium_ref_get_fx`.`fx_rate`) AS `calc_premium_ref`,
+`v_trade_premium_ref_get_fx`.`calc_premium_trade_ref` AS `calc_premium_trade_ref`,
+`v_trade_premium_ref_get_fx`.`calc_premium_ref_open`  AS `calc_premium_ref_open`,
+`v_trade_premium_ref_get_fx`.`premium` AS `premium`,
+`v_trade_premium_ref_get_fx`.`ref_currency_id` AS `ref_currency_id`,
+`v_trade_premium_ref_get_fx`.`ref_decimals` AS `ref_decimals`,
+`v_trade_premium_ref_get_fx`.`fx_rate` AS `fx_rate` ,
+`v_trade_premium_ref_get_fx`.`fx_rate_open` AS `fx_rate_open` 
+from (`v_trade_premium_ref_get_fx`
+     left join `currencies` on (`v_trade_premium_ref_get_fx`.`ref_currency_id` = `currencies`.`currency_id`));
+
+-- --------------------------------------------------------
+
+--
+-- Structure for view `v_trade_premium_ref_cash`
+--
+DROP TABLE IF EXISTS `v_trade_premium_ref_cash`;
+
+CREATE  ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `v_trade_premium_ref_cash` AS 
+select 
+  `v_trade_premium_ref_get_fx_cash`.`portfolio_id`                                                AS `portfolio_id`,
+  `v_trade_premium_ref_get_fx_cash`.`security_id`                                                 AS `security_id`,
+  `v_trade_premium_ref_get_fx_cash`.`currency_id`                                                 AS `currency_id`,
+  `v_trade_premium_ref_get_fx_cash`.`trade_curr`                                                  AS `trade_curr`,
+  `v_trade_premium_ref_get_fx_cash`.`sec_currency_id`                                             AS `sec_currency_id`,
+  `v_trade_premium_ref_get_fx_cash`.`security_issuer_id`                                          AS `security_issuer_id`,
+  `v_trade_premium_ref_get_fx_cash`.`sec_curr`                                                    AS `sec_curr`,
+  `v_trade_premium_ref_get_fx_cash`.`decimals`                                                    AS `decimals`,
+  `v_trade_premium_ref_get_fx_cash`.`trade_date`                                                  AS `trade_date`,
+  `v_trade_premium_ref_get_fx_cash`.`price`                                                       AS `price`,
+ (`v_trade_premium_ref_get_fx_cash`.`price` * `v_trade_premium_ref_get_fx_cash`.`fx_rate`)        AS `price_ref`,
+  `v_trade_premium_ref_get_fx_cash`.`price_trade_ref`                                             AS `price_trade_ref`,
+  `v_trade_premium_ref_get_fx_cash`.`price_ref_open`                                              AS `price_ref_open`,
+  `v_trade_premium_ref_get_fx_cash`.`size`                                                        AS `size`,
+  `v_trade_premium_ref_get_fx_cash`.`security_quote_type_id`                                      AS `security_quote_type_id`,
+  `v_trade_premium_ref_get_fx_cash`.`quantity_factor`                                             AS `quantity_factor`,
+  `v_trade_premium_ref_get_fx_cash`.`calc_premium`                                                AS `calc_premium`,
+ (`v_trade_premium_ref_get_fx_cash`.`calc_premium` * `v_trade_premium_ref_get_fx_cash`.`fx_rate`) AS `calc_premium_ref`,
+  `v_trade_premium_ref_get_fx_cash`.`calc_premium_trade_ref`                                      AS `calc_premium_trade_ref`,
+  `v_trade_premium_ref_get_fx_cash`.`calc_premium_ref_open`                                       AS `calc_premium_ref_open`,
+  `v_trade_premium_ref_get_fx_cash`.`premium`                                                     AS `premium`,
+  `v_trade_premium_ref_get_fx_cash`.`ref_currency_id`                                             AS `ref_currency_id`,
+  `v_trade_premium_ref_get_fx_cash`.`ref_decimals`                                                AS `ref_decimals`,
+  `v_trade_premium_ref_get_fx_cash`.`fx_rate`                                                     AS `fx_rate` ,
+  `v_trade_premium_ref_get_fx_cash`.`fx_rate_open`                                                AS `fx_rate_open` 
+from (`v_trade_premium_ref_get_fx_cash`
+     left join `currencies` on (`v_trade_premium_ref_get_fx_cash`.`ref_currency_id` = `currencies`.`currency_id`));
+
+-- --------------------------------------------------------
+
+--
+-- Structure for view `v_trade_premium_ref_get_fx_cash`
+--
+DROP TABLE IF EXISTS `v_trade_premium_ref_get_fx_cash`;
+
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `v_trade_premium_ref_get_fx_cash` AS 
+select 
+  `v_trade_premium_ref_get_cash`.`portfolio_id`    AS `portfolio_id`,
+  Null                                             AS `security_id`,
+  `v_trade_premium_ref_get_cash`.`currency_id`     AS `currency_id`,
+  `v_trade_premium_ref_get_cash`.`trade_curr`      AS `trade_curr`,
+  `v_trade_premium_ref_get_cash`.`currency_id`     AS `sec_currency_id`,
+  Null                                             AS `security_issuer_id`,
+  Null                                             AS `sec_curr`,
+  `v_trade_premium_ref_get_cash`.`decimals`        AS `decimals`,
+  `v_trade_premium_ref_get_cash`.`trade_date`      AS `trade_date`,
+  `v_trade_premium_ref_get_cash`.`price`           AS `price`,
+  `v_trade_premium_ref_get_cash`.`price`           AS `price_trade_ref`,
+  `v_trade_premium_ref_get_cash`.`price`           AS `price_ref_open`,
+  `v_trade_premium_ref_get_cash`.`size`            AS `size`,
+  Null                                             AS `security_quote_type_id`,
+  `v_trade_premium_ref_get_cash`.`quantity_factor` AS `quantity_factor`,
+  `v_trade_premium_ref_get_cash`.`calc_premium`    AS `calc_premium`,
+  `v_trade_premium_ref_get_cash`.`calc_premium`    AS `calc_premium_trade_ref`,
+  `v_trade_premium_ref_get_cash`.`calc_premium`    AS `calc_premium_ref_open`,
+  `v_trade_premium_ref_get_cash`.`premium`         AS `premium`,
+  `v_trade_premium_ref_get_cash`.`ref_currency_id` AS `ref_currency_id`,
+  `v_trade_premium_ref_get_cash`.`decimals`        AS `ref_decimals`,
+  `v_trade_premium_ref_get_cash`.`trade_fx_rate`   AS `trade_fx_rate` ,
+  `v_trade_premium_ref_get_cash`.`fx_rate_open`    AS `fx_rate_open`, 
+  1                                                AS `fx_rate`
+from 
+    `v_trade_premium_ref_get_cash`;
+
+-- --------------------------------------------------------
+
+--
+-- Structure for view `v_trade_premium_ref_get_fx_missing`
+--
+DROP TABLE IF EXISTS `v_trade_premium_ref_get_fx_missing`;
+
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `v_trade_premium_ref_get_fx_missing` AS 
+select 
+  `v_trade_premium_ref_get_fx`.`portfolio_id` AS `portfolio_id`,
+  `v_trade_premium_ref_get_fx`.`security_id` AS `security_id`,
+  `v_trade_premium_ref_get_fx`.`sec_currency_id` AS `sec_currency_id`,
+  `v_trade_premium_ref_get_fx`.`ref_currency_id` AS `ref_currency_id`,
+  `v_currencies`.`symbol` AS `currency_1`,
+  `v_currencies_2`.`symbol` AS `currency_2`,
+  `v_trade_premium_ref_get_fx`.`size` AS `size`,
+  `v_trade_premium_ref_get_fx`.`fx_rate` AS `fx_rate`
+from 
+    `v_trade_premium_ref_get_fx`, 
+    `v_currencies`,
+    `v_currencies_2` 
+where
+      `v_trade_premium_ref_get_fx`.`fx_rate` is Null
+  AND `v_trade_premium_ref_get_fx`.`size` <> 0
+  AND `v_trade_premium_ref_get_fx`.`sec_currency_id` = `v_currencies`.`currency_id`
+  AND `v_trade_premium_ref_get_fx`.`ref_currency_id` = `v_currencies_2`.`currency_id`;
 
 -- --------------------------------------------------------
 
@@ -4219,7 +4746,65 @@ CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW 
 --
 DROP TABLE IF EXISTS `v_trade_premium_ref_get_fx`;
 
-CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `v_trade_premium_ref_get_fx` AS select `v_trade_premium_ref_get_sec`.`portfolio_id` AS `portfolio_id`,`v_trade_premium_ref_get_sec`.`security_id` AS `security_id`,`v_trade_premium_ref_get_sec`.`currency_id` AS `currency_id`,`v_trade_premium_ref_get_sec`.`trade_curr` AS `trade_curr`,`v_trade_premium_ref_get_sec`.`sec_currency_id` AS `sec_currency_id`,`v_trade_premium_ref_get_sec`.`security_issuer_id` AS `security_issuer_id`,`v_trade_premium_ref_get_sec`.`sec_curr` AS `sec_curr`,`v_trade_premium_ref_get_sec`.`decimals` AS `decimals`,`v_trade_premium_ref_get_sec`.`trade_date` AS `trade_date`,`v_trade_premium_ref_get_sec`.`price` AS `price`,`v_trade_premium_ref_get_sec`.`price_trade_ref` AS `price_trade_ref`,`v_trade_premium_ref_get_sec`.`price_ref_open` AS `price_ref_open`,`v_trade_premium_ref_get_sec`.`size` AS `size`,`v_trade_premium_ref_get_sec`.`security_quote_type_id` AS `security_quote_type_id`,`v_trade_premium_ref_get_sec`.`quantity_factor` AS `quantity_factor`,`v_trade_premium_ref_get_sec`.`calc_premium` AS `calc_premium`,`v_trade_premium_ref_get_sec`.`calc_premium_trade_ref` AS `calc_premium_trade_ref`,`v_trade_premium_ref_get_sec`.`calc_premium_ref_open` AS `calc_premium_ref_open`,`v_trade_premium_ref_get_sec`.`premium` AS `premium`,`v_trade_premium_ref_get_sec`.`ref_currency_id` AS `ref_currency_id`,`v_trade_premium_ref_get_sec`.`ref_decimals` AS `ref_decimals`,`v_trade_premium_ref_get_sec`.`trade_fx_rate` AS `trade_fx_rate`,`v_trade_premium_ref_get_sec`.`fx_rate_open` AS `fx_rate_open`,if((`v_trade_premium_ref_get_sec`.`sec_currency_id` = `v_trade_premium_ref_get_sec`.`ref_currency_id`),1,(`currency_pairs`.`fx_rate` * `currency_pairs`.`factor`)) AS `fx_rate` from (`v_trade_premium_ref_get_sec` left join `currency_pairs` on(((`v_trade_premium_ref_get_sec`.`sec_currency_id` = `currency_pairs`.`currency1_id`) and (`v_trade_premium_ref_get_sec`.`ref_currency_id` = `currency_pairs`.`currency2_id`))));
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `v_trade_premium_ref_get_fx` AS 
+select 
+  `v_trade_premium_ref_get_sec`.`portfolio_id` AS `portfolio_id`,
+  `v_trade_premium_ref_get_sec`.`security_id` AS `security_id`,
+  `v_trade_premium_ref_get_sec`.`currency_id` AS `currency_id`,
+  `v_trade_premium_ref_get_sec`.`trade_curr` AS `trade_curr`,
+  `v_trade_premium_ref_get_sec`.`sec_currency_id` AS `sec_currency_id`,
+  `v_trade_premium_ref_get_sec`.`security_issuer_id` AS `security_issuer_id`,
+  `v_trade_premium_ref_get_sec`.`sec_curr` AS `sec_curr`,
+  `v_trade_premium_ref_get_sec`.`decimals` AS `decimals`,
+  `v_trade_premium_ref_get_sec`.`trade_date` AS `trade_date`,
+  `v_trade_premium_ref_get_sec`.`price` AS `price`,
+  `v_trade_premium_ref_get_sec`.`price_trade_ref` AS `price_trade_ref`,
+  `v_trade_premium_ref_get_sec`.`price_ref_open` AS `price_ref_open`,
+  `v_trade_premium_ref_get_sec`.`size` AS `size`,
+  `v_trade_premium_ref_get_sec`.`security_quote_type_id` AS `security_quote_type_id`,
+  `v_trade_premium_ref_get_sec`.`quantity_factor` AS `quantity_factor`,
+  `v_trade_premium_ref_get_sec`.`calc_premium` AS `calc_premium`,
+  `v_trade_premium_ref_get_sec`.`calc_premium_trade_ref` AS `calc_premium_trade_ref`,
+  `v_trade_premium_ref_get_sec`.`calc_premium_ref_open`  AS `calc_premium_ref_open`,
+  `v_trade_premium_ref_get_sec`.`premium` AS `premium`,
+  `v_trade_premium_ref_get_sec`.`ref_currency_id` AS `ref_currency_id`,
+  `v_trade_premium_ref_get_sec`.`ref_decimals` AS `ref_decimals`,
+  `v_trade_premium_ref_get_sec`.`trade_fx_rate` AS `trade_fx_rate` ,
+  `v_trade_premium_ref_get_sec`.`fx_rate_open` AS `fx_rate_open`, 
+  if ((`v_trade_premium_ref_get_sec`.`sec_currency_id` = `v_trade_premium_ref_get_sec`.`ref_currency_id`),
+       1,
+       `currency_pairs`.`fx_rate` * `currency_pairs`.`factor`) AS `fx_rate`
+from 
+    (`v_trade_premium_ref_get_sec`
+        left join `currency_pairs` 
+               on ((`v_trade_premium_ref_get_sec`.`sec_currency_id` = `currency_pairs`.`currency1_id`) 
+               and (`v_trade_premium_ref_get_sec`.`ref_currency_id` = `currency_pairs`.`currency2_id`)));
+
+-- --------------------------------------------------------
+
+--
+-- Structure for view `v_trade_premium_ref_get_cash`
+--
+DROP TABLE IF EXISTS `v_trade_premium_ref_get_cash`;
+
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `v_trade_premium_ref_get_cash` AS 
+select 
+  `v_trade_premium_cash`.`portfolio_id` AS `portfolio_id`,
+  `v_trade_premium_cash`.`currency_id` AS `currency_id`,
+  `v_trade_premium_cash`.`trade_curr` AS `trade_curr`,
+  `v_trade_premium_cash`.`decimals` AS `decimals`,
+  `v_trade_premium_cash`.`trade_date` AS `trade_date`,
+  `v_trade_premium_cash`.`price` AS `price`,
+  `v_trade_premium_cash`.`size` AS `size`,
+  `v_trade_premium_cash`.`calc_premium` AS `calc_premium`,
+  `v_trade_premium_cash`.`premium` AS `premium`,
+  `v_trade_premium_cash`.`ref_currency_id` AS `ref_currency_id`,
+  `currency_pairs`.`factor` AS `quantity_factor`,
+  if((`v_trade_premium_cash`.`currency_id` = `v_trade_premium_cash`.`ref_currency_id`),1,`currency_pairs`.`fx_rate`            * `currency_pairs`.`factor`) AS `trade_fx_rate`,
+  if((`v_trade_premium_cash`.`currency_id` = `v_trade_premium_cash`.`ref_currency_id`),1,`v_trade_premium_cash`.`fx_rate_open` * `currency_pairs`.`factor`) AS `fx_rate_open` 
+from (`v_trade_premium_cash` 
+      left join `currency_pairs` on ((`v_trade_premium_cash`.`currency_id`     = `currency_pairs`.`currency1_id`) 
+                                 and (`v_trade_premium_cash`.`ref_currency_id` = `currency_pairs`.`currency2_id`)));
 
 -- --------------------------------------------------------
 

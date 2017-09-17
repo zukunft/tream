@@ -59,12 +59,14 @@ class Security_types extends P4A_Base_Mask
 			->setSource(P4A::singleton()->security_quote_types)
 			->setSourceDescriptionField("type_name");
 
+		$this->fields->code_id->setLabel("system");
+
 		/* usually a record does not need to be deleted */
 		$this->toolbar->buttons->delete->disable();
 
 		$this->build("p4a_table", "table")
 			->setSource($p4a->security_types)
-			->setVisibleCols(array("description","quote_type")) 
+			->setVisibleCols(array("description","quote_type","code_id")) 
 			->setWidth(500)
 			->showNavigationBar();
 

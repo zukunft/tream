@@ -69,7 +69,7 @@ class Trade_types extends P4A_Base_Mask
 			->anchor($this->fields->factor)
 			->anchor($this->fields->use_fx)
 			->anchorLeft($this->fields->use_cash)
-			->anchor($this->fields->use_fx_swap)
+			->anchorLeft($this->fields->use_fx_swap)
 			->anchor($this->fields->do_not_use_size)
 			->anchor($this->fields->comment);
 		

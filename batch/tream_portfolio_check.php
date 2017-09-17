@@ -32,8 +32,8 @@ Heang Lor <heang@zukunft.com>
 http://tream.biz
 */ 
 
-include_once 'batch/tream_db_adapter.php';
-include_once 'batch/tream_db.php';
+include_once './tream_db_adapter.php';
+include_once './tream_db.php';
 
 define("THIS_SCRIPT_VERBOSE_LEVEL", 2); // 0 = show only actions, 1 = show warnings also, 2 = show also infos
 
@@ -47,7 +47,7 @@ function tream_display($msg, $display) {
 // get portfolio allocation
 function portfolio_value($portfolio_id, $sec_id, $field_name, $display) {
   $result = '';
-  $sql_portfolio_query = "SELECT security_id, security_name, pos_value_ref, pos_value, position, decimals, ref_decimals, sec_curr, buy_price, pnl, pnl_ref FROM v_portfolio_allocation WHERE portfolio_id = '".$portfolio_id."';";
+  $sql_portfolio_query = "SELECT security_id, security_name, ISIN, pos_value_ref, pos_value, position, decimals, ref_decimals, sec_curr, buy_price, pnl, pnl_ref FROM v_portfolio_allocation WHERE portfolio_id = '".$portfolio_id."';";
   $sql_portfolio_result = mysql_query($sql_portfolio_query);
 
   while ($sec_row = mysql_fetch_assoc($sql_portfolio_result)) {
@@ -58,12 +58,19 @@ function portfolio_value($portfolio_id, $sec_id, $field_name, $display) {
   return $result;
 }
 
+// for debugging show also the single trades
+function sec_trades($portfolio_id, $sec_id, $percent, $ref_curr, $display) {
+    $sec_name = portfolio_value($portfolio_id, $sec_id, "security_name", $display);
+    tream_display ('Display trades for '.$sec_name.'<br>', $display);
+}
+
 // show the exposure for one security
 function sec_row($portfolio_id, $sec_id, $percent, $ref_curr, $display) {
   $result = '';
   if ($sec_id > 0 and $portfolio_id > 0 and $percent <> 0) {
     $sec_pos = portfolio_value($portfolio_id, $sec_id, "position", $display);
     $sec_name = portfolio_value($portfolio_id, $sec_id, "security_name", $display);
+    $sec_isin = portfolio_value($portfolio_id, $sec_id, "ISIN", $display);
     $sec_price = portfolio_value($portfolio_id, $sec_id, "buy_price", $display);
     $sec_price_ref = portfolio_value($portfolio_id, $sec_id, "buy_price", $display);
     $sec_value = portfolio_value($portfolio_id, $sec_id, "pos_value", $display);
@@ -74,9 +81,12 @@ function sec_row($portfolio_id, $sec_id, $percent, $ref_curr, $display) {
     $sec_curr = portfolio_value($portfolio_id, $sec_id, "sec_curr", $display);
 
     if ($sec_value <> 0 and $sec_pos <> 0) {
+      if ($display == TRUE) {
+        sec_trades($portfolio_id, $sec_id, $percent, $ref_curr, $display);
+      }
       tream_display (round($sec_value_ref * $percent,$sec_decimals).' '.$ref_curr, $display);
-      if ($percent == 1) { tream_display (' for '.round($sec_pos).' '.$sec_name, $display); }
-      if ($percent <> 1) { tream_display (' ('.round($percent*100,0).'% of '.$ref_curr.' '.round($sec_value_ref, $sec_decimals).' for '.round($sec_pos).' '.$sec_name.'', $display); }
+      if ($percent == 1) { tream_display (' for '.round($sec_pos).' '.$sec_name.' (ISIN '.$sec_isin.')', $display); }
+      if ($percent <> 1) { tream_display (' ('.round($percent*100,0).'% of '.$ref_curr.' '.round($sec_value_ref, $sec_decimals).' for '.round($sec_pos).' '.$sec_name.' (ISIN '.$sec_isin.')', $display); }
       if ($percent <> 1 and $sec_curr <> $ref_curr) { tream_display (', in '.$sec_curr.' '.round($sec_value_ref * $percent,$sec_decimals), $display); }
       if ($percent <> 1) { tream_display (')', $display); }
 /*
@@ -87,9 +97,14 @@ function sec_row($portfolio_id, $sec_id, $percent, $ref_curr, $display) {
       tream_display (' at '.$sec_row['name'].' id '.$sec_id.' (curr based xxx)', $display);
       */
       tream_display ('<br>', $display);
-    //} else {
+    } else {
+      if ($sec_pos <> 0) {
+        tream_display ('Price is missing for '.$sec_name.'<br>', $display);
+      }  
     //  echo $sec_row['name'].'<br>' ;
     } 
+  } else {
+    tream_display ('Missing sec '.$sec_id.' with '.$percent.'<br>', $display);
   }  
   return $result;
 }
@@ -128,14 +143,16 @@ function exposures($portfolio_id, $exposure_id, $description, $currency_id, $sec
       $sql_sec = 'SELECT security_id,  security_type_id, 100 AS exposure_in_pct FROM securities WHERE currency_id = '.$currency_id.';';
     }
     if ($type_name == 'Asset Class') {
-      // list the single positions for the currency splitting
+      // list the single positions for the security splitting
       $sql_sec = 'SELECT security_id,  security_type_id, 100 AS exposure_in_pct FROM securities WHERE security_type_id = '.$security_type_id.';';
-      //echo $sql_sec;
+      //tream_display ('get sec with '.$sql_sec.'->', $display);
     }
     $sql_sec_result = mysql_query($sql_sec);
     while ($sec_row = mysql_fetch_assoc($sql_sec_result)) {
-      //echo $sec_row['name'].'<br>';
       $sec_id = $sec_row['security_id'];
+      if ($result_type == '') {
+        //tream_display ('found sec '.$sec_id.'->', $display);
+      }
       $percent = $sec_row['exposure_in_pct'] / 100;
       if ($sec_id > 0) {
 	if ($result_type == '') {
@@ -159,8 +176,9 @@ function exposures($portfolio_id, $exposure_id, $description, $currency_id, $sec
     if ($position_usage[$level-1] <> 0) {
       if ($result_type == '') {
 	$usage_in_pct = $position_usage[$level-1]/$total_aum*100;
-	tream_display ('<h3>'.$description.' '.round($usage_in_pct,2).' % ('.$ref_curr.' '.round($position_usage[$level-1]).')</h3><br>', $display);
+	tream_display ('<h3>'.$description.' '.round($usage_in_pct,2).' pct ('.$ref_curr.' '.round($position_usage[$level-1]).')</h3><br>', $display);
 	// get exposure limits
+	//tream_display (check_exposure($exposure_id, $portfolio_id, $usage_in_pct, $display)."<br><br>", $display);
 	tream_display (check_exposure($exposure_id, $portfolio_id, $usage_in_pct)."<br><br>", $display);
       }
     }
@@ -202,7 +220,7 @@ function exposure_by_type($portfolio_id, $exposure_type_id, $type_name, $total_a
     }
   }
       
-  // loop over the items of the type and fill up the usage
+  // loop over the exposure items of the type and fill up the usage
   $sql_item = 'SELECT exposure_item_id, description, currency_id, security_type_id FROM exposure_items WHERE exposure_type_id = '.$exposure_type_id.' AND (is_part_of IS NULL OR is_part_of = 0) ORDER BY order_nbr;';
   $sql_item_result = mysql_query($sql_item);
   while ($item_row = mysql_fetch_assoc($sql_item_result)) {
@@ -222,6 +240,8 @@ function exposure_by_type($portfolio_id, $exposure_type_id, $type_name, $total_a
 	}
 	array_push($exposure_ids, $item_row['exposure_item_id']);
       }
+    } else {  
+      tream_display ('description missing for '.$item_row['exposure_item_id'], $display);
     }  
   }  
 
@@ -277,16 +297,31 @@ function exposure_by_type($portfolio_id, $exposure_type_id, $type_name, $total_a
   return $position_usage[0];
 }
 
-// check the asset allocation of one portfolio
-// if display is set the results are shown for mainly for debugging; otherwise only messages are created
-function tream_check_portfolio($portfolio_id, $display) {
-  // main batch job 
-  tream_display (' - portfolio overview for portfolio "'.sql_get_portfolio_name($portfolio_id).'" at '.date('Y-m-d H:i:s').'<br><br>', $display);
+// check all parameters needed for one portfolio
+// and create messages for the user for the missing parameters
+function tream_check_portfolio_setup($portfolio_id, $display) {
+  $result = '';
 
-  // show the portfolio selector
+  $sql_check_setup = 'SELECT currency_1, currency_2 FROM v_trade_premium_ref_get_fx_missing WHERE portfolio_id = '.$portfolio_id.' GROUP BY currency_1, currency_2;';
+  $sql_check_result = mysql_query($sql_check_setup);
+  while ($check_row = mysql_fetch_assoc($sql_check_result)) {
+    $check_msg = 'Portfolio check result: Currency pair '.$check_row['currency_1'].' to '.$check_row['currency_2'].' or factor is missing.';
+    tream_display ('<h3>'.$check_msg.'</h3>', $display);
+    $result .= event_add("curr pair missing ".$check_row['currency_1'].'/'.$check_row['currency_2'], check_msg, EVENT_TYPE_USER_DAILY, date('Y-m-d'), "", "", "", "", 0, $portfolio_id);
+    tream_display ('<br>', $display);
+  }
+  
+  return $result;
+}
+
+// display the portfolio selector
+function tream_check_portfolio_selector($portfolio_id, $display) {
   tream_display ('<form action="">', $display);
   tream_display ('<select name="id">', $display);
-  $sql_query_portfolios = 'SELECT portfolio_name, portfolio_id FROM portfolios WHERE portfolio_id > 0 ORDER BY portfolio_name;';
+  $sql_query_portfolios = 'SELECT portfolio_name, portfolio_id 
+                             FROM portfolios 
+                            WHERE portfolio_id > 0 
+                         ORDER BY portfolio_number;';
   $portfolio_result = mysql_query($sql_query_portfolios);
   while ($portfolio_row = mysql_fetch_assoc($portfolio_result)) {
     if ($portfolio_id == $portfolio_row['portfolio_id']) {
@@ -299,15 +334,31 @@ function tream_check_portfolio($portfolio_id, $display) {
   tream_display ('</select>', $display);
   tream_display ('</form>', $display);
   tream_display ('<br>', $display);
+}
+
+
+// check the asset allocation of one portfolio
+// if display is set the results are shown for mainly for debugging; otherwise only messages are created
+function tream_check_portfolio($portfolio_id, $display) {
+  // main batch job 
+  tream_display ('Portfolio overview for portfolio "'.sql_get_portfolio_name($portfolio_id).'" at '.date('Y-m-d H:i:s').'<br><br>', $display);
+  
+  // check parameters consistency
+  tream_check_portfolio_setup($portfolio_id, $display);
+
+  // show the portfolio selector
+  tream_check_portfolio_selector($portfolio_id, $display);
 
   // get portfolio sums
   $portfolio_aum = sql_get("SELECT aum FROM v_portfolio_pnl WHERE portfolio_id = '".$portfolio_id."';");
   $ref_curr = sql_get("SELECT c.symbol FROM portfolios p, currencies c WHERE p.portfolio_id = '".$portfolio_id."' AND p.currency_id = c.currency_id;");
 
   // loop over the type
-  $sql_type = 'SELECT type_name, exposure_type_id FROM exposure_types;';
+  $sql_type = 'SELECT type_name, exposure_type_id 
+                 FROM exposure_types;';
   $sql_type_result = mysql_query($sql_type);
   while ($type_row = mysql_fetch_assoc($sql_type_result)) {
+    tream_display ('<h1>'.$type_row['type_name'].'</h1>', $display);
     $type_sum = 0;
     if (trim($type_row['type_name']) <> 'not set') {
       $type_sum = $type_sum + exposure_by_type($portfolio_id, $type_row['exposure_type_id'], trim($type_row['type_name']), $portfolio_aum, $ref_curr, $display);
@@ -320,11 +371,18 @@ function tream_check_portfolio($portfolio_id, $display) {
 
 }  
 
-// main batch job to check all
+// main batch job to check all portfolios
 function tream_check_all_portfolios($display) {
+  
   tream_display ('check all portfolios at '.date('Y-m-d H:i:s').'<br><br>', $display);
-  // loop over he portfolios that should be checked
-  $sql_query_portfolios = 'SELECT portfolio_name, portfolio_id FROM portfolios WHERE portfolio_id > 0 AND monitoring = 1 ORDER BY portfolio_name;';
+
+  // loop over the portfolios that should be checked
+  $sql_query_portfolios = 'SELECT portfolio_name, portfolio_id 
+                             FROM portfolios 
+                            WHERE portfolio_id > 0 
+                              AND monitoring = 1 
+                         ORDER BY portfolio_name;';
+
   $portfolio_result = mysql_query($sql_query_portfolios);
   while ($portfolio_row = mysql_fetch_assoc($portfolio_result)) {
     tream_display ('check portfolio '.$portfolio_row['portfolio_name'].'<br>', $display);

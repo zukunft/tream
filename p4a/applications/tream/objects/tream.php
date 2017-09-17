@@ -93,8 +93,28 @@ class Tream extends P4A
 			->setFontColor("DarkGreen")
 			->implement("onclick", $this, "menuClick");
 
+		$this->menu->addItem("trade_fx")
+			->setLabel("FX")
+			->setFontColor("DarkGreen")
+			->implement("onclick", $this, "menuClick");
+
+		$this->menu->addItem("trade_fx_swap")
+			->setLabel("FX Swap")
+			->setFontColor("DarkGreen")
+			->implement("onclick", $this, "menuClick");
+
+		$this->menu->addItem("trade_cash")
+			->setLabel("Cash")
+			->setFontColor("DarkGreen")
+			->implement("onclick", $this, "menuClick");
+
 		$this->menu->addItem("portfolios")
 			//->setAccessKey("p")
+			->setFontColor("YellowGreen")
+			->implement("onclick", $this, "menuClick");
+
+		$this->menu->addItem("portfolio_monitor")
+			->setLabel("Grid")
 			->setFontColor("YellowGreen")
 			->implement("onclick", $this, "menuClick");
 
@@ -173,11 +193,11 @@ class Tream extends P4A
 			->implement("onclick", $this, "menuClick");
 		$this->menu->items->security_tables->addItem("portfolio_security_fixings")
 			->implement("onclick", $this, "menuClick");
-
+/* switch off until user acoount setup is completed
 		if ($tream_user_type == 'root' 
 		or $tream_user_type == 'admin' 
 		or $tream_user_type == 'power_user'
-		or $tream_user_type == 'risk') {
+		or $tream_user_type == 'risk') { */
 			$this->menu->addItem("support_tables", "Support Tables");
 			$this->menu->items->support_tables->addItem("exposure_types")
 				->implement("onclick", $this, "menuClick");
@@ -189,6 +209,8 @@ class Tream extends P4A
 				->implement("onclick", $this, "menuClick");
 			$this->menu->items->support_tables->addItem("exposure_exceptions")
 				->implement("onclick", $this, "menuClick");
+			$this->menu->items->support_tables->addItem("exposure_references")
+				->implement("onclick", $this, "menuClick"); 
 			$this->menu->items->support_tables->addItem("trade_types")
 				->implement("onclick", $this, "menuClick");
 			$this->menu->items->support_tables->addItem("trade_stati")
@@ -241,11 +263,11 @@ class Tream extends P4A
 				->implement("onclick", $this, "menuClick");
 			$this->menu->items->support_tables->addItem("value_stati")
 				->implement("onclick", $this, "menuClick");
-		}
-
+/*		} */
+/*  switch off until user acoount setup is completed
 		if ($tream_user_type == 'root' 
 		or $tream_user_type == 'admin' 
-		or $tream_user_type == 'power_user') {
+		or $tream_user_type == 'power_user') { */
 			$this->menu->addItem("reconciliation_tables", "Reconciliation");
 			$this->menu->items->reconciliation_tables->addItem("Recon_files")
 				->implement("onclick", $this, "menuClick");
@@ -259,7 +281,7 @@ class Tream extends P4A
 				->implement("onclick", $this, "menuClick");
 			$this->menu->items->reconciliation_tables->addItem("trade_type_bank_codes")
 				->implement("onclick", $this, "menuClick");
-		}
+/*		} */
 
 		// the records of these table may have a link to the program code
 		// this is one reason why not all users should be able to change records in these tables
@@ -278,7 +300,7 @@ class Tream extends P4A
 				->implement("onclick", $this, "menuClick");
 			$this->menu->items->administration->addItem("User_rights")
 				->implement("onclick", $this, "menuClick"); 
-		}
+		} 
 
 			
 /*
@@ -318,6 +340,7 @@ class Tream extends P4A
 		$this->build("p4a_db_source", "select_portfolios")
 			->setTable("v_portfolios")
 			->addOrder("portfolio_select_name")
+			//->addOrder("portfolio_number")
 			->setWhere("v_portfolios.inactive <> 1") 
 			->setPK("portfolio_id")
 			->load();
@@ -363,6 +386,13 @@ class Tream extends P4A
 			->addOrder("select_name")
 			->setPageLimit(30)
 			->setPK("security_id")
+			->load();
+
+		$this->build("p4a_db_source", "v_portfolio_pos_named")
+			->setTable("v_portfolio_pos_named")
+			->addOrder("portfolio")
+			->setPageLimit(30)
+			->setPK("portfolio_id")
 			->load();
 
 		$this->build("p4a_db_source", "security_underlyings")
@@ -508,6 +538,18 @@ class Tream extends P4A
 
 		// Select tables for main tables
 		$this->build("p4a_db_source", "select_securities")
+			->setTable("v_securities")
+			->addOrder("select_name")
+			->setPK("security_id")
+			->load();
+
+		$this->build("p4a_db_source", "select_securities_2")
+			->setTable("v_securities")
+			->addOrder("select_name")
+			->setPK("security_id")
+			->load();
+
+		$this->build("p4a_db_source", "select_securities_3")
 			->setTable("v_securities")
 			->addOrder("select_name")
 			->setPK("security_id")
@@ -795,6 +837,24 @@ class Tream extends P4A
 			->setPK("trade_type_id")
 			->load();
 
+		$this->build("p4a_db_source", "select_trade_types_fx")
+			->setTable("v_trade_types_fx")
+			->addOrder("description")
+			->setPK("trade_type_id")
+			->load();
+
+		$this->build("p4a_db_source", "select_trade_types_fx_swap")
+			->setTable("v_trade_types_fx_swap")
+			->addOrder("description")
+			->setPK("trade_type_id")
+			->load();
+
+		$this->build("p4a_db_source", "select_trade_types_cash")
+			->setTable("v_trade_types_cash")
+			->addOrder("description")
+			->setPK("trade_type_id")
+			->load();
+
 		$this->build("p4a_db_source", "trade_payments")
 			->setTable("trade_payments")
 			->addJoinLeft("currencies", "trade_payments.currency_id  = currencies.currency_id",
@@ -1051,6 +1111,17 @@ class Tream extends P4A
 			->addOrder("account_mandat_id")
 			->load();
 
+		$this->build("p4a_db_source", "exposure_references")
+			->setTable("exposure_references")
+			->addJoinLeft("securities", "exposure_references.sec_ref_neutral_id  = securities.security_id",
+					  array('name'=>'neutral_reference'))
+			->addJoinLeft("account_mandates", "exposure_references.account_mandat_id  = account_mandates.account_mandat_id",
+					  array('description'=>'mandat'))
+			->addJoinLeft("currencies", "exposure_references.currency_id  = currencies.currency_id",
+					  array('symbol'=>'fx'))
+			->addOrder("account_mandat_id")
+			->load();
+
 		$this->build("p4a_db_source", "security_exposures")
 			->setTable("security_exposures")
 			->addJoinLeft("securities", "security_exposures.security_id  = securities.security_id",
@@ -1173,7 +1244,18 @@ class Tream extends P4A
 			->addOrder("symbol")
 			->load();
 
+		$this->build("p4a_db_source", "settle_currencies")
+			->setTable("currencies")
+			->addOrder("symbol")
+			->load();
+
 		$this->build("p4a_db_source", "select_currencies")
+			->setTable("v_currencies")
+			->addOrder("symbol")
+			->setPK("currency_id")
+			->load();
+
+		$this->build("p4a_db_source", "select_settle_currencies")
 			->setTable("v_currencies")
 			->addOrder("symbol")
 			->setPK("currency_id")
@@ -1216,7 +1298,8 @@ class Tream extends P4A
 			// Primary action
 		//echo get_current_user();
 		$this->openMask("open_today");
-		/*
+		/* to be removed
+		$this->openMask("P4A_Login_Mask");
 		$this->active_mask->implement('onLogin', $this, 'login');
 		$this->active_mask->username->setTooltip("your username");
 		$this->active_mask->password->setTooltip("Type db here");

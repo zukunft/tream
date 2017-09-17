@@ -19,7 +19,7 @@ along with TREAM. If not, see <http://www.gnu.org/licenses/gpl.html>.
 To contact the authors write to: 
 Timon Zielonka <timon@zukunft.com>
 
-Copyright (c) 2013-2015 zukunft.com AG, Zurich
+Copyright (c) 2013-2017 zukunft.com AG, Zurich
 Heang Lor <heang@zukunft.com>
 
 http://tream.biz
@@ -33,7 +33,7 @@ http://tream.biz
  * https://github.com/fballiano/p4a
  *
  * @author Timon Zielonka <timon@zukunft.com>
- * @copyright Copyright (c) 2013-2015 zukunft.com AG, Zurich
+ * @copyright Copyright (c) 2013-2017 zukunft.com AG, Zurich
 
 */
 class Portfolios extends P4A_Base_Mask
@@ -57,7 +57,10 @@ class Portfolios extends P4A_Base_Mask
 			->addJoinLeft("banks", "portfolios.bank_id = banks.bank_id",
 					  array('bank_name'=>'bank'))
 // 			needs to be replaced with the correct user indentification once the tream internal user login is switched on
-//			->setWhere(P4A_DB::singleton()->getCaseInsensitiveLikeSQL('v_portfolios_u.user_name', $_SERVER['REMOTE_USER']))
+			->setWhere(P4A_DB::singleton()->getCaseInsensitiveLikeSQL('v_portfolios_u.user_name', $_SERVER['REMOTE_USER']))
+//			->setWhere(P4A_DB::singleton()->getCaseInsensitiveLikeSQL('v_portfolios_u.user_name', $this->active_mask->menu->loguser->Label()))
+//			->setWhere(P4A_DB::singleton()->getCaseInsensitiveLikeSQL('v_portfolios_u.user_name', $loguser))
+//			->setWhere(P4A_DB::singleton()->getCaseInsensitiveLikeSQL('v_portfolios_u.user_name', $p4a->menu->items->loguser->getLabel()))
 			->load();
 
 		$this->build("p4a_db_source", "trades")
@@ -203,7 +206,8 @@ class Portfolios extends P4A_Base_Mask
 		$this->exposure_target_values->addFilter("portfolio_id = ?", $this->portfolios->fields->portfolio_id);  
 
 		$this->build("p4a_fieldset", "fs_details")
-			->setLabel("Account detail")
+//			->setLabel($p4a->Tream->menu->loguser->getLabel())
+			->setLabel("Portfolio details")
 			->anchor($this->fields->account_id)
 			->anchor($this->fields->portfolio_number)
 			->anchor($this->fields->portfolio_name)
