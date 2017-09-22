@@ -33,7 +33,7 @@ http://tream.biz
  * https://github.com/fballiano/p4a
  *
  * @author Timon Zielonka <timon@zukunft.com>
- * @copyright Copyright (c) 2013-2015 zukunft.com AG, Zurich
+ * @copyright Copyright (c) 2013-2017 zukunft.com AG, Zurich
 
 */
 class Event_types extends P4A_Base_Mask
@@ -49,6 +49,12 @@ class Event_types extends P4A_Base_Mask
 
 		$this->setSource($p4a->event_types);
 		$this->firstRow();
+
+		$this->fields->user_type_id
+			->setLabel("Type")
+			->setType("select")
+			->setSource(P4A::singleton()->user_type_select)
+			->setSourceDescriptionField("type_name"); 
 
 		$this->build("p4a_full_toolbar", "toolbar")
 			->setMask($this);
@@ -66,7 +72,10 @@ class Event_types extends P4A_Base_Mask
 		$this->build("p4a_fieldset", "fs_details")
 			->setLabel("Event type detail")
 			->anchor($this->fields->type_name)
-			->anchor($this->fields->factor);
+			->anchor($this->fields->push_message)
+			->anchor($this->fields->user_type_id)
+			->anchor($this->fields->code_id)
+			->anchor($this->fields->comment);
 		
 		$this->frame
 			->anchor($this->table)

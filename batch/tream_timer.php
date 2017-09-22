@@ -27,7 +27,7 @@ along with TREAM. If not, see <http://www.gnu.org/licenses/gpl.html>.
 To contact the authors write to: 
 Timon Zielonka <timon@zukunft.com>
 
-Copyright (c) 2013-2015 zukunft.com AG, Zurich
+Copyright (c) 2013-2017 zukunft.com AG, Zurich
 Heang Lor <heang@zukunft.com>
 
 http://tream.biz
@@ -35,15 +35,15 @@ http://tream.biz
 
 // todo:add this to the crontab by install.php
 
-include_once 'batch/tream_db_adapter.php';
-include_once 'batch/tream_db.php';
-include_once 'batch/tream_get_yahoo.php';
-include_once 'batch/tream_portfolio_check.php';
-include_once 'batch/tream_messages.php';
-include_once 'batch/tream_check_securities.php';
+include_once './tream_db_adapter.php';
+include_once './tream_db.php';
+include_once './tream_get_yahoo.php';
+include_once './tream_portfolio_check.php';
+include_once './tream_messages.php';
+include_once './tream_check_securities.php';
 
 // save prices from yahoo
-tream_save_yahoo();
+tream_save_yahoo(FALSE);
 
 // add birthdays
 //tream_check_events();

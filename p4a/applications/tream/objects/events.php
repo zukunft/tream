@@ -33,7 +33,7 @@ http://tream.biz
  * https://github.com/fballiano/p4a
  *
  * @author Timon Zielonka <timon@zukunft.com>
- * @copyright Copyright (c) 2013-2015 zukunft.com AG, Zurich
+ * @copyright Copyright (c) 2013-2017 zukunft.com AG, Zurich
 
 */
 class Events extends P4A_Base_Mask
@@ -168,7 +168,7 @@ class Events extends P4A_Base_Mask
 		$this
 			->display("menu", $p4a->menu)
 			->display("top", $this->toolbar)
-			->setFocus($this->fields->rational);
+			->setFocus($this->fields->solution_selected);
 	}
 /*
 public function search()

@@ -60,7 +60,7 @@ class Recon_steps extends P4A_Base_Mask
 
 		$this->fields->source_id_field
 			->setLabel("External ID field")
-			->setTooltip("Name of the field in the external file that is used to identify the record in the TREAM database; in many cases this field name is set by an earlier step; e.g. in the earlier step the ISIN is replaced by the security_id, so if the valor should be added in this step use security_id");
+			->setTooltip("Name of the field in the external file that is used to identify the record in the TREAM database; in many cases this field name is set by an earlier step; e.g. in the earlier step the ISIN is replaced by the security_id, so if the valor should be added in this step use security_id; if the step is used to remove rows, this field is used to limit the search");
 
 		$this->fields->dest_table
 			->setLabel("Database table")

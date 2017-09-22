@@ -33,9 +33,9 @@ Heang Lor <heang@zukunft.com>
 http://tream.biz
 */ 
 
-include_once 'batch/tream_db_adapter.php';
-include_once 'batch/tream_db.php';
-include_once 'batch/tream_messages.php';
+include_once './tream_db_adapter.php';
+include_once './tream_db.php';
+include_once './tream_messages.php';
 
 //$debug = TRUE;
 $debug = FALSE;
@@ -57,13 +57,14 @@ function tream_check_portfolio_security_moves($debug) {
   $link = sql_open();
 
   // get securities
-  $sql_securities_to_monitor = "SELECT pos.portfolio_id, pos.security_id, pos.pos_value_ref, pos.position, pos.bid, pos.ask, pos.last, pos.ref_decimals FROM v_portfolio_pos pos, portfolios p WHERE pos.pos_value_ref <> 0 AND p.monitoring = 1 AND pos.portfolio_id = p.portfolio_id;";
+  $sql_securities_to_monitor = "SELECT pos.portfolio_id, pos.security_id, pos.pos_value_ref, pos.position, pos.bid, pos.ask, pos.last, pos.ref_decimals, sec_curr FROM v_portfolio_pos pos, portfolios p WHERE pos.pos_value_ref <> 0 AND p.monitoring = 1 AND pos.portfolio_id = p.portfolio_id;";
   $result_securities_to_monitor = mysql_query($sql_securities_to_monitor);
   while ($security_row = mysql_fetch_assoc($result_securities_to_monitor)) {
     $portfolio_id = $security_row['portfolio_id'];
     $security_id  = $security_row['security_id'];
     $portfolio_name = sql_get_value("portfolios", "portfolio_id", $portfolio_id, "portfolio_name");
     $security_name  =sql_get_value("securities", "security_id", $security_id, "name");
+    $sec_curr  = $security_row['sec_curr'];
     $sec_value  = $security_row['pos_value_ref'];
     $sec_position = $security_row['position'];
     $sec_decimals = $security_row['ref_decimals'];
@@ -93,27 +94,32 @@ function tream_check_portfolio_security_moves($debug) {
     if ($used_limit > 0) {
       if ($last_value == '') {
 	echo 'insert not log';
-	$result = mysql_query("INSERT INTO portfolio_security_fixings (portfolio_id, security_id, fixed_price) VALUES ('".$portfolio_id."', '".$security_id."', '".$sec_value."');");
+	$result = mysql_query("INSERT INTO portfolio_security_fixings (portfolio_id, security_id, fixed_price, fixing_date) VALUES ('".$portfolio_id."', '".$security_id."', '".$sec_value."', '".date('Y-m-d H:i:s')."');");
       } else {
         if ($last_value <> 0) {
 	  $change_in_pct = ($sec_value - $last_value) / $last_value * 100; // $last_value is the sec value when the last message has been sent
+          $last_update = sql_get("SELECT fixing_date FROM portfolio_security_fixings WHERE portfolio_id = ".$portfolio_id." AND security_id = ".$security_id.";");
+	  $interval = date_diff(date_create($last_update), date_create(date('Y-m-d')));
+	  $change_since =  $interval->format('since %a days');
 	} else {  
 	  $change_in_pct = 0;
+	  $change_since = '';
 	}
 	echo 'check limit of '.$used_limit.', change '.round($change_in_pct,$sec_decimals).'% (used price '.$sec_bid.'-'.$sec_ask.' '.$sec_last.'), ';
 	if (abs($change_in_pct) > $used_limit) {
 	  echo 'send message';
+          $portfolio_curr = sql_get("SELECT c.symbol FROM portfolios p, currencies c WHERE p.portfolio_id = ".$portfolio_id." AND p.currency_id = c.currency_id;");
 	  // maybe create a function for the next line in tream_messages.php
 	  $portfolio_manager = sql_get("SELECT contact_number FROM v_portfolio_persons WHERE portfolio_id = ".$portfolio_id." AND portfolio_function_code_id = '".ACCOUNT_PERSON_TYPE_PM."';");
 	  echo 'to '.$portfolio_manager;
 	  $portfolio_manager_deputy = sql_get("SELECT contact_number FROM v_portfolio_persons WHERE portfolio_id = ".$portfolio_id." AND portfolio_function_code_id = '".ACCOUNT_PERSON_TYPE_DPM."';");
 	  echo ' and to '.$portfolio_manager_deputy;
 	  $mail_subject = "TREAM: ".$security_name." moved ".round($change_in_pct,$sec_decimals)."% (portfolio ".$portfolio_name.")";
-	  $mail_msg = "".$security_name." moved ".round($change_in_pct,$sec_decimals)."% and is now trading at ".round($sec_last,$sec_decimals)." (position ".round($sec_position,$sec_decimals)." in portfolio ".$portfolio_name.")";
-	  echo msg_email($portfolio_manager, $mail_subject, $mail_msg);
-	  echo msg_email($portfolio_manager_deputy, $mail_subject, $mail_msg);
-	  echo 'update value';
-	  $sql_update = "UPDATE portfolio_security_fixings SET fixed_price = '".$sec_value."' WHERE portfolio_id = '".$portfolio_id."' AND security_id = '".$security_id."';";
+	  $mail_msg = "".$security_name." moved ".round($change_in_pct,$sec_decimals)."% ".$change_since." and is now trading at ".$sec_curr." ".round($sec_last,$sec_decimals)." (position ".round($sec_position,$sec_decimals)." in portfolio ".$portfolio_name."= ".$portfolio_curr." ".round($sec_value,$sec_decimals).")";
+	  msg_email($portfolio_manager, $mail_subject, $mail_msg);
+	  msg_email($portfolio_manager_deputy, $mail_subject, $mail_msg);
+	  echo ' -> update value';
+	  $sql_update = "UPDATE portfolio_security_fixings SET fixed_price = '".$sec_value."', fixing_date = '".date('Y-m-d H:i:s')."' WHERE portfolio_id = '".$portfolio_id."' AND security_id = '".$security_id."';";
 	  //echo $sql_update;
 	  $result .= mysql_query($sql_update);
 	}

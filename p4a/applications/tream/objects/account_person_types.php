@@ -2,7 +2,7 @@
 
 /* 
 
-This file is part of TREAM - Portfolio Management Software.
+This file is part of TREAM - Open Source Portfolio Management Software for External Asset Advisors.
 
 TREAM is free software: you can redistribute it and/or modify it
 under the terms of the GNU General Public License as
@@ -23,8 +23,6 @@ Timon Zielonka <timon@zukunft.com>
 Copyright (c) 2013-2015 zukunft.com AG, Zurich
 Heang Lor <heang@zukunft.com>
 
-http://tream.biz
-
  * This file is based on P4A - PHP For Applications.
  *
  * To contact the authors write to:                                     
@@ -34,7 +32,9 @@ http://tream.biz
  * https://github.com/fballiano/p4a
  *
  * @author Timon Zielonka <timon@zukunft.com>
- * @copyright Copyright (c) 2013-2015 zukunft.com AG, Zurich
+ * @copyright Copyright (c) 2013-2017 zukunft.com AG, Zurich
+ * @link http://tream.biz
+ * @license http://www.gnu.org/licenses/gpl.html GNU General Public License
 
 */
 
@@ -68,7 +68,7 @@ class Account_person_types extends P4A_Base_Mask
 		$this->build("p4a_fieldset", "fs_details")
 			->setLabel("Account type detail")
 			->anchor($this->fields->type_name)
-			->anchor($this->fields->factor);
+			->anchor($this->fields->code_id);
 		
 		$this->frame
 			->anchor($this->table)

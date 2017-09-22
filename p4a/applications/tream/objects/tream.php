@@ -1,7 +1,7 @@
 <?php
 /* 
 
-This file is part of TREAM - Portfolio Management Software.
+This file is part of TREAM - Open Source Portfolio Management Software for External Asset Advisors.
 
 TREAM is free software: you can redistribute it and/or modify it
 under the terms of the GNU General Public License as
@@ -22,8 +22,6 @@ Timon Zielonka <timon@zukunft.com>
 Copyright (c) 2013-2015 zukunft.com AG, Zurich
 Heang Lor <heang@zukunft.com>
 
-http://tream.biz
-
  * This file is based on P4A - PHP For Applications.
  *
  * To contact the authors write to:                                     
@@ -33,10 +31,12 @@ http://tream.biz
  * https://github.com/fballiano/p4a
  *
  * @author Timon Zielonka <timon@zukunft.com>
- * @copyright Copyright (c) 2013-2015 zukunft.com AG, Zurich
+ * @copyright Copyright (c) 2013-2017 zukunft.com AG, Zurich
+ * @link http://tream.biz
+ * @license http://www.gnu.org/licenses/gpl.html GNU General Public License
 
 */
- 
+
 //include 'batch/tream_db_adapter.php';
  
 class Tream extends P4A
@@ -193,7 +193,7 @@ class Tream extends P4A
 			->implement("onclick", $this, "menuClick");
 		$this->menu->items->security_tables->addItem("portfolio_security_fixings")
 			->implement("onclick", $this, "menuClick");
-/* switch off until user acoount setup is completed
+/* switch off until user account setup is completed
 		if ($tream_user_type == 'root' 
 		or $tream_user_type == 'admin' 
 		or $tream_user_type == 'power_user'
@@ -264,7 +264,7 @@ class Tream extends P4A
 			$this->menu->items->support_tables->addItem("value_stati")
 				->implement("onclick", $this, "menuClick");
 /*		} */
-/*  switch off until user acoount setup is completed
+/*  switch off until user account setup is completed
 		if ($tream_user_type == 'root' 
 		or $tream_user_type == 'admin' 
 		or $tream_user_type == 'power_user') { */
@@ -285,8 +285,9 @@ class Tream extends P4A
 
 		// the records of these table may have a link to the program code
 		// this is one reason why not all users should be able to change records in these tables
+/*  switch off until user account setup is completed
 		if ($tream_user_type == 'root' 
-		or $tream_user_type == 'admin') {
+		or $tream_user_type == 'admin') { */
 			$this->menu->addItem("administration", "Administration");
 			$this->menu->items->administration->addItem("Portfolio_rights")
 				->implement("onclick", $this, "menuClick");
@@ -300,7 +301,7 @@ class Tream extends P4A
 				->implement("onclick", $this, "menuClick");
 			$this->menu->items->administration->addItem("User_rights")
 				->implement("onclick", $this, "menuClick"); 
-		} 
+/*		} */
 
 			
 /*
