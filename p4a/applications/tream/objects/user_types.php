@@ -19,7 +19,7 @@ along with TREAM. If not, see <http://www.gnu.org/licenses/gpl.html>.
 To contact the authors write to: 
 Timon Zielonka <timon@zukunft.com>
 
-Copyright (c) 2013-2015 zukunft.com AG, Zurich
+Copyright (c) 2013-2017 zukunft.com AG, Zurich
 Heang Lor <heang@zukunft.com>
 
  * This file is based on P4A - PHP For Applications.
@@ -48,7 +48,11 @@ class User_types extends P4A_Base_Mask
 		$p4a = p4a::singleton();
 
 		$this->setSource($p4a->user_types);
+		$this->setTitle("System roles - only to rename the predefined system rights");
 		$this->firstRow();
+
+		// Customizing fields properties
+		$this->fields->code_id->disable(); // because code_id is used in the code and should never be changed; it is just show to have an indication for the naming
 
 		$this->build("p4a_full_toolbar", "toolbar")
 			->setMask($this);
@@ -58,6 +62,7 @@ class User_types extends P4A_Base_Mask
 
 		$this->build("p4a_table", "table")
 			->setSource($p4a->user_types)
+			->setVisibleCols(array("type_name","code_id","comment"))
 			->setWidth(500)
 			->showNavigationBar();
 
@@ -66,6 +71,7 @@ class User_types extends P4A_Base_Mask
 		$this->build("p4a_fieldset", "fs_details")
 			->setLabel("Trade type detail")
 			->anchor($this->fields->type_name)
+			->anchor($this->fields->code_id)
 			->anchor($this->fields->comment);
 		
 		$this->frame

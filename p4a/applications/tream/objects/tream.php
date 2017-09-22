@@ -62,50 +62,49 @@ class Tream extends P4A
 		$this->menu->addItem("open_today")
 			//->setAccessKey("o")
 			->setLabel("Today")
-			->setFontColor("ForestGreen")
+			->setFontColor("DarkGreen")
 			->implement("onclick", $this, "menuClick");
 
 		$this->menu->addItem("events")
 			//->setAccessKey("e")
-			->setLabel("Events")
+			->setLabel("To Do")
 			->setFontColor("DarkGreen")
 			->implement("onclick", $this, "menuClick");
 
-		$this->menu->addItem("contact_menu", "Client activities")
+		$this->menu->addItem("contact_menu", "Persons")
 			->setFontColor("DarkGreen");
 		$this->menu->items->contact_menu->addItem("contacts")
-			->setLabel("Save a client activity")
+			->setLabel("Client contacts")
 			->implement("onclick", $this, "menuClick");
 		$this->menu->items->contact_menu->addItem("actions")
-			->setLabel("Add an activity to an existing client activity")
+			->setLabel("Client contact notes")
 			->implement("onclick", $this, "menuClick");
 		$this->menu->items->contact_menu->addItem("contact_members")
-			->setLabel("Add a person to a client contact")
+			->setLabel("Client contact persons")
+			->implement("onclick", $this, "menuClick");
+		$this->menu->items->contact_menu->addItem("persons")
+			->setLabel("Persons")
+			->implement("onclick", $this, "menuClick");
+		$this->menu->items->contact_menu->addItem("contact_numbers")
+			->setLabel("Contact numbers")
+			->implement("onclick", $this, "menuClick");
+		$this->menu->items->contact_menu->addItem("addresses")
+			->setLabel("Addresses")
+			->implement("onclick", $this, "menuClick");
+		$this->menu->items->contact_menu->addItem("address_links")
+			->setLabel("Address links")
+			->implement("onclick", $this, "menuClick");
+		$this->menu->items->contact_menu->addItem("documents")
+			->setLabel("Documents")
+			->implement("onclick", $this, "menuClick");
+		$this->menu->items->contact_menu->addItem("links")
+			->setLabel("Links to Mandates")
 			->implement("onclick", $this, "menuClick");
 
-		$this->menu->addItem("documents")
-			//->setAccessKey("d")
+		$this->menu->addItem("accounts")
+			->setLabel("Mandates")
+			//->setAccessKey("n")
 			->setFontColor("YellowGreen")
-			->implement("onclick", $this, "menuClick");
-
-		$this->menu->addItem("trades")
-			//->setAccessKey("t")
-			->setFontColor("DarkGreen")
-			->implement("onclick", $this, "menuClick");
-
-		$this->menu->addItem("trade_fx")
-			->setLabel("FX")
-			->setFontColor("DarkGreen")
-			->implement("onclick", $this, "menuClick");
-
-		$this->menu->addItem("trade_fx_swap")
-			->setLabel("FX Swap")
-			->setFontColor("DarkGreen")
-			->implement("onclick", $this, "menuClick");
-
-		$this->menu->addItem("trade_cash")
-			->setLabel("Cash")
-			->setFontColor("DarkGreen")
 			->implement("onclick", $this, "menuClick");
 
 		$this->menu->addItem("portfolios")
@@ -114,47 +113,41 @@ class Tream extends P4A
 			->implement("onclick", $this, "menuClick");
 
 		$this->menu->addItem("portfolio_monitor")
-			->setLabel("Grid")
-			->setFontColor("YellowGreen")
+			->setLabel("Analysis")
+			->setFontColor("DarkGreen")
 			->implement("onclick", $this, "menuClick");
 
-		$this->menu->addItem("accounts")
-			//->setAccessKey("n")
-			->setFontColor("YellowGreen")
+		$this->menu->addItem("trade_menu", "Trades")
+			->setFontColor("DarkGreen");
+		$this->menu->items->trade_menu->addItem("trades")
+			//->setAccessKey("t")
+			->setLabel("All trades")
+			->implement("onclick", $this, "menuClick");
+                $this->menu->items->trade_menu->addItem("trade_equities")
+			->setLabel("Equities")
+			->implement("onclick", $this, "menuClick");
+		$this->menu->items->trade_menu->addItem("trade_bonds")
+			->setLabel("Bonds")
+			->implement("onclick", $this, "menuClick");
+		$this->menu->items->trade_menu->addItem("trade_funds")
+			->setLabel("Funds")
+			->implement("onclick", $this, "menuClick");
+		$this->menu->items->trade_menu->addItem("trade_fx")
+			->setLabel("FX")
+			->implement("onclick", $this, "menuClick");
+		$this->menu->items->trade_menu->addItem("trade_fx_swap")
+			->setLabel("FX Swap")
+			->implement("onclick", $this, "menuClick");
+		$this->menu->items->trade_menu->addItem("trade_cash")
+			->setLabel("Cash")
 			->implement("onclick", $this, "menuClick");
 
-		$this->menu->addItem("links")
-			//->setAccessKey("l")
-			->setFontColor("DarkOrchid")
-			->implement("onclick", $this, "menuClick");
-
-		$this->menu->addItem("persons")
-			//->setAccessKey("s")
-			->setFontColor("Indigo")
-			->implement("onclick", $this, "menuClick");
-
-		$this->menu->addItem("contact_numbers")
-			//->setAccessKey("n")
-			->setFontColor("Indigo")
-			->implement("onclick", $this, "menuClick");
-
-		$this->menu->addItem("addresses")
-			//->setAccessKey("d")
-			->setFontColor("Indigo")
-			->implement("onclick", $this, "menuClick");
-
-		$this->menu->addItem("address_links")
-			//->setAccessKey("s")
-			->setFontColor("Indigo")
-			->implement("onclick", $this, "menuClick");
 /*
 		$this->menu->addItem("link_masks", "links");
 		$this->menu->items->link_masks->addItem("address_number_links")
 			->implement("onclick", $this, "menuClick");
 */
 		$this->menu->addItem("security_tables", "Securities");
-		$this->menu->items->security_tables->addItem("security_triggers")
-			->implement("onclick", $this, "menuClick");
 		$this->menu->items->security_tables->addItem("securities")
 			->implement("onclick", $this, "menuClick");
 		$this->menu->items->security_tables->addItem("security_underlyings")
@@ -177,10 +170,6 @@ class Tream extends P4A
 			->implement("onclick", $this, "menuClick");
 		$this->menu->items->security_tables->addItem("security_price_feed_types")
 			->implement("onclick", $this, "menuClick");
-		$this->menu->items->security_tables->addItem("security_exposures")
-			->implement("onclick", $this, "menuClick");
-		$this->menu->items->security_tables->addItem("security_exposure_stati")
-			->implement("onclick", $this, "menuClick");
 		$this->menu->items->security_tables->addItem("security_issuers")
 			->implement("onclick", $this, "menuClick");
 		$this->menu->items->security_tables->addItem("security_payments")
@@ -189,28 +178,39 @@ class Tream extends P4A
 			->implement("onclick", $this, "menuClick");
 		$this->menu->items->security_tables->addItem("security_amount_types")
 			->implement("onclick", $this, "menuClick");
-		$this->menu->items->security_tables->addItem("portfolio_types")
-			->implement("onclick", $this, "menuClick");
-		$this->menu->items->security_tables->addItem("portfolio_security_fixings")
-			->implement("onclick", $this, "menuClick");
 /* switch off until user account setup is completed
 		if ($tream_user_type == 'root' 
 		or $tream_user_type == 'admin' 
 		or $tream_user_type == 'power_user'
 		or $tream_user_type == 'risk') { */
-			$this->menu->addItem("support_tables", "Support Tables");
-			$this->menu->items->support_tables->addItem("exposure_types")
+			$this->menu->addItem("risk_menu", "Risk")
+                            ->setFontColor("YellowGreen");
+			$this->menu->items->risk_menu->addItem("account_mandates")
 				->implement("onclick", $this, "menuClick");
-			$this->menu->items->support_tables->addItem("exposure_items")
+                        $this->menu->items->risk_menu->addItem("portfolio_types")
+                                ->implement("onclick", $this, "menuClick");
+                        $this->menu->items->risk_menu->addItem("portfolio_security_fixings")
+                                ->implement("onclick", $this, "menuClick");
+			$this->menu->items->risk_menu->addItem("exposure_types")
 				->implement("onclick", $this, "menuClick");
-			$this->menu->items->support_tables->addItem("exposure_item_values")
+			$this->menu->items->risk_menu->addItem("exposure_items")
 				->implement("onclick", $this, "menuClick");
-			$this->menu->items->support_tables->addItem("exposure_targets")
+			$this->menu->items->risk_menu->addItem("exposure_item_values")
 				->implement("onclick", $this, "menuClick");
-			$this->menu->items->support_tables->addItem("exposure_exceptions")
+			$this->menu->items->risk_menu->addItem("exposure_targets")
 				->implement("onclick", $this, "menuClick");
-			$this->menu->items->support_tables->addItem("exposure_references")
+			$this->menu->items->risk_menu->addItem("exposure_exceptions")
+				->implement("onclick", $this, "menuClick");
+			$this->menu->items->risk_menu->addItem("exposure_references")
 				->implement("onclick", $this, "menuClick"); 
+                        $this->menu->items->risk_menu->addItem("security_triggers")
+                                ->implement("onclick", $this, "menuClick");
+                        $this->menu->items->risk_menu->addItem("security_exposures")
+                                ->implement("onclick", $this, "menuClick");
+                        $this->menu->items->risk_menu->addItem("security_exposure_stati")
+                                ->implement("onclick", $this, "menuClick");
+
+                        $this->menu->addItem("support_tables", "Settings");
 			$this->menu->items->support_tables->addItem("trade_types")
 				->implement("onclick", $this, "menuClick");
 			$this->menu->items->support_tables->addItem("trade_stati")
@@ -226,8 +226,6 @@ class Tream extends P4A
 			$this->menu->items->support_tables->addItem("event_stati")
 				->implement("onclick", $this, "menuClick");
 			$this->menu->items->support_tables->addItem("account_types")
-				->implement("onclick", $this, "menuClick");
-			$this->menu->items->support_tables->addItem("account_mandates")
 				->implement("onclick", $this, "menuClick");
 			$this->menu->items->support_tables->addItem("account_persons")
 				->implement("onclick", $this, "menuClick");
@@ -289,18 +287,24 @@ class Tream extends P4A
 		if ($tream_user_type == 'root' 
 		or $tream_user_type == 'admin') { */
 			$this->menu->addItem("administration", "Administration");
-			$this->menu->items->administration->addItem("Portfolio_rights")
-				->implement("onclick", $this, "menuClick");
 			$this->menu->items->administration->addItem("Users")
+                                ->setLabel("TREAM Users")
 				->implement("onclick", $this, "menuClick");
 			$this->menu->items->administration->addItem("User_groups")
+                                ->setLabel("Teams")
 				->implement("onclick", $this, "menuClick");
 			$this->menu->items->administration->addItem("User_assigns")
+                                ->setLabel("Team Members")
 				->implement("onclick", $this, "menuClick");
-			$this->menu->items->administration->addItem("User_types")
+			$this->menu->items->administration->addItem("Portfolio_rights")
+                                ->setLabel("Portfolio access")
 				->implement("onclick", $this, "menuClick");
 			$this->menu->items->administration->addItem("User_rights")
+                                ->setLabel("Rename portfolio rights")
 				->implement("onclick", $this, "menuClick"); 
+			$this->menu->items->administration->addItem("User_types")
+                                ->setLabel("Rename system rights")
+				->implement("onclick", $this, "menuClick");
 /*		} */
 
 			

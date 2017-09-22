@@ -759,7 +759,7 @@ CREATE TABLE IF NOT EXISTS `log_tables` (
 --
 
 CREATE TABLE IF NOT EXISTS `log_users` (
-  `user_id` int(11) NOT NULL,
+  `user_id` int(11) NOT NULL AUTO_INCREMENT,
   `username` varchar(200) NOT NULL,
   `password` varchar(200) DEFAULT NULL,
   `code_id` varchar(50) DEFAULT NULL,
@@ -805,7 +805,7 @@ CREATE TABLE IF NOT EXISTS `log_user_rights` (
   `user_right_id` int(11) NOT NULL AUTO_INCREMENT,
   `right_name` varchar(200) DEFAULT NULL,
   `comment` text,
-  `code_id` varchar(2) DEFAULT NULL,
+  `code_id` varchar(20) DEFAULT NULL,
   PRIMARY KEY (`user_right_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
@@ -3759,7 +3759,14 @@ CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW 
 --
 DROP TABLE IF EXISTS `v_log_user_rights`;
 
-CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `v_log_user_rights` AS select NULL AS `user_right_id`,' not set' AS `right_name` union select `log_user_rights`.`user_right_id` AS `user_right_id`,`log_user_rights`.`right_name` AS `right_name` from `log_user_rights`;
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `v_log_user_rights` AS 
+select 
+  NULL AS `user_right_id`,
+  ' not set' AS `right_name` 
+union select 
+  `log_user_rights`.`user_right_id` AS `user_right_id`,
+  `log_user_rights`.`right_name` AS `right_name` 
+from `log_user_rights`;
 
 -- --------------------------------------------------------
 
@@ -3852,7 +3859,7 @@ union select
 -- --------------------------------------------------------
 
 --
--- Structure for view `v_portfolios_r`
+-- Structure for view `v_portfolios_r` - list of all restricted portfolios that the TREAM user is allowed to see
 --
 DROP TABLE IF EXISTS `v_portfolios_r`;
 
@@ -3874,7 +3881,7 @@ where
 -- --------------------------------------------------------
 
 --
--- Structure for view `v_portfolios_f`
+-- Structure for view `v_portfolios_f` - list of all portfolios open to all users or if the TREAM user is an admin
 --
 DROP TABLE IF EXISTS `v_portfolios_f`;
 
@@ -3884,15 +3891,17 @@ select
   `log_users`.`code_id` AS `user_name`,
   `portfolios`.*
 from 
-  `portfolios`, `log_user_types`, `log_users` 
+  `portfolios`, `portfolio_rights`, `log_user_types`, `log_user_rights`, `log_users` 
 where 
-  `log_users`.`user_type_id` = `log_user_types`.`user_type_id`
+  `portfolios`.`portfolio_id` = `portfolio_rights`.`portfolio_id`
+  AND `portfolio_rights`.`user_right_id` = `log_user_rights`.`user_right_id`
+  AND `log_users`.`user_type_id` = `log_user_types`.`user_type_id`
   AND (`log_user_types`.`code_id` = 'normal' OR `log_user_types`.`code_id` = 'admin');
 
 -- --------------------------------------------------------
 
 --
--- Structure for view `v_portfolios_u`
+-- Structure for view `v_portfolios_u` - list of all portfolios the TREAM user is allowed to see
 --
 DROP TABLE IF EXISTS `v_portfolios_u`;
 

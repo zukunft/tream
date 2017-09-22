@@ -57,7 +57,7 @@ class Portfolios extends P4A_Base_Mask
 			->addJoinLeft("banks", "portfolios.bank_id = banks.bank_id",
 					  array('bank_name'=>'bank'))
 // 			needs to be replaced with the correct user indentification once the tream internal user login is switched on
-			->setWhere(P4A_DB::singleton()->getCaseInsensitiveLikeSQL('v_portfolios_u.user_name', $_SERVER['REMOTE_USER']))
+//			->setWhere(P4A_DB::singleton()->getCaseInsensitiveLikeSQL('v_portfolios_u.user_name', $_SERVER['REMOTE_USER']))
 //			->setWhere(P4A_DB::singleton()->getCaseInsensitiveLikeSQL('v_portfolios_u.user_name', $this->active_mask->menu->loguser->Label()))
 //			->setWhere(P4A_DB::singleton()->getCaseInsensitiveLikeSQL('v_portfolios_u.user_name', $loguser))
 //			->setWhere(P4A_DB::singleton()->getCaseInsensitiveLikeSQL('v_portfolios_u.user_name', $p4a->menu->items->loguser->getLabel()))
@@ -99,7 +99,7 @@ class Portfolios extends P4A_Base_Mask
 		$this->build("p4a_db_source", "exposure_target_values")
 			->setTable("v_exposure_target_values")
 			->addOrder("portfolio_id")
-			->load();
+			->load(); 
 
 		$this->setSource($this->portfolios);
 		$this->firstRow();
@@ -169,7 +169,7 @@ class Portfolios extends P4A_Base_Mask
 		$this->table->cols->portfolio_number
 			->setWidth(30)
 			->setLabel('nbr');
-
+/*
 		$this->build("p4a_table", "table_trades")
 			->setSource($this->trades)
 			->setWidth(600)
@@ -204,7 +204,7 @@ class Portfolios extends P4A_Base_Mask
 			->setVisibleCols(array("item_name","limit_up","limit_down","neutral","calc_value","diff_neutral")) 
 			->showNavigationBar();
 		$this->exposure_target_values->addFilter("portfolio_id = ?", $this->portfolios->fields->portfolio_id);  
-
+*/
 		$this->build("p4a_fieldset", "fs_details")
 //			->setLabel($p4a->Tream->menu->loguser->getLabel())
 			->setLabel("Portfolio details")
@@ -228,15 +228,15 @@ class Portfolios extends P4A_Base_Mask
 		$this->frame
 			->anchor($this->table)
  			->anchorLeft($this->fs_details)
- 			->anchorLeft($this->table_portfolio_pnl)
+/* 			->anchorLeft($this->table_portfolio_pnl)
  			->anchor($this->table_trades)
  			->anchorLeft($this->table_portfolio_pos)
  			->anchor($this->table_portfolio_pos_closed)
- 			->anchorLeft($this->table_target_values); 
+ 			->anchorLeft($this->table_target_values) */; 
 
 		$this
 			->display("menu", $p4a->menu)
 			->display("top", $this->toolbar)
-			->setFocus($this->fields->person_id);
+			->setFocus($this->fields->portfolio_name);
 	}
 }

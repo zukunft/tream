@@ -25,6 +25,20 @@ INSERT INTO `log_user_types` (`user_type_id`, `type_name`, `comment`, `code_id`)
 (7, 'risk manager', 'the risk manager can set the asset allocation limits which the client advisor cannot', 'risk');
 
 --
+-- Dumping data for table `log_user_rights`
+--
+
+INSERT INTO `log_user_rights` (`user_right_id`, `right_name`, `comment`, `code_id`) VALUES
+(1, 'full control', 'can also archive portfolios', 'full'),
+(2, 'full trading', 'can also delete trades', 'power_client_advisor'),
+(3, 'client advisor', 'this user can see and add trades, but not delete.', 'client_advisor'),
+(4, 'add trades', 'this user can only add trades, but not see the portfolio nor delete trades.', 'add_trades'),
+(5, 'asset allocation', 'can only confirm trades suggested due to the asset allocation; can also see the positions', 'confirm'),
+(6, 'portfolio manager', 'the portfolio manager can set the asset allocation limits which the client advisor cannot', 'manager'),
+(7, 'read only', 'can just see to some portfolios', 'read_only'),
+(8, 'system batch', 'this user is used by the tream batch jobs and cannot be assigned to a real person', 'system');
+
+--
 -- Database: `tream`
 --
 
