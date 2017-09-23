@@ -56,262 +56,14 @@ class Tream extends P4A
 		parent::__construct();
 		$this->setTitle("TREAM - tream.biz");
 
+		$_SESSION['user_type'] = 'view only';
+		$_SESSION['mandate_filter'] = "all";
+                
 		// Menu
 		$this->build("p4a_menu", "menu");
 		
-		$this->menu->addItem("open_today")
-			//->setAccessKey("o")
-			->setLabel("Today")
-			->setFontColor("DarkGreen")
-			->implement("onclick", $this, "menuClick");
+		$this->menu_for_all_users();
 
-		$this->menu->addItem("events")
-			//->setAccessKey("e")
-			->setLabel("To Do")
-			->setFontColor("DarkGreen")
-			->implement("onclick", $this, "menuClick");
-
-		$this->menu->addItem("contact_menu", "Persons")
-			->setFontColor("DarkGreen");
-		$this->menu->items->contact_menu->addItem("contacts")
-			->setLabel("Client contacts")
-			->implement("onclick", $this, "menuClick");
-		$this->menu->items->contact_menu->addItem("actions")
-			->setLabel("Client contact notes")
-			->implement("onclick", $this, "menuClick");
-		$this->menu->items->contact_menu->addItem("contact_members")
-			->setLabel("Client contact persons")
-			->implement("onclick", $this, "menuClick");
-		$this->menu->items->contact_menu->addItem("persons")
-			->setLabel("Persons")
-			->implement("onclick", $this, "menuClick");
-		$this->menu->items->contact_menu->addItem("contact_numbers")
-			->setLabel("Contact numbers")
-			->implement("onclick", $this, "menuClick");
-		$this->menu->items->contact_menu->addItem("addresses")
-			->setLabel("Addresses")
-			->implement("onclick", $this, "menuClick");
-		$this->menu->items->contact_menu->addItem("address_links")
-			->setLabel("Address links")
-			->implement("onclick", $this, "menuClick");
-		$this->menu->items->contact_menu->addItem("documents")
-			->setLabel("Documents")
-			->implement("onclick", $this, "menuClick");
-		$this->menu->items->contact_menu->addItem("links")
-			->setLabel("Links to Mandates")
-			->implement("onclick", $this, "menuClick");
-
-		$this->menu->addItem("accounts")
-			->setLabel("Mandates")
-			//->setAccessKey("n")
-			->setFontColor("YellowGreen")
-			->implement("onclick", $this, "menuClick");
-
-		$this->menu->addItem("portfolios")
-			//->setAccessKey("p")
-			->setFontColor("YellowGreen")
-			->implement("onclick", $this, "menuClick");
-
-		$this->menu->addItem("portfolio_monitor")
-			->setLabel("Analysis")
-			->setFontColor("DarkGreen")
-			->implement("onclick", $this, "menuClick");
-
-		$this->menu->addItem("trade_menu", "Trades")
-			->setFontColor("DarkGreen");
-		$this->menu->items->trade_menu->addItem("trades")
-			//->setAccessKey("t")
-			->setLabel("All trades")
-			->implement("onclick", $this, "menuClick");
-                $this->menu->items->trade_menu->addItem("trade_equities")
-			->setLabel("Equities")
-			->implement("onclick", $this, "menuClick");
-		$this->menu->items->trade_menu->addItem("trade_bonds")
-			->setLabel("Bonds")
-			->implement("onclick", $this, "menuClick");
-		$this->menu->items->trade_menu->addItem("trade_funds")
-			->setLabel("Funds")
-			->implement("onclick", $this, "menuClick");
-		$this->menu->items->trade_menu->addItem("trade_fx")
-			->setLabel("FX")
-			->implement("onclick", $this, "menuClick");
-		$this->menu->items->trade_menu->addItem("trade_fx_swap")
-			->setLabel("FX Swap")
-			->implement("onclick", $this, "menuClick");
-		$this->menu->items->trade_menu->addItem("trade_cash")
-			->setLabel("Cash")
-			->implement("onclick", $this, "menuClick");
-
-/*
-		$this->menu->addItem("link_masks", "links");
-		$this->menu->items->link_masks->addItem("address_number_links")
-			->implement("onclick", $this, "menuClick");
-*/
-		$this->menu->addItem("security_tables", "Securities");
-		$this->menu->items->security_tables->addItem("securities")
-			->implement("onclick", $this, "menuClick");
-		$this->menu->items->security_tables->addItem("security_underlyings")
-			->implement("onclick", $this, "menuClick");
-		$this->menu->items->security_tables->addItem("currencies")
-			->implement("onclick", $this, "menuClick");
-		$this->menu->items->security_tables->addItem("currency_pairs")
-			->implement("onclick", $this, "menuClick");
-		$this->menu->items->security_tables->addItem("security_field_values")
-			->implement("onclick", $this, "menuClick");
-		$this->menu->items->security_tables->addItem("security_fields")
-			->implement("onclick", $this, "menuClick");
-		$this->menu->items->security_tables->addItem("security_types")
-			->implement("onclick", $this, "menuClick");
-		$this->menu->items->security_tables->addItem("security_quote_types")
-			->implement("onclick", $this, "menuClick");
-		$this->menu->items->security_tables->addItem("security_field_source_types")
-			->implement("onclick", $this, "menuClick");
-		$this->menu->items->security_tables->addItem("security_trigger_types")
-			->implement("onclick", $this, "menuClick");
-		$this->menu->items->security_tables->addItem("security_price_feed_types")
-			->implement("onclick", $this, "menuClick");
-		$this->menu->items->security_tables->addItem("security_issuers")
-			->implement("onclick", $this, "menuClick");
-		$this->menu->items->security_tables->addItem("security_payments")
-			->implement("onclick", $this, "menuClick");
-		$this->menu->items->security_tables->addItem("security_payment_types")
-			->implement("onclick", $this, "menuClick");
-		$this->menu->items->security_tables->addItem("security_amount_types")
-			->implement("onclick", $this, "menuClick");
-/* switch off until user account setup is completed
-		if ($tream_user_type == 'root' 
-		or $tream_user_type == 'admin' 
-		or $tream_user_type == 'power_user'
-		or $tream_user_type == 'risk') { */
-			$this->menu->addItem("risk_menu", "Risk")
-                            ->setFontColor("YellowGreen");
-			$this->menu->items->risk_menu->addItem("account_mandates")
-				->implement("onclick", $this, "menuClick");
-                        $this->menu->items->risk_menu->addItem("portfolio_types")
-                                ->implement("onclick", $this, "menuClick");
-                        $this->menu->items->risk_menu->addItem("portfolio_security_fixings")
-                                ->implement("onclick", $this, "menuClick");
-			$this->menu->items->risk_menu->addItem("exposure_types")
-				->implement("onclick", $this, "menuClick");
-			$this->menu->items->risk_menu->addItem("exposure_items")
-				->implement("onclick", $this, "menuClick");
-			$this->menu->items->risk_menu->addItem("exposure_item_values")
-				->implement("onclick", $this, "menuClick");
-			$this->menu->items->risk_menu->addItem("exposure_targets")
-				->implement("onclick", $this, "menuClick");
-			$this->menu->items->risk_menu->addItem("exposure_exceptions")
-				->implement("onclick", $this, "menuClick");
-			$this->menu->items->risk_menu->addItem("exposure_references")
-				->implement("onclick", $this, "menuClick"); 
-                        $this->menu->items->risk_menu->addItem("security_triggers")
-                                ->implement("onclick", $this, "menuClick");
-                        $this->menu->items->risk_menu->addItem("security_exposures")
-                                ->implement("onclick", $this, "menuClick");
-                        $this->menu->items->risk_menu->addItem("security_exposure_stati")
-                                ->implement("onclick", $this, "menuClick");
-
-                        $this->menu->addItem("support_tables", "Settings");
-			$this->menu->items->support_tables->addItem("trade_types")
-				->implement("onclick", $this, "menuClick");
-			$this->menu->items->support_tables->addItem("trade_stati")
-				->implement("onclick", $this, "menuClick");
-			$this->menu->items->support_tables->addItem("trade_payments")
-				->implement("onclick", $this, "menuClick");
-			$this->menu->items->support_tables->addItem("trade_payment_types")
-				->implement("onclick", $this, "menuClick");
-			$this->menu->items->support_tables->addItem("trade_confirmation_types")
-				->implement("onclick", $this, "menuClick");
-			$this->menu->items->support_tables->addItem("event_types")
-				->implement("onclick", $this, "menuClick");
-			$this->menu->items->support_tables->addItem("event_stati")
-				->implement("onclick", $this, "menuClick");
-			$this->menu->items->support_tables->addItem("account_types")
-				->implement("onclick", $this, "menuClick");
-			$this->menu->items->support_tables->addItem("account_persons")
-				->implement("onclick", $this, "menuClick");
-			$this->menu->items->support_tables->addItem("account_person_types")
-				->implement("onclick", $this, "menuClick");
-			$this->menu->items->support_tables->addItem("person_types")
-				->implement("onclick", $this, "menuClick");
-			$this->menu->items->support_tables->addItem("address_link_types")
-				->implement("onclick", $this, "menuClick");
-			$this->menu->items->support_tables->addItem("countries")
-				->implement("onclick", $this, "menuClick");
-			$this->menu->items->support_tables->addItem("contact_types")
-				->implement("onclick", $this, "menuClick");
-			$this->menu->items->support_tables->addItem("contact_number_types")
-				->implement("onclick", $this, "menuClick");
-			$this->menu->items->support_tables->addItem("contact_categories")
-				->implement("onclick", $this, "menuClick");
-			$this->menu->items->support_tables->addItem("document_types")
-				->implement("onclick", $this, "menuClick");
-			$this->menu->items->support_tables->addItem("document_categories")
-				->implement("onclick", $this, "menuClick");
-			$this->menu->items->support_tables->addItem("messages")
-				->implement("onclick", $this, "menuClick"); 
-			$this->menu->items->support_tables->addItem("message_types")
-				->implement("onclick", $this, "menuClick");
-			$this->menu->items->support_tables->addItem("contract_types")
-				->implement("onclick", $this, "menuClick");
-			$this->menu->items->support_tables->addItem("banks")
-				->implement("onclick", $this, "menuClick");
-			$this->menu->items->support_tables->addItem("values")
-				->implement("onclick", $this, "menuClick");
-			$this->menu->items->support_tables->addItem("value_types")
-				->implement("onclick", $this, "menuClick");
-			$this->menu->items->support_tables->addItem("value_stati")
-				->implement("onclick", $this, "menuClick");
-/*		} */
-/*  switch off until user account setup is completed
-		if ($tream_user_type == 'root' 
-		or $tream_user_type == 'admin' 
-		or $tream_user_type == 'power_user') { */
-			$this->menu->addItem("reconciliation_tables", "Reconciliation");
-			$this->menu->items->reconciliation_tables->addItem("Recon_files")
-				->implement("onclick", $this, "menuClick");
-			$this->menu->items->reconciliation_tables->addItem("Recon_steps")
-				->implement("onclick", $this, "menuClick");
-			$this->menu->items->reconciliation_tables->addItem("Recon_file_types")
-				->implement("onclick", $this, "menuClick");
-			$this->menu->items->reconciliation_tables->addItem("Recon_step_types")
-				->implement("onclick", $this, "menuClick");
-			$this->menu->items->reconciliation_tables->addItem("Recon_value_types")
-				->implement("onclick", $this, "menuClick");
-			$this->menu->items->reconciliation_tables->addItem("trade_type_bank_codes")
-				->implement("onclick", $this, "menuClick");
-/*		} */
-
-		// the records of these table may have a link to the program code
-		// this is one reason why not all users should be able to change records in these tables
-/*  switch off until user account setup is completed
-		if ($tream_user_type == 'root' 
-		or $tream_user_type == 'admin') { */
-			$this->menu->addItem("administration", "Administration");
-			$this->menu->items->administration->addItem("Users")
-                                ->setLabel("TREAM Users")
-				->implement("onclick", $this, "menuClick");
-			$this->menu->items->administration->addItem("User_groups")
-                                ->setLabel("Teams")
-				->implement("onclick", $this, "menuClick");
-			$this->menu->items->administration->addItem("User_assigns")
-                                ->setLabel("Team Members")
-				->implement("onclick", $this, "menuClick");
-			$this->menu->items->administration->addItem("Portfolio_rights")
-                                ->setLabel("Portfolio access")
-				->implement("onclick", $this, "menuClick");
-			$this->menu->items->administration->addItem("User_rights")
-                                ->setLabel("Rename portfolio rights")
-				->implement("onclick", $this, "menuClick"); 
-			$this->menu->items->administration->addItem("User_types")
-                                ->setLabel("Rename system rights")
-				->implement("onclick", $this, "menuClick");
-/*		} */
-
-			
-/*
-		$this->menu->addItem("change_language")
-			->implement("onclick", $this, "openLanguagesPopup");
-*/
 		// Data sources
 		// Main portfolio management tables
 		$this->build("p4a_db_source", "accounts")
@@ -1302,14 +1054,262 @@ class Tream extends P4A
 		
 			// Primary action
 		//echo get_current_user();
-		$this->openMask("open_today");
-		/* to be removed
+		//$this->openMask("open_today");
+
 		$this->openMask("P4A_Login_Mask");
 		$this->active_mask->implement('onLogin', $this, 'login');
 		$this->active_mask->username->setTooltip("your username");
 		$this->active_mask->password->setTooltip("Type db here");
 		$this->loginInfo();
-		*/
+		
+	}
+
+	public function menu_for_all_users()
+	{
+		$this->menu->addItem("open_today")
+			//->setAccessKey("o")
+			->setLabel("Today")
+			->setFontColor("DarkGreen")
+			->implement("onclick", $this, "menuClick");
+
+		$this->menu->addItem("events")
+			//->setAccessKey("e")
+			->setLabel("To Do")
+			->setFontColor("DarkGreen")
+			->implement("onclick", $this, "menuClick");
+
+		$this->menu->addItem("contact_menu", "Persons")
+			->setFontColor("DarkGreen");
+		$this->menu->items->contact_menu->addItem("contacts")
+			->setLabel("Client contacts")
+			->implement("onclick", $this, "menuClick");
+		$this->menu->items->contact_menu->addItem("actions")
+			->setLabel("Client contact notes")
+			->implement("onclick", $this, "menuClick");
+		$this->menu->items->contact_menu->addItem("contact_members")
+			->setLabel("Client contact persons")
+			->implement("onclick", $this, "menuClick");
+		$this->menu->items->contact_menu->addItem("persons")
+			->setLabel("Persons")
+			->implement("onclick", $this, "menuClick");
+		$this->menu->items->contact_menu->addItem("contact_numbers")
+			->setLabel("Contact numbers")
+			->implement("onclick", $this, "menuClick");
+		$this->menu->items->contact_menu->addItem("addresses")
+			->setLabel("Addresses")
+			->implement("onclick", $this, "menuClick");
+		$this->menu->items->contact_menu->addItem("address_links")
+			->setLabel("Address links")
+			->implement("onclick", $this, "menuClick");
+		$this->menu->items->contact_menu->addItem("documents")
+			->setLabel("Documents")
+			->implement("onclick", $this, "menuClick");
+		$this->menu->items->contact_menu->addItem("links")
+			->setLabel("Links to Mandates")
+			->implement("onclick", $this, "menuClick");
+
+		$this->menu->addItem("accounts")
+			->setLabel("Mandates")
+			//->setAccessKey("n")
+			->setFontColor("YellowGreen")
+			->implement("onclick", $this, "menuClick");
+
+		$this->menu->addItem("portfolios")
+			//->setAccessKey("p")
+			->setFontColor("YellowGreen")
+			->implement("onclick", $this, "menuClick");
+
+		$this->menu->addItem("portfolio_monitor")
+			->setLabel("Analysis")
+			->setFontColor("DarkGreen")
+			->implement("onclick", $this, "menuClick");
+
+		$this->menu->addItem("trade_menu", "Trades")
+			->setFontColor("DarkGreen");
+		$this->menu->items->trade_menu->addItem("trades")
+			//->setAccessKey("t")
+			->setLabel("All trades")
+			->implement("onclick", $this, "menuClick");
+                $this->menu->items->trade_menu->addItem("trade_equities")
+			->setLabel("Equities")
+			->implement("onclick", $this, "menuClick");
+		$this->menu->items->trade_menu->addItem("trade_bonds")
+			->setLabel("Bonds")
+			->implement("onclick", $this, "menuClick");
+		$this->menu->items->trade_menu->addItem("trade_funds")
+			->setLabel("Funds")
+			->implement("onclick", $this, "menuClick");
+		$this->menu->items->trade_menu->addItem("trade_fx")
+			->setLabel("FX")
+			->implement("onclick", $this, "menuClick");
+		$this->menu->items->trade_menu->addItem("trade_fx_swap")
+			->setLabel("FX Swap")
+			->implement("onclick", $this, "menuClick");
+		$this->menu->items->trade_menu->addItem("trade_cash")
+			->setLabel("Cash")
+			->implement("onclick", $this, "menuClick");
+
+/*
+		$this->menu->addItem("link_masks", "links");
+		$this->menu->items->link_masks->addItem("address_number_links")
+			->implement("onclick", $this, "menuClick");
+*/
+		$this->menu->addItem("security_tables", "Securities");
+		$this->menu->items->security_tables->addItem("securities")
+			->implement("onclick", $this, "menuClick");
+		$this->menu->items->security_tables->addItem("security_underlyings")
+			->implement("onclick", $this, "menuClick");
+		$this->menu->items->security_tables->addItem("currencies")
+			->implement("onclick", $this, "menuClick");
+		$this->menu->items->security_tables->addItem("currency_pairs")
+			->implement("onclick", $this, "menuClick");
+		$this->menu->items->security_tables->addItem("security_field_values")
+			->implement("onclick", $this, "menuClick");
+		$this->menu->items->security_tables->addItem("security_fields")
+			->implement("onclick", $this, "menuClick");
+		$this->menu->items->security_tables->addItem("security_types")
+			->implement("onclick", $this, "menuClick");
+		$this->menu->items->security_tables->addItem("security_quote_types")
+			->implement("onclick", $this, "menuClick");
+		$this->menu->items->security_tables->addItem("security_field_source_types")
+			->implement("onclick", $this, "menuClick");
+		$this->menu->items->security_tables->addItem("security_trigger_types")
+			->implement("onclick", $this, "menuClick");
+		$this->menu->items->security_tables->addItem("security_price_feed_types")
+			->implement("onclick", $this, "menuClick");
+		$this->menu->items->security_tables->addItem("security_issuers")
+			->implement("onclick", $this, "menuClick");
+		$this->menu->items->security_tables->addItem("security_payments")
+			->implement("onclick", $this, "menuClick");
+		$this->menu->items->security_tables->addItem("security_payment_types")
+			->implement("onclick", $this, "menuClick");
+		$this->menu->items->security_tables->addItem("security_amount_types")
+			->implement("onclick", $this, "menuClick");
+	}
+	
+	public function menu_risk()
+	{
+                $this->menu->addItem("risk_menu", "Risk")
+                    ->setFontColor("YellowGreen");
+                $this->menu->items->risk_menu->addItem("account_mandates")
+                        ->implement("onclick", $this, "menuClick");
+                $this->menu->items->risk_menu->addItem("portfolio_types")
+                        ->implement("onclick", $this, "menuClick");
+                $this->menu->items->risk_menu->addItem("portfolio_security_fixings")
+                        ->implement("onclick", $this, "menuClick");
+                $this->menu->items->risk_menu->addItem("exposure_types")
+                        ->implement("onclick", $this, "menuClick");
+                $this->menu->items->risk_menu->addItem("exposure_items")
+                        ->implement("onclick", $this, "menuClick");
+                $this->menu->items->risk_menu->addItem("exposure_item_values")
+                        ->implement("onclick", $this, "menuClick");
+                $this->menu->items->risk_menu->addItem("exposure_targets")
+                        ->implement("onclick", $this, "menuClick");
+                $this->menu->items->risk_menu->addItem("exposure_exceptions")
+                        ->implement("onclick", $this, "menuClick");
+                $this->menu->items->risk_menu->addItem("exposure_references")
+                        ->implement("onclick", $this, "menuClick"); 
+                $this->menu->items->risk_menu->addItem("security_triggers")
+                        ->implement("onclick", $this, "menuClick");
+                $this->menu->items->risk_menu->addItem("security_exposures")
+                        ->implement("onclick", $this, "menuClick");
+                $this->menu->items->risk_menu->addItem("security_exposure_stati")
+                        ->implement("onclick", $this, "menuClick");
+	}
+		
+	public function menu_settings()
+	{
+                $this->menu->addItem("support_tables", "Settings");
+                $this->menu->items->support_tables->addItem("trade_types")
+                        ->implement("onclick", $this, "menuClick");
+                $this->menu->items->support_tables->addItem("trade_stati")
+                        ->implement("onclick", $this, "menuClick");
+                $this->menu->items->support_tables->addItem("trade_payments")
+                        ->implement("onclick", $this, "menuClick");
+                $this->menu->items->support_tables->addItem("trade_payment_types")
+                        ->implement("onclick", $this, "menuClick");
+                $this->menu->items->support_tables->addItem("trade_confirmation_types")
+                        ->implement("onclick", $this, "menuClick");
+                $this->menu->items->support_tables->addItem("event_types")
+                        ->implement("onclick", $this, "menuClick");
+                $this->menu->items->support_tables->addItem("event_stati")
+                        ->implement("onclick", $this, "menuClick");
+                $this->menu->items->support_tables->addItem("account_types")
+                        ->implement("onclick", $this, "menuClick");
+                $this->menu->items->support_tables->addItem("account_persons")
+                        ->implement("onclick", $this, "menuClick");
+                $this->menu->items->support_tables->addItem("account_person_types")
+                        ->implement("onclick", $this, "menuClick");
+                $this->menu->items->support_tables->addItem("person_types")
+                        ->implement("onclick", $this, "menuClick");
+                $this->menu->items->support_tables->addItem("address_link_types")
+                        ->implement("onclick", $this, "menuClick");
+                $this->menu->items->support_tables->addItem("countries")
+                        ->implement("onclick", $this, "menuClick");
+                $this->menu->items->support_tables->addItem("contact_types")
+                        ->implement("onclick", $this, "menuClick");
+                $this->menu->items->support_tables->addItem("contact_number_types")
+                        ->implement("onclick", $this, "menuClick");
+                $this->menu->items->support_tables->addItem("contact_categories")
+                        ->implement("onclick", $this, "menuClick");
+                $this->menu->items->support_tables->addItem("document_types")
+                        ->implement("onclick", $this, "menuClick");
+                $this->menu->items->support_tables->addItem("document_categories")
+                        ->implement("onclick", $this, "menuClick");
+                $this->menu->items->support_tables->addItem("messages")
+                        ->implement("onclick", $this, "menuClick"); 
+                $this->menu->items->support_tables->addItem("message_types")
+                        ->implement("onclick", $this, "menuClick");
+                $this->menu->items->support_tables->addItem("contract_types")
+                        ->implement("onclick", $this, "menuClick");
+                $this->menu->items->support_tables->addItem("banks")
+                        ->implement("onclick", $this, "menuClick");
+                $this->menu->items->support_tables->addItem("values")
+                        ->implement("onclick", $this, "menuClick");
+                $this->menu->items->support_tables->addItem("value_types")
+                        ->implement("onclick", $this, "menuClick");
+                $this->menu->items->support_tables->addItem("value_stati")
+                        ->implement("onclick", $this, "menuClick");
+	}
+
+	public function menu_reconciliation()
+	{
+                $this->menu->addItem("reconciliation_tables", "Reconciliation");
+                $this->menu->items->reconciliation_tables->addItem("Recon_files")
+                        ->implement("onclick", $this, "menuClick");
+                $this->menu->items->reconciliation_tables->addItem("Recon_steps")
+                        ->implement("onclick", $this, "menuClick");
+                $this->menu->items->reconciliation_tables->addItem("Recon_file_types")
+                        ->implement("onclick", $this, "menuClick");
+                $this->menu->items->reconciliation_tables->addItem("Recon_step_types")
+                        ->implement("onclick", $this, "menuClick");
+                $this->menu->items->reconciliation_tables->addItem("Recon_value_types")
+                        ->implement("onclick", $this, "menuClick");
+                $this->menu->items->reconciliation_tables->addItem("trade_type_bank_codes")
+                        ->implement("onclick", $this, "menuClick");
+	}
+
+	public function menu_admin()
+	{
+                $this->menu->addItem("administration", "Administration");
+                $this->menu->items->administration->addItem("Users")
+                        ->setLabel("TREAM Users")
+                        ->implement("onclick", $this, "menuClick");
+                $this->menu->items->administration->addItem("User_groups")
+                        ->setLabel("Teams")
+                        ->implement("onclick", $this, "menuClick");
+                $this->menu->items->administration->addItem("User_assigns")
+                        ->setLabel("Team Members")
+                        ->implement("onclick", $this, "menuClick");
+                $this->menu->items->administration->addItem("Portfolio_rights")
+                        ->setLabel("Portfolio access")
+                        ->implement("onclick", $this, "menuClick");
+                $this->menu->items->administration->addItem("User_rights")
+                        ->setLabel("Rename portfolio rights")
+                        ->implement("onclick", $this, "menuClick"); 
+                $this->menu->items->administration->addItem("User_types")
+                        ->setLabel("Rename system rights")
+                        ->implement("onclick", $this, "menuClick");
 	}
 
 	public function menuClick()
@@ -1327,9 +1327,81 @@ class Tream extends P4A
 		$username = $this->active_mask->username->getNewValue();
 		$password = $this->active_mask->password->getNewValue();
 		
-		if (($username == "timon" or $username == "thomas" or $username == "patrick") and $password == md5("db")) {
-			$this->messageInfo("Login successful");
-			$this->openMask("persons");
+		$login_status = 0;
+		
+		// the default admin users; remove in case of a live installation
+		if ($username == "timon" and $password == md5("xxx")) {
+			$login_status = 1;
+		}
+		if ($username == "heang" and $password == md5("xxx")) {
+			$login_status = 1;
+		}
+		
+		// the default guest user; remove in case of a live installation
+		if ($username == "guest" and $password == md5("tream")) {
+			$login_status = 1;
+		}
+		
+		if ($login_status == 1) {
+			//$this->messageInfo("Login successful");
+
+			$_SESSION['log_user'] = $username;
+			//$GLOBALS['log_user'] = $username; // not GLOBAL to avoiv intererences
+			$log_user = $username;
+
+                        // set the system user rights
+                        if ($username == "timon" or $username == "heang") {
+                                $tream_user_type = "admin";
+                                $_SESSION['user_type'] = "admin";
+                        } 
+			
+			$this->messageInfo("Login successful as ".$_SESSION['log_user']." (".$_SESSION['user_type'].")");
+
+                        // show the user type depending menus
+			if ($_SESSION['user_type'] == 'root' 
+                        or $_SESSION['user_type'] == 'admin' 
+                        or $_SESSION['user_type'] == 'power_user'
+                        or $_SESSION['user_type'] == 'risk') {
+                                $this->menu_risk();
+                                $this->menu_settings();
+                        }
+
+                        if ($_SESSION['user_type'] == 'root' 
+                        or $_SESSION['user_type'] == 'admin' 
+                        or $_SESSION['user_type'] == 'power_user') { 
+                                $this->menu_reconciliation();
+                        } 
+
+                        // the records of these table may have a link to the program code
+                        // this is one reason why not all users should be able to change records in these tables
+
+                        if ($_SESSION['user_type'] == 'root' 
+                        or $_SESSION['user_type'] == 'admin') { 
+                                $this->menu_admin();
+        		} 
+
+			
+			// display the default mandate filter
+/*			$_SESSION['mandate_filter'] = "all";
+			$this->menu->addItem("mandate_filter")
+				->setLabel("Mandate ".$_SESSION['mandate_filter'])
+//				->setAlign("Right")
+				->setFontColor("DarkOrchid");
+
+                        $this->menu->addItem("change_language")
+                                ->implement("onclick", $this, "openLanguagesPopup");
+*/
+			// display the user logged in
+			$this->menu->addItem("loguser")
+				->setLabel("- ".$_SESSION['log_user']." (".$_SESSION['user_type'].")")
+//				->setAlign("Right")
+				->setFontColor("Grey");
+				
+			//$this->menu->refresh;	
+			//$this->display("menu", $p4a->menu);
+
+			$this->openMask("open_today");
+
 		} else {
 			$this->messageError("Login failed");
 			$this->loginInfo();
@@ -1338,7 +1410,7 @@ class Tream extends P4A
 	
 	protected function loginInfo()
 	{
-		$this->messageInfo('To login type:<br />username: p4a<br />password: p4a', 'info');
+		$this->messageInfo('To login type:<br />username: guest<br />password: tream', 'info');
 	}
 
 }

@@ -3859,24 +3859,30 @@ union select
 -- --------------------------------------------------------
 
 --
--- Structure for view `v_portfolios_r` - list of all restricted portfolios that the TREAM user is allowed to see
+-- Structure for view `v_portfolios_r` - list of all restricted portfolios and the TREAM users that are premitted to see it
 --
+
+/* 
+  portfolio_rights - defines (w)hich users can have access to the portfolio; if several rights apply the most access is used
+  log_user_right   - defines (h)ow the users have access to the portfolio
+  log_user_types   - defines (i)f the user is at all allowed to access 
+*/
 DROP TABLE IF EXISTS `v_portfolios_r`;
 
 CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `v_portfolios_r` AS 
 select 
-  `log_users`.`user_id`,
-  `log_users`.`code_id` AS `user_name`,
-  `portfolios`.*
+  u.`user_id`,
+  u.`code_id` AS `user_name`,
+  p.*
 from 
-  `portfolios`, `portfolio_rights`, `log_user_types`, `log_user_rights`, `log_users` 
+  `portfolios` p, `portfolio_rights` w, `log_user_rights` h, `log_user_types` i, `log_users` u
 where 
-  `portfolios`.`portfolio_id` = `portfolio_rights`.`portfolio_id`
-  AND `portfolio_rights`.`user_right_id` = `log_user_rights`.`user_right_id`
-  AND `log_user_rights`.`code_id` = 'change'
-  AND `portfolio_rights`.`user_id` = `log_users`.`user_id`
-  AND `log_users`.`user_type_id` = `log_user_types`.`user_type_id`
-  AND `log_user_types`.`code_id` = 'restricted';
+      p.`portfolio_id` = w.`portfolio_id`
+  AND w.`user_right_id` = h.`user_right_id`
+  AND h.`code_id` = 'client_advisor'
+  AND w.`user_id` = u.`user_id`
+  AND u.`user_type_id` = i.`user_type_id`
+  AND i.`code_id` in ('system','root','admin','power_user','user','risk');
 
 -- --------------------------------------------------------
 

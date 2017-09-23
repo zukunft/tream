@@ -75,6 +75,7 @@ class Accounts extends P4A_Base_Mask
 			->load(); 
 
 		$this->setSource($this->accounts);
+		$this->setTitle("Mandates - ".$_SESSION['mandate_filter']);
 		$this->firstRow();
 
 		// Customizing fields properties
@@ -133,6 +134,14 @@ class Accounts extends P4A_Base_Mask
 			->setVisibleCols(array("aum","start","days","fees","mwst","total"))
 			->showNavigationBar();
 		$this->bills->addFilter("account_id = ?", $this->accounts->fields->account_id); 
+		
+		$this->build("p4a_button", "btn_filter_on") 
+			->setLabel("Set filter") 
+			->implement("onclick", $this,"_btn_filter_on_click");
+
+		$this->build("p4a_button", "btn_filter_off") 
+			->setLabel("Show all")
+			->implement("onclick", $this,"_btn_filter_off_click");
 
 		$this->build("p4a_fieldset", "fs_details")
 			->setLabel("Account detail")
@@ -155,11 +164,45 @@ class Accounts extends P4A_Base_Mask
 			->anchor($this->table)
  			->anchor($this->fs_details)
  			->anchorLeft($this->table_actions)
- 			->anchor($this->table_bill); 
+ 			->anchor($this->table_bill)
+ 			->anchorLeft($this->btn_filter_on)
+ 			->anchorLeft($this->btn_filter_off);
 
 		$this
 			->display("menu", $p4a->menu)
 			->display("top", $this->toolbar)
 			->setFocus($this->fields->account_name);
+	}
+
+	// show only this mandate
+	public function _btn_filter_on_click()
+	{
+		// set the filter
+		$_SESSION['mandate_filter'] = $this->accounts->fields->account_name;
+
+//		$this->openMask($this->active_object->getName());
+//		$this->messageInfo("Show only one mandate");
+
+//		$p4a->menu->display;
+/*		$this
+			->display("menu", $p4a->menu)
+			->display("top", $this->toolbar)
+			->setFocus($this->fields->account_name); */
+		//$this->messageInfo('Show only '.$this->accounts->fields->account_name.'', 'info');
+		//$p4a$->menu->messageInfo('Show only one mandate', 'info');
+		// $this->txt_field1->setNewValue("This is my first P4A application!");
+	}
+
+	public function _btn_filter_off_click()
+	{
+		// set the filter
+		$_SESSION['mandate_filter'] = "all";
+
+		//$this->messageInfo("Show all mandates");
+//		$p4a->menu->messageInfo("Show all mandates");
+
+		//$this->messageInfo('Show only '.$this->accounts->fields->account_name.'', 'info');
+		//$p4a$->menu->messageInfo('Show all mandates', 'info');
+		// $this->txt_field1->setNewValue("This is my first P4A application!");
 	}
 }

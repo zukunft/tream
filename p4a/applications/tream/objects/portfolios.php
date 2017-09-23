@@ -56,11 +56,7 @@ class Portfolios extends P4A_Base_Mask
 					  array('symbol'=>'fx'))
 			->addJoinLeft("banks", "portfolios.bank_id = banks.bank_id",
 					  array('bank_name'=>'bank'))
-// 			needs to be replaced with the correct user indentification once the tream internal user login is switched on
-//			->setWhere(P4A_DB::singleton()->getCaseInsensitiveLikeSQL('v_portfolios_u.user_name', $_SERVER['REMOTE_USER']))
-//			->setWhere(P4A_DB::singleton()->getCaseInsensitiveLikeSQL('v_portfolios_u.user_name', $this->active_mask->menu->loguser->Label()))
-//			->setWhere(P4A_DB::singleton()->getCaseInsensitiveLikeSQL('v_portfolios_u.user_name', $loguser))
-//			->setWhere(P4A_DB::singleton()->getCaseInsensitiveLikeSQL('v_portfolios_u.user_name', $p4a->menu->items->loguser->getLabel()))
+			->setWhere(P4A_DB::singleton()->getCaseInsensitiveLikeSQL('v_portfolios_u.user_name', $_SESSION['log_user']))
 			->load();
 
 		$this->build("p4a_db_source", "trades")
@@ -169,13 +165,20 @@ class Portfolios extends P4A_Base_Mask
 		$this->table->cols->portfolio_number
 			->setWidth(30)
 			->setLabel('nbr');
-/*
+
 		$this->build("p4a_table", "table_trades")
 			->setSource($this->trades)
 			->setWidth(600)
 			->setVisibleCols(array("trade_date","trade_type","size","security","price","curr")) 
 			->showNavigationBar();
 		$this->trades->addFilter("portfolio_id = ?", $this->portfolios->fields->portfolio_id); 
+
+		$this->build("p4a_table", "table_portfolio_pnl")
+			->setSource($this->portfolio_pnl)
+			->setWidth(600)
+			->setVisibleCols(array("update_time","aum","pnl"))
+			->showNavigationBar();
+		$this->portfolio_pnl->addFilter("portfolio_id = ?", $this->portfolios->fields->portfolio_id); 
 
 		$this->build("p4a_table", "table_portfolio_pos")
 			->setSource($this->portfolio_pos)
@@ -191,20 +194,13 @@ class Portfolios extends P4A_Base_Mask
 			->showNavigationBar();
 		$this->portfolio_pos_closed->addFilter("portfolio_id = ?", $this->portfolios->fields->portfolio_id); 
 
-		$this->build("p4a_table", "table_portfolio_pnl")
-			->setSource($this->portfolio_pnl)
-			->setWidth(600)
-			->setVisibleCols(array("update_time","aum","pnl"))
-			->showNavigationBar();
-		$this->portfolio_pnl->addFilter("portfolio_id = ?", $this->portfolios->fields->portfolio_id); 
-
 		$this->build("p4a_table", "table_target_values")
 			->setSource($this->exposure_target_values)
 			->setWidth(600)
 			->setVisibleCols(array("item_name","limit_up","limit_down","neutral","calc_value","diff_neutral")) 
 			->showNavigationBar();
 		$this->exposure_target_values->addFilter("portfolio_id = ?", $this->portfolios->fields->portfolio_id);  
-*/
+
 		$this->build("p4a_fieldset", "fs_details")
 //			->setLabel($p4a->Tream->menu->loguser->getLabel())
 			->setLabel("Portfolio details")
@@ -228,11 +224,11 @@ class Portfolios extends P4A_Base_Mask
 		$this->frame
 			->anchor($this->table)
  			->anchorLeft($this->fs_details)
-/* 			->anchorLeft($this->table_portfolio_pnl)
+ 			->anchorLeft($this->table_portfolio_pnl)
  			->anchor($this->table_trades)
  			->anchorLeft($this->table_portfolio_pos)
  			->anchor($this->table_portfolio_pos_closed)
- 			->anchorLeft($this->table_target_values) */; 
+ 			->anchorLeft($this->table_target_values); 
 
 		$this
 			->display("menu", $p4a->menu)
