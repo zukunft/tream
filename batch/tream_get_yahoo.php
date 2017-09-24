@@ -46,6 +46,37 @@ define ("MAX_SYMBOLS_AT_ONCE", 20);
 
 //http://ichart.yahoo.com/table.csv?s=GOOG&c=2010
 
+// reads the static data from yahoo
+function tream_get_sec_yahoo ($symbol, $sec_id, $debug)
+{
+    $lineCount = 0;
+
+    // load the stock quotes: we are opening it for reading
+    // http://finance.yahoo.com/d/quotes.csv?s=  STOCK SYMBOLS  &f=  FORMAT TAGS
+    $URL = QUOTES_URL."s=$symbol&f=n&e=.csv";
+
+    tream_debug("URL: ".$URL, $debug);
+
+    $fileHandle = fopen ($URL,"r");
+
+    if ($fileHandle) {
+	// use the fgetcsv function to store quote values into an array $lineValues
+	// one symbol in one line
+	do {
+	    $stockValues = fgetcsv ($fileHandle, 999999, ",");
+            tream_debug('Security name '.$stockValues[0].' found for '.$symbol.'; ', $debug);
+	    sql_sec_name_update($sec_id, $stockValues[0], $debug);
+	} while ($stockValues);
+
+    fclose ($fileHandle);
+    } else {
+	// ERROR-Message in the array
+	tream_debug('No security name found for '.$symbol.'; ', $debug);
+    }
+
+    return $stocks;
+}
+
 function tream_get_quote_yahoo ($symbol, $tags, $debug)
 {
     $lineCount = 0;
@@ -81,17 +112,33 @@ function tream_get_quote_yahoo ($symbol, $tags, $debug)
 }
 
 // special case for fast update 
+function sql_sec_name_update($sec_id, $sec_name, $debug) {
+  if ($sec_id > 0 and $sec_name <> '') {
+    $get_sql_q = "SELECT name FROM securities WHERE security_id = ".$sec_id.";";
+    $db_name = sql_get($get_sql_q);
+    if (trim($db_name) == '') {
+        $sql_update = "UPDATE securities SET name = '".$sec_name."' WHERE security_id = ".$sec_id.";";
+        $result = mysql_query($sql_update);
+        tream_debug('Security name '.$sec_name.' added to '.$sec_id.' using '.$sql_update.'; ', $debug);
+    } else {
+        tream_debug('Security name not overwritten; ', $debug);
+    }
+    tream_debug('No security for data adding given; ', $debug);
+  }
+
+}
+// special case for fast update 
 function sql_price_update($sec_id, $timestamp, $open, $high, $low, $close, $debug) {
   $get_sql_q = "SELECT close FROM security_daily_prices WHERE security_id = ".$sec_id." AND quote_date = '".$timestamp."';";
   $db_close = sql_get($get_sql_q);
   if (trim($db_close) == '' and $close > 0) {
     $sql_update = "INSERT INTO security_daily_prices (security_id, quote_date, open, high, low, close) VALUES (".$sec_id.", '".$timestamp."', ".$open.", ".$high.", ".$low.", ".$close.");";
     $result = mysql_query($sql_update);
-    echo 'day added.<br>';
+    tream_debug('Day added; ', $debug);
   } else {
     $sql_update = "UPDATE security_daily_prices SET security_id = ".$sec_id.", quote_date = '".$timestamp."', open = ".$open.", high = ".$high.", low = ".$low.", close = ".$close." WHERE security_id = ".$sec_id." AND quote_date = '".$timestamp."';";
     $result = mysql_query($sql_update);
-    echo 'day updated.<br>';
+    tream_debug('Day updated; ', $debug);
   }
 
 }
@@ -137,12 +184,12 @@ function tream_save_yahoo_part($symbols, $symbol_array, $ids, $debug) {
       $db_timestamp = strftime ('%Y-%m-%d',$date).' '.strftime ('%T',$time);
       $db_date = strftime ('%Y-%m-%d',$date);
     }
-    echo $symbol.': bid '.$bid.', ask '.$ask.', last '.$last.', open '.$open.', high '.$high.', low '.$low.' at '.$db_timestamp.' / '.$db_date;
+    tream_debug($symbol.': bid '.$bid.', ask '.$ask.', last '.$last.', open '.$open.', high '.$high.', low '.$low.' at '.$db_timestamp.' / '.$db_date, $debug);
     //if ($symbol_array[$pos] == $symbol) {
     if ($symbol_array[$pos] !== 'N/A') {
       $db_symbol = sql_get_value("securities", "security_id", $ids[$pos], "symbol_yahoo");
       if ($db_symbol == $symbol) {
-	echo ' symbol OK -> ';
+	tream_debug(' symbol OK -> ', $debug);
 	$db_time = strtotime(sql_get_value("securities", "security_id", $ids[$pos], "update_time"));
 	if ($db_time < strtotime($db_timestamp)) {
 	  tream_debug(' time OK -> ', $debug);
@@ -154,13 +201,13 @@ function tream_save_yahoo_part($symbols, $symbol_array, $ids, $debug) {
 	  sql_price_update($ids[$pos], $db_date, $open, $high, $low, $last, $debug);
 	  //echo ' last -> '.$last;
 	} else {
-	  echo 'no new quote<br>';
+	  tream_debug('No new quote; ', $debug);
 	}
       } else {
-	echo 'db symbol error: '.$db_symbol.' <> '.$symbol.' symbol changed? <br>';
+	echo 'db symbol error: '.$db_symbol.' <> '.$symbol.' symbol changed? ';
       }
     } else {
-      echo 'internal symbol error: '.$symbol_array[$pos].' <> '.$symbol.'<br>';
+      echo 'internal symbol error: '.$symbol_array[$pos].' <> '.$symbol.' ';
     }
     $pos = $pos + 1;
   }
@@ -168,7 +215,7 @@ function tream_save_yahoo_part($symbols, $symbol_array, $ids, $debug) {
 
 // splitted into packets to load at least some in case of a wrong symbol
 function tream_save_yahoo($debug) {
-echo "Yahoo price load start<br>";
+tream_debug("Yahoo price load start<br>", $debug);
 
 $link = sql_open();
 mysql_select_db('tream');
@@ -219,7 +266,7 @@ mysql_select_db('tream');
 
   sql_close($link);
 
-  echo "Yahoo price load end<br>";
+  tream_debug("Yahoo price load end<br>", $debug);
   
   }
 ?> 

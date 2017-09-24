@@ -192,8 +192,16 @@ class Securities extends P4A_Base_Mask
 			->anchor($this->fields->archiv);
 			
 		
+		$this->build("p4a_button", "btn_update_yahoo") 
+			->setLabel("Yahoo update") 
+			->implement("onclick", $this,"_btn_update_yahoo");
+
+		$this->build("p4a_label", "yahoo_result"," ");
+
 		$this->frame
 			->anchor($this->fs_search)
+			->anchorLeft($this->btn_update_yahoo)
+			->anchorLeft($this->yahoo_result)
 			->anchor($this->table)
  			->anchorLeft($this->fs_details)
  			->anchor($this->table_trades)
@@ -224,4 +232,18 @@ class Securities extends P4A_Base_Mask
 			}
 		}
 	} 	
+
+	public function _btn_update_yahoo()
+	{
+		// update prices
+		//$this->yahoo_result->setLabel(http_parse_message(http_get("https://tream.biz/batch/tream_get_security_from_yahoo.php"))->body); 
+		$sec_id = $this->securities->fields->security_id->getValue();
+		if ($sec_id > 0) {
+                        $yahoo_result = file_get_contents("https://tream.biz/batch/tream_get_security_from_yahoo.php?id=".$sec_id);
+		} else {
+                        $yahoo_result = file_get_contents("https://tream.biz/batch/tream_get_security_from_yahoo.php");
+		}
+		$this->yahoo_result->setLabel($yahoo_result); 
+	}
+
 }
