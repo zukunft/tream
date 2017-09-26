@@ -56,6 +56,9 @@ class Exposure_types extends P4A_Base_Mask
 
 		$this->firstRow();
 
+		// Customizing fields properties
+		$this->fields->code_id->disable(); // because code_id is used in the code and should never be changed; it is just show to have an indication for the naming
+
 		$this->build("p4a_full_toolbar", "toolbar")
 			->setMask($this);
 
@@ -64,6 +67,7 @@ class Exposure_types extends P4A_Base_Mask
 
 		$this->build("p4a_table", "table")
 			->setSource($this->exposure_types)
+			->setVisibleCols(array("type_name","code_id","description","comment"))
 			->setWidth(500)
 			->showNavigationBar();
 

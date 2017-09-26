@@ -1,7 +1,7 @@
 <?php
 /* 
 
-This file is part of TREAM - Portfolio Management Software.
+This file is part of TREAM - Open Source Portfolio Management Software for External Asset Advisors.
 
 TREAM is free software: you can redistribute it and/or modify it
 under the terms of the GNU General Public License as
@@ -22,8 +22,6 @@ Timon Zielonka <timon@zukunft.com>
 Copyright (c) 2013-2015 zukunft.com AG, Zurich
 Heang Lor <heang@zukunft.com>
 
-http://tream.biz
-
  * This file is based on P4A - PHP For Applications.
  *
  * To contact the authors write to:                                     
@@ -33,7 +31,9 @@ http://tream.biz
  * https://github.com/fballiano/p4a
  *
  * @author Timon Zielonka <timon@zukunft.com>
- * @copyright Copyright (c) 2013-2015 zukunft.com AG, Zurich
+ * @copyright Copyright (c) 2013-2017 zukunft.com AG, Zurich
+ * @link http://tream.biz
+ * @license http://www.gnu.org/licenses/gpl.html GNU General Public License
 
 */
 class Exposure_items extends P4A_Base_Mask
@@ -59,12 +59,14 @@ class Exposure_items extends P4A_Base_Mask
 
 		$this->fields->currency_id
 			->setLabel("Currency")
+			->setTooltip("to link the currencies without usage of Security Exposures")
 			->setType("select")
 			->setSource(P4A::singleton()->select_currencies)
 			->setSourceDescriptionField("symbol");
 
 		$this->fields->security_type_id
 			->setLabel("Asset class")
+			->setTooltip("to link the main security types without usage of Security Exposures")
 			->setType("select")
 			->setSource(P4A::singleton()->select_security_types)
 			->setSourceDescriptionField("description");
@@ -86,8 +88,8 @@ class Exposure_items extends P4A_Base_Mask
 
 		$this->build("p4a_table", "table")
 			->setSource($p4a->exposure_items)
-			->setVisibleCols(array("type","description","part_weight")) 
-			->setWidth(500)
+			->setVisibleCols(array("type","description","is_part_of","part_weight")) 
+			->setWidth(700)
 			->showNavigationBar();
 
 		$this->setRequiredField("description");

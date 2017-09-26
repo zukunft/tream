@@ -19,7 +19,7 @@ along with TREAM. If not, see <http://www.gnu.org/licenses/gpl.html>.
 To contact the authors write to: 
 Timon Zielonka <timon@zukunft.com>
 
-Copyright (c) 2013-2015 zukunft.com AG, Zurich
+Copyright (c) 2013-2017 zukunft.com AG, Zurich
 Heang Lor <heang@zukunft.com>
 
 http://tream.biz
@@ -33,7 +33,7 @@ http://tream.biz
  * https://github.com/fballiano/p4a
  *
  * @author Timon Zielonka <timon@zukunft.com>
- * @copyright Copyright (c) 2013-2015 zukunft.com AG, Zurich
+ * @copyright Copyright (c) 2013-2017 zukunft.com AG, Zurich
 
 */
 class Security_quote_types extends P4A_Base_Mask
@@ -58,6 +58,7 @@ class Security_quote_types extends P4A_Base_Mask
 
 		$this->build("p4a_table", "table")
 			->setSource($p4a->security_quote_types)
+			->setVisibleCols(array("type_name","quantity_factor","margin"))
 			->setWidth(500)
 			->showNavigationBar();
 
@@ -66,7 +67,9 @@ class Security_quote_types extends P4A_Base_Mask
 		$this->build("p4a_fieldset", "fs_details")
 			->setLabel("Security type detail")
 			->anchor($this->fields->type_name)
-			->anchor($this->fields->quantity_factor);
+			->anchor($this->fields->quantity_factor)
+			->anchor($this->fields->margin)
+			->anchor($this->fields->comment);
 		
 		$this->frame
 			->anchor($this->table)

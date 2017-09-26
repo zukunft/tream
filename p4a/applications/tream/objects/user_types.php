@@ -54,6 +54,8 @@ class User_types extends P4A_Base_Mask
 		// Customizing fields properties
 		$this->fields->code_id->disable(); // because code_id is used in the code and should never be changed; it is just show to have an indication for the naming
 
+		$this->fields->comment->setWidth(400);
+                        
 		$this->build("p4a_full_toolbar", "toolbar")
 			->setMask($this);
 

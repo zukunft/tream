@@ -1,11 +1,38 @@
--- phpMyAdmin SQL Dump
--- version 3.4.11.1deb2+deb7u1
--- http://www.phpmyadmin.net
---
--- Host: localhost
--- Generation Time: Nov 04, 2014 at 10:30 PM
--- Server version: 5.5.40
--- PHP Version: 5.4.4-14+deb7u14
+/*
+
+TREAM database setup - to create the TREAM database with MySQL
+
+Contains tables and views.
+
+Version 0.0.4 - 25. Sep 2017
+
+Initial dump created with phpMyAdmin SQL Dump version 3.4.11.1deb2+deb7u1 - http://www.phpmyadmin.net
+Server version: 5.5.40 - PHP Version: 5.4.4-14+deb7u14
+
+This file is part of TREAM - Portfolio Management Software.
+
+TREAM is free software: you can redistribute it and/or modify it
+under the terms of the GNU General Public License as
+published by the Free Software Foundation, either version 3 of
+the License, or (at your option) any later version.
+
+TREAM is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+GNU General Public License for more details.
+ 
+You should have received a copy of the GNU General Public License
+along with TREAM. If not, see <http://www.gnu.org/licenses/gpl.html>.
+
+To contact the authors write to: 
+Timon Zielonka <timon@zukunft.com>
+
+Copyright (c) 2013-2017 zukunft.com AG, Zurich
+Heang Lor <heang@zukunft.com>
+
+http://tream.biz
+
+*/ 
 
 SET SQL_MODE="NO_AUTO_VALUE_ON_ZERO";
 SET time_zone = "+00:00";
@@ -719,6 +746,7 @@ CREATE TABLE IF NOT EXISTS `exposure_types` (
   `type_name` varchar(200) NOT NULL,
   `description` text,
   `comment` text,
+  `code_id` varchar(50),
   PRIMARY KEY (`exposure_type_id`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
@@ -764,6 +792,7 @@ CREATE TABLE IF NOT EXISTS `log_users` (
   `password` varchar(200) DEFAULT NULL,
   `code_id` varchar(50) DEFAULT NULL,
   `user_type_id` int(11) DEFAULT NULL,
+  `internal_person_id` int(11) DEFAULT NULL,
   `comment` text,
   PRIMARY KEY (`user_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
@@ -1155,6 +1184,7 @@ CREATE TABLE IF NOT EXISTS `securities` (
   `valor` varchar(15) DEFAULT NULL COMMENT 'the swiss valor',
   `security_quote_type_id` int(11) DEFAULT NULL,
   `security_exposure_status_id` int(11) DEFAULT NULL,
+  `exposure_item_asset_class_id` int(11) DEFAULT NULL,
   `monitoring_security_limit` double DEFAULT NULL,
   `archiv` tinyint(1) DEFAULT NULL,
   PRIMARY KEY (`security_id`),
@@ -1365,6 +1395,8 @@ CREATE TABLE IF NOT EXISTS `security_quote_types` (
   `security_quote_type_id` int(11) NOT NULL AUTO_INCREMENT,
   `type_name` varchar(200) NOT NULL,
   `quantity_factor` double DEFAULT '1' COMMENT 'multiply the trade size with this factor to get the correct premium',
+  `margin` TINYINT NULL COMMENT 'to allow trades based on margin settlement',
+  `comment` text,
   PRIMARY KEY (`security_quote_type_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
@@ -3637,7 +3669,35 @@ CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW 
 --
 DROP TABLE IF EXISTS `v_exposure_items`;
 
-CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `v_exposure_items` AS select NULL AS `exposure_item_id`,' not set' AS `description` union select `exposure_items`.`exposure_item_id` AS `exposure_item_id`,`exposure_items`.`description` AS `description` from `exposure_items`;
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `v_exposure_items` AS 
+select 
+  NULL AS `exposure_item_id`,
+  ' not set' AS `description` 
+union select 
+  i.`exposure_item_id` AS `exposure_item_id`,
+  i.`description` AS `description` 
+from 
+  `exposure_items` i;
+
+-- --------------------------------------------------------
+
+--
+-- Structure for view `v_exposure_asset_classes`
+--
+DROP TABLE IF EXISTS `v_exposure_asset_classes`;
+
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `v_exposure_asset_classes` AS 
+select 
+  NULL AS `exposure_item_id`,
+  ' not set' AS `description` 
+union select 
+  i.`exposure_item_id` AS `exposure_item_id`,
+  i.`description` AS `description` 
+from 
+  `exposure_items` i, `exposure_types` t
+where
+  i.`exposure_type_id` = t.`exposure_type_id`
+  and t.`code_id` = 'asset_class';
 
 -- --------------------------------------------------------
 

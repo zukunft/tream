@@ -19,7 +19,7 @@ along with TREAM. If not, see <http://www.gnu.org/licenses/gpl.html>.
 To contact the authors write to: 
 Timon Zielonka <timon@zukunft.com>
 
-Copyright (c) 2013-2015 zukunft.com AG, Zurich
+Copyright (c) 2013-2017 zukunft.com AG, Zurich
 Heang Lor <heang@zukunft.com>
 
 http://tream.biz
@@ -49,6 +49,9 @@ class Event_types extends P4A_Base_Mask
 
 		$this->setSource($p4a->event_types);
 		$this->firstRow();
+
+		// Customizing fields properties
+		$this->fields->code_id->disable(); // because code_id is used in the code and should never be changed; it is just show to have an indication for the naming
 
 		$this->fields->user_type_id
 			->setLabel("Type")

@@ -46,6 +46,13 @@ define ("MAX_SYMBOLS_AT_ONCE", 20);
 
 //http://ichart.yahoo.com/table.csv?s=GOOG&c=2010
 
+//https://de.finance.yahoo.com/lookup/stocks?s=ch0012221716&t=S&m=ALL
+//https://www.wikidata.org/wiki/Q52825
+//https://www.wikidata.org/wiki/Special:EntityData/Q52825.json
+//https://query.wikidata.org/#PREFIX entity%3A <http%3A%2F%2Fwww.wikidata.org%2Fentity%2F>%0APREFIX rdf%3A <http%3A%2F%2Fwww.w3.org%2F1999%2F02%2F22-rdf-syntax-ns%23>%0A%0ASELECT %3FpropUrl %3FpropLabel %3FvalUrl %3FvalLabel WHERE {%0A {%0A entity%3AQ52825 %3FpropUrl %3FvalUrl.%0A %3Fproperty %3Fref %3FpropUrl.%0A %3Fproperty rdf%3Atype wikibase%3AProperty.%0A %3Fproperty rdfs%3Alabel %3FpropLabel.%0A }%0A %3FvalUrl rdfs%3Alabel %3FvalLabel.%0A FILTER((LANG(%3FvalLabel)) %3D "en")%0A FILTER((LANG(%3FpropLabel)) %3D "en")%0A}%0A
+//https://tools.wmflabs.org/isin/?language=de&isin=CH0012221716
+//https://www.six-swiss-exchange.com/shares/security_info_de.html?id=CH0012221716
+
 // reads the static data from yahoo
 function tream_get_sec_yahoo ($symbol, $sec_id, $debug)
 {

@@ -1,7 +1,7 @@
 <?php
 /* 
 
-This file is part of TREAM - Portfolio Management Software.
+This file is part of TREAM - Open Source Portfolio Management Software for External Asset Advisors.
 
 TREAM is free software: you can redistribute it and/or modify it
 under the terms of the GNU General Public License as
@@ -22,8 +22,6 @@ Timon Zielonka <timon@zukunft.com>
 Copyright (c) 2013-2015 zukunft.com AG, Zurich
 Heang Lor <heang@zukunft.com>
 
-http://tream.biz
-
  * This file is based on P4A - PHP For Applications.
  *
  * To contact the authors write to:                                     
@@ -33,7 +31,9 @@ http://tream.biz
  * https://github.com/fballiano/p4a
  *
  * @author Timon Zielonka <timon@zukunft.com>
- * @copyright Copyright (c) 2013-2015 zukunft.com AG, Zurich
+ * @copyright Copyright (c) 2013-2017 zukunft.com AG, Zurich
+ * @link http://tream.biz
+ * @license http://www.gnu.org/licenses/gpl.html GNU General Public License
 
 */
 class Securities extends P4A_Base_Mask
@@ -95,9 +95,17 @@ class Securities extends P4A_Base_Mask
 			->setSourceDescriptionField("select_name");
 
 		$this->fields->security_type_id
-			->setLabel("Asset class")
+			->setLabel("Security type")
+			->setTooltip("to define the trade mask used")
 			->setType("select")
 			->setSource(P4A::singleton()->select_security_types)
+			->setSourceDescriptionField("description");
+
+		$this->fields->exposure_item_asset_class_id
+			->setLabel("Asset Class")
+			->setTooltip("to ancher the security in the asset allocation tree. If the security cannot be linked to one asset class, use Security exposures")
+			->setType("select")
+			->setSource(P4A::singleton()->select_asset_class)
 			->setSourceDescriptionField("description");
 
 		$this->fields->price_feed_type_id
@@ -171,6 +179,7 @@ class Securities extends P4A_Base_Mask
 			->setLabel("Security detail")
 			->anchor($this->fields->name)
 			->anchor($this->fields->security_type_id)
+			->anchor($this->fields->exposure_item_asset_class_id)
 			->anchor($this->fields->ISIN)
 			->anchor($this->fields->valor)
 			->anchor($this->fields->currency_id)
@@ -243,7 +252,9 @@ class Securities extends P4A_Base_Mask
 		} else {
                         $yahoo_result = file_get_contents("https://tream.biz/batch/tream_get_security_from_yahoo.php");
 		}
-		$this->yahoo_result->setLabel($yahoo_result); 
+		$this->yahoo_result
+                        ->setWidth(600)
+                        ->setLabel($yahoo_result); 
 	}
 
 }
