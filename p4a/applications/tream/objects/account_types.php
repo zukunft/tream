@@ -48,8 +48,11 @@ class Account_types extends P4A_Base_Mask
 		$p4a = p4a::singleton();
 
 		$this->setSource($p4a->account_types);
+		$this->setTitle("Mandate types");
 		$this->firstRow();
 
+		$this->fields->comment->setWidth(400);
+                        
 		$this->build("p4a_full_toolbar", "toolbar")
 			->setMask($this);
 
@@ -58,14 +61,16 @@ class Account_types extends P4A_Base_Mask
 
 		$this->build("p4a_table", "table")
 			->setSource($p4a->account_types)
-			->setWidth(500)
+			->setVisibleCols(array("description","comment"))
+			->setWidth(700)
 			->showNavigationBar();
 
 		$this->setRequiredField("description");
 
 		$this->build("p4a_fieldset", "fs_details")
-			->setLabel("Account type detail")
-			->anchor($this->fields->description);
+			->setLabel("Mandate type details")
+			->anchor($this->fields->description)
+			->anchor($this->fields->comment);
 		
 		$this->frame
 			->anchor($this->table)

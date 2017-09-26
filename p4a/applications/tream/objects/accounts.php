@@ -56,6 +56,8 @@ class Accounts extends P4A_Base_Mask
 					  array('bank_name'=>'bank'))
 			->addJoinLeft("account_mandates", "accounts.account_mandat_id = account_mandates.account_mandat_id",
 					  array('description'=>'mandate')) 
+			->addJoinLeft("account_types", "accounts.account_type_id = account_types.account_type_id",
+					  array('description'=>'status')) 
 			->setPK("account_id")
 			->load();
 
@@ -98,7 +100,7 @@ class Accounts extends P4A_Base_Mask
 			->setSourceDescriptionField("description");
 
 		$this->fields->account_type_id
-			->setLabel("Type")
+			->setLabel("Status")
 			->setType("select")
 			->setSource(P4A::singleton()->select_account_types)
 			->setSourceDescriptionField("description");
@@ -117,8 +119,8 @@ class Accounts extends P4A_Base_Mask
 
 		$this->build("p4a_table", "table")
 			->setSource($this->accounts)
-			->setWidth(500)
-			->setVisibleCols(array("account_name","mandate","fx","bank")) 
+			->setWidth(900)
+			->setVisibleCols(array("account_name","mandate","fx","bank","status")) 
 			->showNavigationBar();
 
 		$this->build("p4a_table", "table_actions")

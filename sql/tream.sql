@@ -87,6 +87,7 @@ CREATE TABLE IF NOT EXISTS `accounts` (
 CREATE TABLE IF NOT EXISTS `account_mandates` (
   `account_mandat_id` int(11) NOT NULL AUTO_INCREMENT,
   `description` varchar(200) NOT NULL,
+  `comment` text,
   PRIMARY KEY (`account_mandat_id`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
@@ -118,6 +119,7 @@ CREATE TABLE IF NOT EXISTS `account_person_types` (
   `account_person_type_id` int(11) NOT NULL AUTO_INCREMENT,
   `type_name` varchar(200) NOT NULL,
   `code_id` varchar(200) DEFAULT NULL,
+  `comment` text,
   PRIMARY KEY (`account_person_type_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
@@ -130,6 +132,7 @@ CREATE TABLE IF NOT EXISTS `account_person_types` (
 CREATE TABLE IF NOT EXISTS `account_types` (
   `account_type_id` int(11) NOT NULL AUTO_INCREMENT,
   `description` varchar(200) NOT NULL,
+  `comment` text,
   PRIMARY KEY (`account_type_id`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
@@ -168,6 +171,8 @@ CREATE TABLE IF NOT EXISTS `actions` (
 CREATE TABLE IF NOT EXISTS `action_stati` (
   `action_status_id` int(11) NOT NULL AUTO_INCREMENT,
   `status_text` varchar(200) NOT NULL,
+  `code_id` varchar(50),
+  `comment` text,
   PRIMARY KEY (`action_status_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
@@ -295,6 +300,7 @@ CREATE TABLE IF NOT EXISTS `contacts` (
 CREATE TABLE IF NOT EXISTS `contact_categories` (
   `contact_category_id` int(11) NOT NULL AUTO_INCREMENT,
   `category_name` varchar(300) NOT NULL,
+  `comment` text,
   PRIMARY KEY (`contact_category_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
@@ -325,6 +331,7 @@ CREATE TABLE IF NOT EXISTS `contact_members` (
 CREATE TABLE IF NOT EXISTS `contact_member_types` (
   `contact_member_type_id` int(11) NOT NULL AUTO_INCREMENT,
   `member_type` varchar(200) NOT NULL,
+  `comment` text,
   PRIMARY KEY (`contact_member_type_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
@@ -394,6 +401,7 @@ CREATE TABLE IF NOT EXISTS `contact_topics` (
 CREATE TABLE IF NOT EXISTS `contact_types` (
   `contact_type_id` int(11) NOT NULL AUTO_INCREMENT,
   `type_name` varchar(200) NOT NULL,
+  `comment` text,
   PRIMARY KEY (`contact_type_id`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
@@ -518,6 +526,7 @@ CREATE TABLE IF NOT EXISTS `documents` (
 CREATE TABLE IF NOT EXISTS `document_categories` (
   `document_category_id` int(11) NOT NULL AUTO_INCREMENT,
   `category_name` varchar(200) NOT NULL,
+  `comment` text,
   PRIMARY KEY (`document_category_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
@@ -531,6 +540,7 @@ CREATE TABLE IF NOT EXISTS `document_types` (
   `document_type_id` int(11) NOT NULL AUTO_INCREMENT,
   `type_name` varchar(200) NOT NULL,
   `document_category_id` int(11) DEFAULT NULL,
+  `comment` text,
   PRIMARY KEY (`document_type_id`),
   KEY `document_category_id` (`document_category_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
@@ -1447,6 +1457,7 @@ CREATE TABLE IF NOT EXISTS `security_trigger_types` (
   `type_name` varchar(200) NOT NULL,
   `description` text NOT NULL,
   `code_id` varchar(200) DEFAULT NULL,
+  `comment` text,
   PRIMARY KEY (`trigger_type_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
@@ -1461,6 +1472,7 @@ CREATE TABLE IF NOT EXISTS `security_types` (
   `description` varchar(200) NOT NULL,
   `security_quote_type_id` int(11) DEFAULT NULL,
   `code_id` varchar(100) DEFAULT NULL COMMENT 'field to link predefined records to the code: cannot be changed by the users',
+  `comment` text,
   PRIMARY KEY (`security_type_id`),
   KEY `security_quote_type_id` (`security_quote_type_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
@@ -4484,6 +4496,7 @@ SELECT
   NULL       AS `security_quote_type_id`, 
   NULL       AS `security_issuer_id`, 
   ''         AS `type`, 
+  ''         AS `type_code_id`, 
   NULL       AS `quantity_factor`,
   ''         AS `quote_type`, 
   0          AS `archiv` 
@@ -4506,6 +4519,7 @@ UNION SELECT
   `securities`.`security_quote_type_id` AS `security_quote_type_id`, 
   `securities`.`security_issuer_id` AS `security_issuer_id`, 
   `v_security_types`.`description` AS `type`, 
+  `v_security_types`.`code_id` AS `type_code_id`, 
   IF(`security_quote_types`.`security_quote_type_id` > 0,`security_quote_types`.`quantity_factor`,`v_security_types`.`quantity_factor`) AS `quantity_factor`,
   IF(`security_quote_types`.`security_quote_type_id` > 0,`security_quote_types`.`type_name`,      `v_security_types`.`quote_type`)      AS `quote_type`, 
   `securities`.`archiv` AS `archiv`
@@ -4743,19 +4757,21 @@ DROP TABLE IF EXISTS `v_security_types`;
 
 CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `v_security_types` AS 
 select 
-  NULL AS `security_type_id`,
+  NULL       AS `security_type_id`,
   ' not set' AS `description`,
-  NULL AS `security_quote_type_id`,
-  1 AS `quantity_factor`,
-  '' AS `quote_type` 
+  ''         AS `code_id`,
+  NULL       AS `security_quote_type_id`,
+  1          AS `quantity_factor`,
+  ''         AS `quote_type` 
 union select 
-  `security_types`.`security_type_id` AS `security_type_id`,
-  `security_types`.`description` AS `description`, 
-  `security_types`.`security_quote_type_id` AS `security_quote_type_id`,
+  t.`security_type_id`                     AS `security_type_id`,
+  t.`description`                          AS `description`, 
+  t.`code_id`                              AS `code_id`, 
+  t.`security_quote_type_id`               AS `security_quote_type_id`,
   `security_quote_types`.`quantity_factor` AS `quantity_factor`,
-  `security_quote_types`.`type_name` AS `quote_type` 
-from (`security_types` 
-  left join `security_quote_types` on (`security_types`.`security_quote_type_id` = `security_quote_types`.`security_quote_type_id`));
+  `security_quote_types`.`type_name`       AS `quote_type` 
+from (`security_types` t 
+  left join `security_quote_types` on (t.`security_quote_type_id` = `security_quote_types`.`security_quote_type_id`));
 
 -- --------------------------------------------------------
 

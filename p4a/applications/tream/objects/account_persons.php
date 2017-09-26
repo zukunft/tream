@@ -19,10 +19,8 @@ along with TREAM. If not, see <http://www.gnu.org/licenses/gpl.html>.
 To contact the authors write to: 
 Timon Zielonka <timon@zukunft.com>
 
-Copyright (c) 2013-2015 zukunft.com AG, Zurich
+Copyright (c) 2013-2017 zukunft.com AG, Zurich
 Heang Lor <heang@zukunft.com>
-
-http://tream.biz
 
  * This file is based on P4A - PHP For Applications.
  *
@@ -33,7 +31,9 @@ http://tream.biz
  * https://github.com/fballiano/p4a
  *
  * @author Timon Zielonka <timon@zukunft.com>
- * @copyright Copyright (c) 2013-2015 zukunft.com AG, Zurich
+ * @copyright Copyright (c) 2013-2017 zukunft.com AG, Zurich
+ * @link http://tream.biz
+ * @license http://www.gnu.org/licenses/gpl.html GNU General Public License
 
 */
 class Account_persons extends P4A_Base_Mask
@@ -48,26 +48,29 @@ class Account_persons extends P4A_Base_Mask
 		$p4a = p4a::singleton();
 
 		$this->setSource($p4a->account_persons);
+		$this->setTitle("Persons related to a mandate");
 		$this->firstRow();
 
 		// Customizing fields properties
 		$this->fields->person_id
 			->setLabel("Person")
 			->setType("select")
-			->setSource(P4A::singleton()->internal_persons)
+			->setSource(P4A::singleton()->select_persons)
 			->setSourceDescriptionField("select_name");
 
 		$this->fields->account_id
 			->setLabel("Account")
 			->setType("select")
 			->setSource(P4A::singleton()->select_accounts)
-			->setSourceDescriptionField("account_name");
+			->setSourceDescriptionField("account_select_name");
 
 		$this->fields->account_person_type_id
 			->setLabel("Type")
 			->setType("select")
 			->setSource(P4A::singleton()->account_person_type_select)
 			->setSourceDescriptionField("type_name");
+
+		$this->fields->comment->setWidth(400);
 
 		$this->build("p4a_full_toolbar", "toolbar")
 			->setMask($this);

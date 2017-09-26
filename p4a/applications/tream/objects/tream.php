@@ -142,6 +142,9 @@ class Tream extends P4A
 			//->setAccessKey("n")
 			->setFontColor("YellowGreen")
 			->implement("onclick", $this, "menuClick");
+                $this->menu->items->accounts->addItem("account_persons")
+			->setLabel("Mandate persons")
+                        ->implement("onclick", $this, "menuClick");
 
 		$this->menu->addItem("portfolios")
 			//->setAccessKey("p")
@@ -263,10 +266,10 @@ class Tream extends P4A
                 $this->menu->items->support_tables->addItem("event_stati")
                         ->implement("onclick", $this, "menuClick");
                 $this->menu->items->support_tables->addItem("account_types")
-                        ->implement("onclick", $this, "menuClick");
-                $this->menu->items->support_tables->addItem("account_persons")
+			->setLabel("Mandate Types")
                         ->implement("onclick", $this, "menuClick");
                 $this->menu->items->support_tables->addItem("account_person_types")
+			->setLabel("Mandate relationships")
                         ->implement("onclick", $this, "menuClick");
                 $this->menu->items->support_tables->addItem("person_types")
                         ->implement("onclick", $this, "menuClick");
@@ -278,7 +281,11 @@ class Tream extends P4A
                         ->implement("onclick", $this, "menuClick");
                 $this->menu->items->support_tables->addItem("contact_number_types")
                         ->implement("onclick", $this, "menuClick");
+                $this->menu->items->support_tables->addItem("contact_member_types")
+                        ->implement("onclick", $this, "menuClick");
                 $this->menu->items->support_tables->addItem("contact_categories")
+                        ->implement("onclick", $this, "menuClick");
+                $this->menu->items->support_tables->addItem("contact_stati")
                         ->implement("onclick", $this, "menuClick");
                 $this->menu->items->support_tables->addItem("document_types")
                         ->implement("onclick", $this, "menuClick");
@@ -452,8 +459,7 @@ class Tream extends P4A
 			->setPK("bank_id")
 			->load();
 
-		// views
-
+		// view for later use of bill creation
 		$this->build("p4a_db_source", "v_bill")
 			->setTable("v_bill")
 			->addOrder("account_id")
@@ -509,10 +515,10 @@ class Tream extends P4A
 		// the relations of several persons to an mandate
 		$this->build("p4a_db_source", "account_persons")
 			->setTable("account_persons")
-			->addJoinLeft("accounts", "account_persons.account_id = accounts.account_id",
-					  array('account_name'=>'account'))
-			->addJoinLeft("persons", "account_persons.person_id = persons.person_id",
-					  array('lastname'=>'person'))
+			->addJoinLeft("v_accounts", "account_persons.account_id = v_accounts.account_id",
+					  array('account_select_name'=>'account'))
+			->addJoinLeft("v_persons", "account_persons.person_id = v_persons.person_id",
+					  array('display_name'=>'person'))
 			->addJoinLeft("account_person_types", "account_persons.account_person_type_id = account_person_types.account_person_type_id",
 					  array('type_name'=>'type'))
 			->addOrder("account_id")
@@ -552,6 +558,7 @@ class Tream extends P4A
 			->setPK("portfolio_id")
 			->load();
 
+                // the portfolio type defines the asset allocation settings for one portfolio
 		$this->build("p4a_db_source", "portfolio_types")
 			->setTable("portfolio_types")
 			->addOrder("type_name")
@@ -563,6 +570,7 @@ class Tream extends P4A
 			->setPK("portfolio_type_id")
 			->load();
 
+		// the portfolio position includ the portfolio name
                 $this->build("p4a_db_source", "v_portfolio_pos_named")
 			->setTable("v_portfolio_pos_named")
 			->addOrder("portfolio")
@@ -586,12 +594,14 @@ class Tream extends P4A
 			->setPageLimit(30)
 			->load();
 
+		// to select an underlying for a derivative
 		$this->build("p4a_db_source", "underlyings")
 			->setTable("v_securities")
 			->addOrder("select_name")
 			->setPageLimit(30)
 			->setPK("security_id")
 			->load();
+			
 		$this->build("p4a_db_source", "security_underlyings")
 			->setTable("security_underlyings")
 			->addJoinLeft("securities", "security_underlyings.security_id  = securities.security_id",
@@ -622,7 +632,101 @@ class Tream extends P4A
 			->addOrder("select_name")
 			->setPK("security_id")
 			->load();
-	}
+
+		$this->build("p4a_db_source", "security_cash")
+			->setTable("v_securities")
+			->setWhere("v_securities.type_code_id = 'cash'") 
+			->addOrder("select_name")
+			->setPK("security_id")
+			->load();
+
+
+		$this->build("p4a_db_source", "security_bond")
+			->setTable("v_securities")
+			->setWhere("v_securities.type_code_id = 'bond'") 
+			->addOrder("select_name")
+			->setPK("security_id")
+			->load();
+
+
+		$this->build("p4a_db_source", "security_equity")
+			->setTable("v_securities")
+			->setWhere("v_securities.type_code_id = 'equity'") 
+			->addOrder("select_name")
+			->setPK("security_id")
+			->load();
+
+
+		$this->build("p4a_db_source", "security_fund")
+			->setTable("v_securities")
+			->setWhere("v_securities.type_code_id = 'fund'") 
+			->addOrder("select_name")
+			->setPK("security_id")
+			->load();
+
+
+		$this->build("p4a_db_source", "security_ETF")
+			->setTable("v_securities")
+			->setWhere("v_securities.type_code_id = 'ETF'") 
+			->addOrder("select_name")
+			->setPK("security_id")
+			->load();
+
+
+		$this->build("p4a_db_source", "security_metal")
+			->setTable("v_securities")
+			->setWhere("v_securities.type_code_id = 'metal'") 
+			->addOrder("select_name")
+			->setPK("security_id")
+			->load();
+
+
+		$this->build("p4a_db_source", "security_structi")
+			->setTable("v_securities")
+			->setWhere("v_securities.type_code_id = 'structi'") 
+			->addOrder("select_name")
+			->setPK("security_id")
+			->load();
+
+
+		$this->build("p4a_db_source", "security_option")
+			->setTable("v_securities")
+			->setWhere("v_securities.type_code_id = 'option'") 
+			->addOrder("select_name")
+			->setPK("security_id")
+			->load();
+
+
+		$this->build("p4a_db_source", "security_future")
+			->setTable("v_securities")
+			->setWhere("v_securities.type_code_id = 'future'") 
+			->addOrder("select_name")
+			->setPK("security_id")
+			->load();
+
+
+		$this->build("p4a_db_source", "security_alternative")
+			->setTable("v_securities")
+			->setWhere("v_securities.type_code_id = 'alternative'") 
+			->addOrder("select_name")
+			->setPK("security_id")
+			->load();
+
+		$this->build("p4a_db_source", "security_FX")
+			->setTable("v_securities")
+			->setWhere("v_securities.type_code_id = 'FX'") 
+			->addOrder("select_name")
+			->setPK("security_id")
+			->load();
+
+		$this->build("p4a_db_source", "security_FX_swap")
+			->setTable("v_securities")
+			->setWhere("v_securities.type_code_id = 'FX_swap'") 
+			->addOrder("select_name")
+			->setPK("security_id")
+			->load();
+
+        }
 
 	public function data_source_security_special()
 	{
@@ -1026,17 +1130,6 @@ class Tream extends P4A
 			->addOrder("security_id")
 			->load();
 
-		$this->build("p4a_db_source", "action_stati")
-			->setTable("action_stati")
-			->addOrder("status_text")
-			->load();
-
-		$this->build("p4a_db_source", "select_action_stati")
-			->setTable("v_action_stati")
-			->addOrder("status_text")
-			->setPK("action_status_id")
-			->load();
-
 		$this->build("p4a_db_source", "security_triggers")
 			->setTable("security_triggers")
 			->addJoinLeft("securities", "security_triggers.security_id  = securities.security_id",
@@ -1254,6 +1347,17 @@ class Tream extends P4A
 					  array('description'=>'contact'))
 			->load();
 
+                // also used to track the status of client meetings
+		$this->build("p4a_db_source", "action_stati")
+			->setTable("action_stati")
+			->addOrder("status_text")
+			->load();
+
+		$this->build("p4a_db_source", "select_action_stati")
+			->setTable("v_action_stati")
+			->addOrder("status_text")
+			->setPK("action_status_id")
+			->load();
 
 		$this->build("p4a_db_source", "contact_numbers")
 			->setTable("contact_numbers")
@@ -1266,6 +1370,7 @@ class Tream extends P4A
 					  array('city'=>'address'))
 			->load();
 
+                // to seperate the phases of a client relationship and for faster finding
 		$this->build("p4a_db_source", "contact_categories")
 			->setTable("contact_categories")
 			->addOrder("category_name")

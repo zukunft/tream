@@ -19,10 +19,8 @@ along with TREAM. If not, see <http://www.gnu.org/licenses/gpl.html>.
 To contact the authors write to: 
 Timon Zielonka <timon@zukunft.com>
 
-Copyright (c) 2013-2015 zukunft.com AG, Zurich
+Copyright (c) 2013-2017 zukunft.com AG, Zurich
 Heang Lor <heang@zukunft.com>
-
-http://tream.biz
 
  * This file is based on P4A - PHP For Applications.
  *
@@ -33,7 +31,9 @@ http://tream.biz
  * https://github.com/fballiano/p4a
  *
  * @author Timon Zielonka <timon@zukunft.com>
- * @copyright Copyright (c) 2013-2015 zukunft.com AG, Zurich
+ * @copyright Copyright (c) 2013-2017 zukunft.com AG, Zurich
+ * @link http://tream.biz
+ * @license http://www.gnu.org/licenses/gpl.html GNU General Public License
 
 */
 class Person_types extends P4A_Base_Mask
@@ -50,6 +50,8 @@ class Person_types extends P4A_Base_Mask
 		$this->setSource($p4a->person_types);
 		$this->firstRow();
 
+		$this->fields->comment->setWidth(400);
+                        
 		$this->build("p4a_full_toolbar", "toolbar")
 			->setMask($this);
 
@@ -58,7 +60,8 @@ class Person_types extends P4A_Base_Mask
 
 		$this->build("p4a_table", "table")
 			->setSource($p4a->person_types)
-			->setWidth(500)
+			->setVisibleCols(array("description","internal","comment"))
+			->setWidth(700)
 			->showNavigationBar();
 
 		$this->setRequiredField("description");

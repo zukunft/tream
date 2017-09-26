@@ -79,13 +79,15 @@ class Documents extends P4A_Base_Mask
 
 		$this->fields->scanned_document->setType("file");
 		
+		$this->fields->comment->setWidth(400);
+                        
 		$this->build("p4a_full_toolbar", "toolbar")
 			->setMask($this);
 
 		$this->build("p4a_table", "table")
 			->setSource($p4a->documents)
 			->setVisibleCols(array("account","type","bank","date_to_account","date_received","keywords"))
-			->setWidth(500)
+			->setWidth(700)
 			->showNavigationBar();
 
 		$this->setRequiredField("document_type_id");

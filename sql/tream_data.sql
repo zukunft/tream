@@ -108,6 +108,41 @@ INSERT INTO `log_users` (`user_id`, `username`, `password`, `code_id`, `user_typ
 
 
 --
+-- `account_types` - some sample mandate types
+--
+
+INSERT INTO `account_types` (`account_type_id`, `description`, `comment`) VALUES
+(1, 'Prospect', NULL),
+(2, 'Discretionary', NULL),
+(3, 'Advisorary', NULL),
+(4, 'Retired', NULL);
+
+--
+-- `account_mandates` - some sample asset allocation types
+--
+
+INSERT INTO `account_mandates` (`account_mandat_id`, `description`, `comment`) VALUES
+(1, 'Discretionary Conservative', NULL),
+(2, 'Discretionary Growth', NULL),
+(3, 'Advisory Growth', NULL);
+
+--
+-- `account_person_types` - the possible relationships between persons and a mandate
+--
+
+INSERT INTO `account_person_types` (`account_person_type_id`, `type_name`, `code_id`, `comment`) VALUES
+(1, 'Beneficial Owner', 'owner', NULL),
+(2, 'Advisor', 'advisor', NULL);
+
+--
+-- `banks` - some sample banks
+--
+
+INSERT INTO `banks` (`bank_id`, `bank_name`) VALUES
+(1, 'JB'),
+(2, 'UBS');
+
+--
 -- `currencies` - some sample currencies
 --
 
@@ -115,71 +150,70 @@ INSERT INTO `currencies` (`currency_id`, `symbol`, `decimals`, `decimals_trading
 (1, 'CHF', 2, 4, NULL),
 (2, 'EUR', 2, 4, NULL),
 (3, 'USD', 2, 4, NULL),
-(4, 'JPY', 2, 2, NULL),
+(4, 'JPY', 0, 2, NULL),
 (5, 'GBP', 2, 4, NULL),
 (6, 'NOK', 2, 4, NULL);
-
---
--- `banks` - some sample banks
---
-
-INSERT INTO `banks` (`bank_id`, `bank_name`) VALUES
-(1, 'JB');
-
---
--- `account_types` - some sample mandate types
---
-
-INSERT INTO `account_types` (`account_type_id`, `description`) VALUES
-(1, 'Prospect');
-
---
--- `account_mandates` - some sample asset allocation types
---
-
-INSERT INTO `account_mandates` (`account_mandat_id`, `description`) VALUES
-(1, 'Discretionary Growth');
 
 --
 -- `accounts` - some sample mandates
 --
 
-INSERT INTO `accounts` (`account_id`, `account_name`, `person_id`, `currency_id`, `bank_id`, `account_type_id`, `account_mandat_id`, `start_mandat`, `start_fee`, `fee_tp`, `fee_finder`, `fee_bank`, `fee_performance`, `end_finders`, `inactive`, `discount_bank`) VALUES
-(1, 'Benificial Owner 1', NULL, 1, 1, 1, 1, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, NULL);
+INSERT INTO `accounts` (`account_id`, `account_name`, `person_id`, `currency_id`, `bank_id`, `account_type_id`, `account_mandat_id`, `start_mandat`, `start_fee`, `fee_tp`, `fee_finder`, `fee_bank`, `fee_performance`, `end_finders`, `inactive`, `discount_bank`, `person_id_encoded`) VALUES
+(1, 'Linus', NULL, 1, 1, 2, 2, NULL, NULL, 0.5, NULL, NULL, NULL, NULL, 0, NULL, NULL),
+(2, 'Heang Privat', 1, 1, 1, 3, 3, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, NULL, NULL),
+(3, 'Heang Company Hong Kong', 1, 3, 2, 2, 1, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, NULL, NULL);
 
 --
--- Dumping data for table `contact_types`
+-- `account_persons` - some relationships to a mandate
 --
 
-INSERT INTO `contact_types` (`contact_type_id`, `type_name`) VALUES
-(1, 'telefon call');
-
-
---
--- Dumping data for table `event_stati`
---
-
-INSERT INTO `event_stati` (`event_status_id`, `status_text`, `code_id`) VALUES
-(1, 'created', 'event_status_create'),
-(2, 'in progress', 'event_status_working'),
-(3, 'done', 'event_status_done'),
-(4, 'closed', 'event_status_closed');
+INSERT INTO `account_persons` (`account_person_id`, `account_id`, `person_id`, `account_person_type_id`, `comment`) VALUES
+(1, 1, 3, 1, NULL);
 
 --
--- Dumping data for table `event_types`
+-- `contact_categories` - sample phases of the client relationship to group the client contacts
 --
 
-INSERT INTO `event_types` (`event_type_id`, `type_name`, `user_type_id`, `comment`, `code_id`) VALUES
-(1, 'Trade missing', NULL, NULL, 'event_type_trade_missing'),
-(2, 'SQL Error', NULL, NULL, 'event_type_sql_error'),
-(3, 'System Event', NULL, NULL, 'event_type_system_event');
+INSERT INTO `contact_categories` (`contact_category_id`, `category_name`, `comment`) VALUES
+(1, 'Acquisition', NULL),
+(2, 'Risk Profiling', NULL),
+(3, 'Retention', NULL);
 
 --
--- Dumping data for table `events`
+-- `contact_types` - samples for the different types of contacts with the client
 --
 
-INSERT INTO `events` (`event_id`, `event_type_id`, `description`, `account_id`, `portfolio_id`, `security_id`, `description_unique`, `solution1_sql`, `event_status_id`, `event_date`, `created`, `updated`, `closed`, `solution1_description`, `solution2_sql`, `solution2_description`, `solution_selected`, `comment`) VALUES
-(1, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, NULL);
+INSERT INTO `contact_types` (`contact_type_id`, `type_name`, `comment`) VALUES
+(1, 'telefon call', NULL),
+(2, 'personal meeting', NULL),
+(3, 'email', NULL);
+
+--
+-- `contact_member_types` - list of roles that persons can have in a meeting
+--
+
+INSERT INTO `contact_member_types` (`contact_member_type_id`, `member_type`, `comment`) VALUES
+(1, 'Client Advisor', NULL),
+(2, 'Portfolio Manager', NULL),
+(3, 'Lawyer', NULL);
+
+--
+-- `document_categories` - e.g. to seperate client from bank related documents
+--
+
+INSERT INTO `document_categories` (`document_category_id`, `category_name`, `comment`) VALUES
+(1, 'Legal contracts with clients', NULL),
+(2, 'Bank statements', NULL);
+
+--
+-- `document_types` - some samples
+--
+
+INSERT INTO `document_types` (`document_type_id`, `type_name`, `document_category_id`, `comment`) VALUES
+(1, 'Proposal', 1, NULL),
+(2, 'Contract', 1, NULL),
+(3, 'Trade statement', 2, NULL),
+(4, 'Contract with Bank', 2, NULL);
 
 --
 -- `security_quote_types` to define the trade factor and the margin calculation
@@ -198,16 +232,18 @@ INSERT INTO `security_quote_types` (`security_quote_type_id`, `type_name`, `quan
 --
 
 INSERT INTO `security_types` (`security_type_id`, `description`, `security_quote_type_id`, `code_id`) VALUES
-(1, 'Cash', 1, 'FX'),
+(1, 'Cash', 1, 'cash'),
 (2, 'Fixed Income', 2, 'bond'),
 (3, 'Equity', 1, 'equity'),
 (4, 'Fund', 1, 'fund'),
 (5, 'ETF', 1, 'ETF'),
 (6, 'Metal', 3, 'metal'),
-(7, 'Structured Product', 1, 'structi');
-(8, 'Option', 5, 'option');
-(9, 'Future', 6, 'future');
-(10, 'Alternative Investment', 1, 'alternative');
+(7, 'Structured Product', 1, 'structi'),
+(8, 'Option', 5, 'option'),
+(9, 'Future', 6, 'future'),
+(10, 'Alternative Investment', 1, 'alternative'),
+(11, 'FX', 1, 'FX'),
+(12, 'FX Swap', 4, 'FX_swap');
 
 --
 -- `exposure_types` - the root of the different asset allocation trees
@@ -243,7 +279,7 @@ INSERT INTO `exposure_items` (`exposure_item_id`, `exposure_type_id`, `order_nbr
 (15, 1, 21, 'Bonds direct', NULL, 2, NULL, NULL, NULL),
 (16, 1, 22, 'Bonds investment grade', NULL, 2, NULL, NULL, NULL),
 (17, 1, 23, 'Bonds lower ratings', NULL, 2, NULL, NULL, NULL),
-(18, 1, 24, 'Junk Bonds', NULL, 2, NULL, NULL NULL),
+(18, 1, 24, 'Junk Bonds', NULL, 2, NULL, NULL, NULL),
 (19, 1, 25, 'Bond Fund', NULL, 2, NULL, NULL, NULL),
 (20, 1, 26, 'Bond ETF', NULL, 2, NULL, NULL, NULL),
 (21, 1, 31, 'Equity direct', NULL, 3, NULL, NULL, NULL),
@@ -268,38 +304,74 @@ INSERT INTO `exposure_items` (`exposure_item_id`, `exposure_type_id`, `order_nbr
 (40, 1, 81, 'Real estate direct', NULL, 7, NULL, NULL, NULL),
 (41, 1, 82, 'Real estate fund', NULL, 7, NULL, NULL, NULL),
 (42, 1, 83, 'Real estate ETF', NULL, 7, NULL, NULL, NULL),
-(43, 1, 91, 'Hedge Funds', NULL, 8, NULL, NULL, NULL);
+(43, 1, 91, 'Hedge Funds', NULL, 8, NULL, NULL, NULL),
 (44, 2, 1, 'USD', 3, 11, NULL, 6, NULL),
 (45, 2, 2, 'EUR', 2, 11, NULL, 6, NULL),
 (46, 2, 3, 'CHF', 1, 11, NULL, 6, NULL),
 (47, 2, 4, 'GBP', 5, 11, NULL, 6, NULL),
 (48, 2, 5, 'JPY', 4, 13, NULL, 6, NULL),
 (49, 2, 6, 'NOK', 6, 13, NULL, 6, NULL),
-(50, 2, 999, 'other currencies', NULL, 11, NULL, NULL, NULL),
+(50, 2, 999, 'other currencies', NULL, 11, NULL, NULL, NULL);
 
 --
--- Dumping data for table `exposure_item_values`
+-- `action_stati` - predefined row to allow the system to track the client contacts
+--
+
+INSERT INTO `action_stati` (`action_status_id`, `status_text`, `code_id`, `comment`) VALUES
+(1, 'planned', 'planned', NULL),
+(2, 'pending tasks', 'pending', NULL),
+(3, 'done', 'done', NULL);
+
+--
+-- `event_stati` - list of status possible for a system created event
+--
+
+INSERT INTO `event_stati` (`event_status_id`, `status_text`, `code_id`) VALUES
+(1, 'created', 'event_status_create'),
+(2, 'in progress', 'event_status_working'),
+(3, 'done', 'event_status_done'),
+(4, 'closed', 'event_status_closed');
+
+--
+-- `event_types` - list of event type that can be created by the system
+--
+
+INSERT INTO `event_types` (`event_type_id`, `type_name`, `user_type_id`, `comment`, `code_id`) VALUES
+(1, 'Trade missing', NULL, NULL, 'event_type_trade_missing'),
+(2, 'SQL Error', NULL, NULL, 'event_type_sql_error'),
+(3, 'System Event', NULL, NULL, 'event_type_system_event');
+
+--
+-- `events` -  sample of an event (maybe not needed)
+--
+
+INSERT INTO `events` (`event_id`, `event_type_id`, `description`, `account_id`, `portfolio_id`, `security_id`, `description_unique`, `solution1_sql`, `event_status_id`, `event_date`, `created`, `updated`, `closed`, `solution1_description`, `solution2_sql`, `solution2_description`, `solution_selected`, `comment`) VALUES
+(1, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, NULL);
+
+--
+-- `exposure_item_values` - sample values for the efficient frontier calculation
 --
 
 INSERT INTO `exposure_item_values` (`exposure_item_value_id`, `exposure_item_id`, `ref_currency_id`, `ref_security_id`, `hist_volatility`, `implied_volatility`, `expected_volatility`, `hist_return`, `market_return`, `expected_return`, `comment`) VALUES
 (1, 1, 1, NULL, 11, 12, 13, 6, 7, 8, NULL);
 
 --
--- Dumping data for table `exposure_targets`
+-- `exposure_targets` - sample for an exposure target
 --
 
 INSERT INTO `exposure_targets` (`exposure_target_id`, `exposure_item_id`, `target`, `limit_up`, `limit_down`, `account_mandat_id`, `currency_id`, `comment`, `optimized`) VALUES
 (1, 1, 45, 50, 40, 1, 1, NULL, 45);
 
 --
--- Dumping data for table `portfolios`
+-- `portfolios` - some sample portfolios
 --
 
-INSERT INTO `portfolios` (`portfolio_id`, `account_id`, `portfolio_name`, `currency_id`, `bank_id`, `bank_portfolio_id`, `inactive`) VALUES
-(1, 1, 'Aggressive Growth', 1, 1, NULL, 0);
+INSERT INTO `portfolios` (`portfolio_id`, `account_id`, `portfolio_number`, `portfolio_name`, `currency_id`, `bank_id`, `bank_portfolio_id`, `inactive`, `monitoring`, `confirm_to_bank`, `confirm_to_client`, `monitoring_security_limit`, `portfolio_type_id`, `is_part_of`, `IBAN`, `domicile`, `nationality`) VALUES
+(1, 36, 1, 'Linus Portfolio', 13, 7, NULL, 0, 0, 1, 0, NULL, 1, NULL, NULL, NULL, NULL),
+(2, 36, 3, 'Linus EUR Growth', 14, 7, NULL, 0, 0, 0, 0, NULL, NULL, NULL, NULL, NULL, NULL),
 
 --
--- Dumping data for table `securities`
+-- `securities` - some sample securities
 --
 
 INSERT INTO `securities` (`security_id`, `security_issuer_id`, `name`, `ISIN`, `last_price`, `bid`, `ask`, `currency_id`, `security_type_id`, `currency_pair_id`, `bsi_id`, `symbol_market_map`, `price_feed_type_id`, `valor`, `security_quote_type_id`, `security_exposure_status_id`) VALUES
@@ -307,7 +379,7 @@ INSERT INTO `securities` (`security_id`, `security_issuer_id`, `name`, `ISIN`, `
 (2, NULL, 'Credit Suisse', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'CSGN.SW', NULL, NULL, NULL, NULL);
 
 --
--- Dumping data for table `trade_types`
+-- `trade_types` samples
 --
 
 INSERT INTO `trade_types` (`trade_type_id`, `description`, `factor`, `comment`) VALUES
@@ -315,7 +387,7 @@ INSERT INTO `trade_types` (`trade_type_id`, `description`, `factor`, `comment`) 
 (2, 'sell @ market', 1, NULL);
 
 --
--- Dumping data for table `trade_stati`
+-- `trade_stati` samples
 --
 
 INSERT INTO `trade_stati` (`trade_status_id`, `status_text`) VALUES
@@ -324,7 +396,7 @@ INSERT INTO `trade_stati` (`trade_status_id`, `status_text`) VALUES
 (3, 'executed');
 
 --
--- Dumping data for table `trades`
+-- `trades` trades
 --
 
 INSERT INTO `trades` (`trade_id`, `account_id`, `creation_time`, `internal_person_id`, `security_id`, `currency_id`, `price`, `size`, `rational`, `settlement_date`, `trade_type_id`, `trade_date`, `premium`, `fees`, `portfolio_id`, `trade_status_id`, `checked`, `comment`, `bank_ref_id`, `counterparty_ref_id`, `valid_until`, `fx_rate`, `premium_settlement_currency`, `settlement_currency_id`, `fees_internal`, `fees_bank`, `fees_extern`, `contact_type_id`, `date_placed`, `date_client`, `related_trade_id`) VALUES
