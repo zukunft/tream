@@ -382,9 +382,19 @@ INSERT INTO `securities` (`security_id`, `security_issuer_id`, `name`, `ISIN`, `
 -- `trade_types` samples
 --
 
-INSERT INTO `trade_types` (`trade_type_id`, `description`, `factor`, `comment`) VALUES
-(1, 'buy @ market', 1, NULL),
-(2, 'sell @ market', 1, NULL);
+INSERT INTO `trade_types` (`trade_type_id`, `description`, `factor`, `comment`, `use_fx`, `use_cash`, `use_fx_swap`, `do_not_use_size`, `use_bond`, `use_equity`, `use_fund`, `use_etf`, `use_metal`, `use_option`, `use_future`, `use_product`, `code_id`) VALUES
+(1, 'Buy ', 1, 'buy at market', 1, 0, 1, NULL, 1, 1, 1, 1, 1, 1, 1, 1, NULL),
+(2, 'Sell ', -1, 'sell at market', 1, 0, 1, NULL, 1, 1, 1, 1, 1, 1, 1, 1, NULL),
+(3, 'Buy @ limit', 1, NULL, 0, 0, 0, NULL, 1, 1, 0, 1, 1, 1, 1, 0, NULL),
+(4, 'Sell @ limit', -1, NULL, 0, 0, 0, NULL, 1, 1, 0, 1, 1, 1, 1, 0, NULL),
+(5, 'Inflow', 1, NULL, 0, 1, 0, NULL, 0, 0, 0, 0, 0, 0, 0, 0, NULL),
+(6, 'Outflow', -1, NULL, 0, 1, 0, NULL, 0, 0, 0, 0, 0, 0, 0, 0, NULL),
+(7, 'Redemption', -1, NULL, 0, 0, 0, NULL, 1, 0, 0, 0, 0, 0, 0, 0, 'redemption'),
+(8, 'Exercise', -1, NULL, 0, 0, 0, NULL, 0, 0, 0, 0, 0, 1, 1, 0, 'exercise'),
+(9, 'Simulate Buy', 0, NULL, 0, 0, 0, 1, 1, 1, 0, 0, 0, 1, 1, 0, NULL),
+(10, 'Simulate Sell', 0, NULL, 0, 0, 0, -1, 1, 1, 0, 0, 0, 1, 1, 0, NULL),
+(12, 'Delivery', 1, NULL, 0, 0, 0, NULL, 0, 1, 0, 0, 1, 0, 0, 0, NULL),
+(13, 'Delivery (Short)', -1, NULL, 0, 0, 0, NULL, 0, 1, 0, 0, 1, 0, 0, 0, NULL);
 
 --
 -- `trade_stati` samples

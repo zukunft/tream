@@ -19,12 +19,11 @@ along with TREAM. If not, see <http://www.gnu.org/licenses/gpl.html>.
 To contact the authors write to: 
 Timon Zielonka <timon@zukunft.com>
 
-Copyright (c) 2013-2015 zukunft.com AG, Zurich
+Copyright (c) 2013-2017 zukunft.com AG, Zurich
 Heang Lor <heang@zukunft.com>
+*/
 
-http://tream.biz
-
- * This file is based on P4A - PHP For Applications.
+/** This file is based on P4A - PHP For Applications.
  *
  * To contact the authors write to:                                     
  * Fabrizio Balliano <fabrizio@fabrizioballiano.it>                    
@@ -33,7 +32,9 @@ http://tream.biz
  * https://github.com/fballiano/p4a
  *
  * @author Timon Zielonka <timon@zukunft.com>
- * @copyright Copyright (c) 2013-2015 zukunft.com AG, Zurich
+ * @copyright Copyright (c) 2013-2017 zukunft.com AG, Zurich
+ * @link http://tream.biz
+ * @license http://www.gnu.org/licenses/gpl.html GNU General Public License
 
 */
 class Accounts extends P4A_Base_Mask
@@ -105,12 +106,24 @@ class Accounts extends P4A_Base_Mask
 			->setSource(P4A::singleton()->select_account_types)
 			->setSourceDescriptionField("description");
 
+		$this->fields->first_contact_person_id
+			->setLabel("First contact person")
+			->setType("select")
+			->setSource(P4A::singleton()->select_persons)
+			->setSourceDescriptionField("select_name");
+
 		$this->fields->fee_tp->setLabel("Own Fee");
 		$this->fields->fee_finder->setLabel("Finders Fee");
 		$this->fields->fee_bank->setLabel("Bank Fee (flat)");
 		$this->fields->discount_bank->setLabel("Bank Discount");
 		$this->fields->fee_performance->setLabel("Performance Fee"); 
 
+		$this->fields->first_contact->setWidth(400);
+		$this->fields->familiy_background->setWidth(400);
+		$this->fields->occupation->setWidth(400);
+		$this->fields->source_of_income->setWidth(400);
+		$this->fields->source_of_wealth->setWidth(400);
+                        
 		$this->build("p4a_full_toolbar", "toolbar")
 			->setMask($this); 
 
@@ -160,6 +173,12 @@ class Accounts extends P4A_Base_Mask
 			->anchor($this->fields->fee_bank) 
 			->anchor($this->fields->discount_bank) 
 			->anchor($this->fields->fee_performance)
+			->anchor($this->fields->first_contact_person_id)
+			->anchor($this->fields->first_contact)
+			->anchor($this->fields->familiy_background)
+			->anchor($this->fields->occupation)
+			->anchor($this->fields->source_of_income)
+			->anchor($this->fields->source_of_wealth)
 			->anchor($this->fields->inactive);
 		
 		$this->frame

@@ -274,7 +274,7 @@ function exposure_by_type($portfolio_id, $exposure_type_id, $type_name, $total_a
   }
   //echo $chart_labels.'<br>';
   //echo $chart_values.'<br>';
-  tream_display ('  <img src="/crm/batch/tream_chart_pie.php?labels='.$chart_labels.'&values='.$chart_values.'&title='.$type_name.'">', $display);
+  tream_display ('  <img src="./tream_chart_pie.php?labels='.$chart_labels.'&values='.$chart_values.'&title='.$type_name.'">', $display);
   tream_display ('  <br><br>', $display);
   // read hist return
   $xvalues = '';
@@ -292,7 +292,7 @@ function exposure_by_type($portfolio_id, $exposure_type_id, $type_name, $total_a
     $yvalues .= round($yvalue);
   }
   //echo $xvalues.'y'.$xvalues.'<br>';
-  tream_display ('  <img src="/crm/batch/tream_chart_xy.php?&title='.$type_name.'&xaxis=risk&yaxis=return&labels='.$chart_labels.'&xvalues='.$xvalues.'&yvalues='.$yvalues.'">', $display);
+  tream_display ('  <img src="./tream_chart_xy.php?&title='.$type_name.'&xaxis=risk&yaxis=return&labels='.$chart_labels.'&xvalues='.$xvalues.'&yvalues='.$yvalues.'">', $display);
       
   return $position_usage[0];
 }

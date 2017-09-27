@@ -70,6 +70,12 @@ CREATE TABLE IF NOT EXISTS `accounts` (
   `end_finders` datetime DEFAULT NULL,
   `inactive` tinyint(1) DEFAULT NULL,
   `discount_bank` double DEFAULT NULL,
+  `first_contact_person_id` int(11) DEFAULT NULL,
+  `first_contact` text,
+  `familiy_background` text,
+  `occupation` text,
+  `source_of_income` text,
+  `source_of_wealth` text,
   PRIMARY KEY (`account_id`),
   KEY `person_id` (`person_id`),
   KEY `currency_id` (`currency_id`),
@@ -1645,13 +1651,22 @@ CREATE TABLE IF NOT EXISTS `trade_types` (
   `trade_type_id` int(11) NOT NULL AUTO_INCREMENT,
   `description` varchar(200) NOT NULL,
   `factor` double DEFAULT NULL,
-  `use_fx` tinyint(1) DEFAULT NULL,
-  `use_cash` tinyint(1) DEFAULT NULL,
-  `use_fx_swap` tinyint(1) DEFAULT NULL,
   `do_not_use_size` tinyint(1) DEFAULT NULL,
+  `use_cash` tinyint(1) DEFAULT NULL,
+  `use_fx` tinyint(1) DEFAULT NULL,
+  `use_fx_swap` tinyint(1) DEFAULT NULL,
+  `use_bond` tinyint(1) DEFAULT NULL,
+  `use_equity` tinyint(1) DEFAULT NULL,
+  `use_fund` tinyint(1) DEFAULT NULL,
+  `use_etf` tinyint(1) DEFAULT NULL,
+  `use_metal` tinyint(1) DEFAULT NULL,
+  `use_option` tinyint(1) DEFAULT NULL,
+  `use_future` tinyint(1) DEFAULT NULL,
+  `use_product` tinyint(1) DEFAULT NULL,
+  `code_id` varchar(100) DEFAULT NULL COMMENT 'field to link predefined actions to the trades e.g. creating the delivery of a stock at the execution of an options',
   `comment` text,
   PRIMARY KEY (`trade_type_id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=24 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
 
@@ -3944,7 +3959,7 @@ DROP TABLE IF EXISTS `v_portfolios_r`;
 CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `v_portfolios_r` AS 
 select 
   u.`user_id`,
-  u.`code_id` AS `user_name`,
+  u.`username` AS `user_name`,
   p.*
 from 
   `portfolios` p, `portfolio_rights` w, `log_user_rights` h, `log_user_types` i, `log_users` u
@@ -5415,32 +5430,32 @@ DROP TABLE IF EXISTS `v_trade_premium`;
 
 CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `v_trade_premium` AS 
 select 
-`trades`.`portfolio_id` AS `portfolio_id`,
-`trades`.`security_id` AS `security_id`,
-`trades`.`currency_id` AS `currency_id`,
-`currencies`.`symbol` AS `trade_curr`,
-`trades`.`trade_date` AS `trade_date`,
-`trades`.`price` AS `price`,
-(`trades`.`size` * `trade_types`.`factor`) AS `size`,
-`v_securities`.`security_quote_type_id` AS `security_quote_type_id`,
-`v_securities`.`quantity_factor` AS `quantity_factor`,
-`v_securities`.`currency_id` AS `sec_currency_id`,
-`v_securities`.`security_issuer_id` AS `security_issuer_id`,
-(((`trades`.`price` * `trades`.`size` * `v_securities`.`quantity_factor`) * -(1)) * `trade_types`.`factor`) AS `calc_premium`,
-`trades`.`premium` AS `premium`,
-if(((`trades`.`currency_id` = `trades`.`settlement_currency_id`) 
- or (`trades`.`settlement_currency_id` = 0) 
- or isnull(`trades`.`settlement_currency_id`)),1,`trades`.`fx_rate`) AS `fx_rate_open`,
-`portfolios`.`currency_id` AS `ref_currency_id`,
-`currencies`.`decimals` AS `decimals` 
-from (((((`trades` left join `trade_stati`  on((`trades`.`trade_status_id`            = `trade_stati`.`trade_status_id`))) 
-                   left join `trade_types`  on((`trades`.`trade_type_id`              = `trade_types`.`trade_type_id`))) 
-                   left join `v_securities` on((`trades`.`security_id`                = `v_securities`.`security_id`))) 
-                   left join `portfolios`   on((`trades`.`portfolio_id`               = `portfolios`.`portfolio_id`))) 
-                   left join `currencies`   on((`trades`.`currency_id`                = `currencies`.`currency_id`))) 
+   t.`portfolio_id` AS `portfolio_id`,
+   t.`security_id`  AS `security_id`,
+   t.`currency_id`  AS `currency_id`,
+   c.`symbol`       AS `trade_curr`,
+   t.`trade_date`   AS `trade_date`,
+   t.`price`        AS `price`,
+  (t.`size` * `trade_types`.`factor`)      AS `size`,
+   s.`security_quote_type_id` AS `security_quote_type_id`,
+   s.`quantity_factor`        AS `quantity_factor`,
+   s.`currency_id`            AS `sec_currency_id`,
+   s.`security_issuer_id`     AS `security_issuer_id`,
+(((t.`price` * t.`size` * s.`quantity_factor`) * -(1)) * `trade_types`.`factor`) AS `calc_premium`,
+   t.`premium`      AS `premium`,
+   if(((t.`currency_id` = t.`settlement_currency_id`) 
+    or (t.`settlement_currency_id` = 0) 
+    or isnull(t.`settlement_currency_id`)),1,t.`fx_rate`) AS `fx_rate_open`,
+   p.`currency_id`  AS `ref_currency_id`,
+   c.`decimals`     AS `decimals` 
+from (((((`trades` t left join `trade_stati`    on((t.`trade_status_id` = `trade_stati`.`trade_status_id`))) 
+                     left join `trade_types`    on((t.`trade_type_id`   = `trade_types`.`trade_type_id`))) 
+                     left join `v_securities` s on((t.`security_id`     = s.`security_id`))) 
+                     left join `portfolios`   p on((t.`portfolio_id`    = p.`portfolio_id`))) 
+                     left join `currencies`   c on((t.`currency_id`     = c.`currency_id`))) 
 WHERE `trade_stati`.`use_for_position` = 1
   AND (`trade_types`.`do_not_use_size` is Null or `trade_types`.`do_not_use_size` = 0)
-  AND `trades`.`security_id` is NOT Null;
+  AND t.`security_id` is NOT Null;
 
 -- --------------------------------------------------------
 
