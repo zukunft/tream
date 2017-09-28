@@ -922,7 +922,7 @@ class Tream extends P4A
 			
 		$this->build("p4a_db_source", "trade_stati")
 			->setTable("trade_stati")
-			->addOrder("status_text")
+			->addOrder("trade_status_id")
 			->load();
 
 		$this->build("p4a_db_source", "trade_type_bank_codes")
@@ -1002,7 +1002,7 @@ class Tream extends P4A
 
 		$this->build("p4a_db_source", "select_trade_stati")
 			->setTable("v_trade_stati")
-			->addOrder("status_text")
+			->addOrder("trade_status_id")
 			->setPK("trade_status_id")
 			->load();
 

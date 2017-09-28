@@ -1370,7 +1370,15 @@ CREATE TABLE IF NOT EXISTS `security_payments` (
 DROP TABLE IF EXISTS `security_payment_types`;
 CREATE TABLE IF NOT EXISTS `security_payment_types` (
   `security_payment_type_id` int(11) NOT NULL AUTO_INCREMENT,
-  `type_name` varchar(200) DEFAULT NULL,
+  `type_name` varchar(200) NOT NULL,
+  `code_id` varchar(100) DEFAULT NULL,
+  `use_for_simulation` tinyint(1) DEFAULT NULL,
+  `use_for_tax` tinyint(1) DEFAULT NULL,
+  `use_for_performance_brutto` tinyint(1) DEFAULT NULL,
+  `use_for_performance_netto` tinyint(1) DEFAULT NULL,
+  `use_for_performance_netto_all` tinyint(1) DEFAULT NULL,
+  `use_for_reconciliation` tinyint(1) DEFAULT NULL,
+  `reconciliation_id` varchar(200) DEFAULT NULL,
   `comment` text,
   PRIMARY KEY (`security_payment_type_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
@@ -1621,7 +1629,16 @@ CREATE TABLE IF NOT EXISTS `trade_payments` (
 DROP TABLE IF EXISTS `trade_payment_types`;
 CREATE TABLE IF NOT EXISTS `trade_payment_types` (
   `trade_payment_type_id` int(11) NOT NULL AUTO_INCREMENT,
-  `type_name` varchar(200) DEFAULT NULL,
+  `type_name` varchar(200) NOT NULL,
+  `code_id` varchar(100) DEFAULT NULL,
+  `use_for_simulation` tinyint(1) DEFAULT NULL,
+  `use_for_tax` tinyint(1) DEFAULT NULL,
+  `use_for_performance_brutto` tinyint(1) DEFAULT NULL,
+  `use_for_performance_netto` tinyint(1) DEFAULT NULL,
+  `use_for_performance_netto_all` tinyint(1) DEFAULT NULL,
+  `use_for_reconciliation` tinyint(1) DEFAULT NULL,
+  `reconciliation_id` varchar(200) DEFAULT NULL,
+  `comment` text,
   PRIMARY KEY (`trade_payment_type_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
@@ -1634,6 +1651,7 @@ CREATE TABLE IF NOT EXISTS `trade_payment_types` (
 CREATE TABLE IF NOT EXISTS `trade_stati` (
   `trade_status_id` int(11) NOT NULL AUTO_INCREMENT,
   `status_text` varchar(200) NOT NULL,
+  `code_id` varchar(100) NOT NULL,
   `use_for_position` tinyint(1) DEFAULT NULL,
   `use_for_simulation` tinyint(1) DEFAULT NULL,
   `use_for_reconciliation` tinyint(1) DEFAULT NULL,

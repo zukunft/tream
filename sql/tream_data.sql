@@ -246,6 +246,14 @@ INSERT INTO `security_types` (`security_type_id`, `description`, `security_quote
 (12, 'FX Swap', 4, 'FX_swap');
 
 --
+-- `security_payment_types` - Samples of payment types based on the amount of securities at a certain point in time
+--
+
+INSERT INTO `security_payment_types` (`security_payment_type_id`, `type_name`, `code_id`, `use_for_simulation`, `use_for_tax`, `use_for_performance_brutto`, `use_for_performance_netto`, `use_for_performance_netto_all`, `use_for_reconciliation`, `reconciliation_id`, `comment`) VALUES
+(1, 'Dividend', 'dividend', 0, 1, 0, 1, 1, 0, NULL, NULL),
+(2, 'Capital repayment', NULL, 0, 0, 0, 1, 1, 0, NULL, NULL);
+
+--
 -- `exposure_types` - the root of the different asset allocation trees
 --                    or in other words the different perspectives on the assets
 --
@@ -391,8 +399,8 @@ INSERT INTO `trade_types` (`trade_type_id`, `description`, `factor`, `comment`, 
 (6, 'Outflow', -1, NULL, 0, 1, 0, NULL, 0, 0, 0, 0, 0, 0, 0, 0, NULL),
 (7, 'Redemption', -1, NULL, 0, 0, 0, NULL, 1, 0, 0, 0, 0, 0, 0, 0, 'redemption'),
 (8, 'Exercise', -1, NULL, 0, 0, 0, NULL, 0, 0, 0, 0, 0, 1, 1, 0, 'exercise'),
-(9, 'Simulate Buy', 0, NULL, 0, 0, 0, 1, 1, 1, 0, 0, 0, 1, 1, 0, NULL),
-(10, 'Simulate Sell', 0, NULL, 0, 0, 0, -1, 1, 1, 0, 0, 0, 1, 1, 0, NULL),
+(9, 'VWAP Buy', 0, NULL, 0, 0, 0, 1, 1, 1, 0, 0, 0, 1, 1, 0, NULL),
+(10, 'VWAP Sell', 0, NULL, 0, 0, 0, -1, 1, 1, 0, 0, 0, 1, 1, 0, NULL),
 (12, 'Delivery', 1, NULL, 0, 0, 0, NULL, 0, 1, 0, 0, 1, 0, 0, 0, NULL),
 (13, 'Delivery (Short)', -1, NULL, 0, 0, 0, NULL, 0, 1, 0, 0, 1, 0, 0, 0, NULL);
 
@@ -400,13 +408,27 @@ INSERT INTO `trade_types` (`trade_type_id`, `description`, `factor`, `comment`, 
 -- `trade_stati` samples
 --
 
-INSERT INTO `trade_stati` (`trade_status_id`, `status_text`) VALUES
-(1, 'new'),
-(2, 'placed'),
-(3, 'executed');
+INSERT INTO `trade_stati` (`trade_status_id`, `status_text`, `code_id`, `use_for_position`, `use_for_simulation`, `use_for_reconciliation`, `comment`) VALUES
+(1, 'received', 'received', 0, 1, 0, 'The order from the client has been recieved, but not yet accepted e.g. due to missing confirmation via telefon.'),
+(2, 'taken', 'taken', 0, 1, 0, 'The order from the client has been accepted'),
+(3, 'placed', 'placed', 0, 1, 0, 'The order has been placed at the bank/broker, but may not yet be online at the markets.'),
+(4, 'live', 'live', 0, 1, 0, 'The order has been placed at the market and is live.'),
+(5, 'executed', 'executed', 1, 1, 1, 'The order is executed, but not yet reconciled.'),
+(6, 'reconciled', 'done', 1, 1, 1, 'The order is executed and reconciled with the bank/broker.'),
+(10, 'canceled by client', 'cancel_client', 0, 0, 1, 'The client has requested to cancel to order.'),
+(11, 'canceled at bank', 'cancel_bank', 0, 0, 1, 'The cancelation is placed at the bank/broker.'),
+(12, 'canceled', 'canceled', 0, 0, 1, 'The cancelation is completed.');
 
 --
--- `trades` trades
+-- `trade_payment_types` - the default trade payment types
+--
+
+INSERT INTO `trade_payment_types` (`trade_payment_type_id`, `type_name`, `code_id`, `use_for_simulation`, `use_for_tax`, `use_for_performance_brutto`, `use_for_performance_netto`, `use_for_performance_netto_all`, `use_for_reconciliation`, `reconciliation_id`, `comment`) VALUES
+(1, 'Broker Fee', 'fee', 0, 0, 0, 1, 1, 0, NULL, NULL),
+(2, 'Stamp', NULL, 0, 1, 0, 1, 1, 0, NULL, NULL);
+
+--
+-- `trades` some sample trades
 --
 
 INSERT INTO `trades` (`trade_id`, `account_id`, `creation_time`, `internal_person_id`, `security_id`, `currency_id`, `price`, `size`, `rational`, `settlement_date`, `trade_type_id`, `trade_date`, `premium`, `fees`, `portfolio_id`, `trade_status_id`, `checked`, `comment`, `bank_ref_id`, `counterparty_ref_id`, `valid_until`, `fx_rate`, `premium_settlement_currency`, `settlement_currency_id`, `fees_internal`, `fees_bank`, `fees_extern`, `contact_type_id`, `date_placed`, `date_client`, `related_trade_id`) VALUES

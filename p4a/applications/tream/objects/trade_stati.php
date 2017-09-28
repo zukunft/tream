@@ -19,12 +19,11 @@ along with TREAM. If not, see <http://www.gnu.org/licenses/gpl.html>.
 To contact the authors write to: 
 Timon Zielonka <timon@zukunft.com>
 
-Copyright (c) 2013-2015 zukunft.com AG, Zurich
+Copyright (c) 2013-2017 zukunft.com AG, Zurich
 Heang Lor <heang@zukunft.com>
+*/
 
-http://tream.biz
-
- * This file is based on P4A - PHP For Applications.
+/** This file is based on P4A - PHP For Applications.
  *
  * To contact the authors write to:                                     
  * Fabrizio Balliano <fabrizio@fabrizioballiano.it>                    
@@ -34,6 +33,8 @@ http://tream.biz
  *
  * @author Timon Zielonka <timon@zukunft.com>
  * @copyright Copyright (c) 2013-2017 zukunft.com AG, Zurich
+ * @link http://tream.biz
+ * @license http://www.gnu.org/licenses/gpl.html GNU General Public License
 
 */
 class Trade_stati extends P4A_Base_Mask
@@ -50,6 +51,9 @@ class Trade_stati extends P4A_Base_Mask
 		$this->setSource($p4a->trade_stati);
 		$this->firstRow();
 
+		$this->fields->code_id->disable();
+		$this->fields->comment->setWidth(400);
+
 		$this->build("p4a_full_toolbar", "toolbar")
 			->setMask($this);
 
@@ -58,7 +62,8 @@ class Trade_stati extends P4A_Base_Mask
 
 		$this->build("p4a_table", "table")
 			->setSource($p4a->trade_stati)
-			->setWidth(500)
+			->setVisibleCols(array("status_text","code_id","use_for_position","use_for_simulation","use_for_reconciliation","comment"))
+			->setWidth(700)
 			->showNavigationBar();
 
 		$this->setRequiredField("status_text");
@@ -66,6 +71,7 @@ class Trade_stati extends P4A_Base_Mask
 		$this->build("p4a_fieldset", "fs_details")
 			->setLabel("Trade stati detail")
 			->anchor($this->fields->status_text)
+			->anchor($this->fields->code_id)
 			->anchor($this->fields->use_for_position)
 			->anchor($this->fields->use_for_simulation)
 			->anchor($this->fields->use_for_reconciliation)
