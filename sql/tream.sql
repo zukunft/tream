@@ -241,6 +241,7 @@ CREATE TABLE IF NOT EXISTS `address_links` (
 CREATE TABLE IF NOT EXISTS `address_link_types` (
   `address_link_type_id` int(11) NOT NULL AUTO_INCREMENT,
   `type_name` varchar(100) NOT NULL,
+  `comment` text,
   PRIMARY KEY (`address_link_type_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
@@ -253,6 +254,7 @@ CREATE TABLE IF NOT EXISTS `address_link_types` (
 CREATE TABLE IF NOT EXISTS `banks` (
   `bank_id` int(11) NOT NULL AUTO_INCREMENT,
   `bank_name` varchar(200) NOT NULL,
+  `comment` text,
   PRIMARY KEY (`bank_id`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
@@ -434,6 +436,8 @@ CREATE TABLE IF NOT EXISTS `contract` (
 CREATE TABLE IF NOT EXISTS `contract_types` (
   `contract_type_id` int(11) NOT NULL AUTO_INCREMENT,
   `type_name` varchar(200) NOT NULL,
+  `code_id` varchar(100) NOT NULL,
+  `comment` text,
   PRIMARY KEY (`contract_type_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
@@ -596,6 +600,7 @@ CREATE TABLE IF NOT EXISTS `event_stati` (
   `event_status_id` int(11) NOT NULL AUTO_INCREMENT,
   `status_text` varchar(200) NOT NULL,
   `code_id` varchar(50) DEFAULT NULL,
+  `comment` text,
   PRIMARY KEY (`event_status_id`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
@@ -895,6 +900,7 @@ CREATE TABLE IF NOT EXISTS `message_types` (
   `message_type_id` int(11) NOT NULL AUTO_INCREMENT,
   `type_name` varchar(200) NOT NULL,
   `code_id` varchar(200) DEFAULT NULL,
+  `comment` text,
   PRIMARY KEY (`message_type_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
@@ -1191,7 +1197,8 @@ CREATE TABLE IF NOT EXISTS `securities` (
   `currency_id` int(11) DEFAULT NULL,
   `security_type_id` int(11) DEFAULT NULL,
   `currency_pair_id` int(11) DEFAULT NULL,
-  `bsi_id` int(11) DEFAULT NULL,
+  `security_exchange_id` int(11) DEFAULT NULL,
+  `symbol_wikidata` varchar(200) DEFAULT NULL,
   `symbol_bloomberg` varchar(200) DEFAULT NULL,
   `symbol_reuters` varchar(200) DEFAULT NULL,
   `symbol_market_map` varchar(200) DEFAULT NULL,
@@ -1222,7 +1229,8 @@ CREATE TABLE IF NOT EXISTS `securities` (
 DROP TABLE IF EXISTS `security_amount_types`;
 CREATE TABLE IF NOT EXISTS `security_amount_types` (
   `security_amount_type_id` int(11) NOT NULL AUTO_INCREMENT,
-  `type_name` varchar(200) DEFAULT NULL,
+  `type_name` varchar(200) NOT NULL,
+  `code_id` varchar(100) NOT NULL,
   `comment` text,
   PRIMARY KEY (`security_amount_type_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
@@ -1274,6 +1282,8 @@ CREATE TABLE IF NOT EXISTS `security_exposures` (
 CREATE TABLE IF NOT EXISTS `security_exposure_stati` (
   `security_exposure_status_id` int(11) NOT NULL AUTO_INCREMENT,
   `status_text` varchar(200) NOT NULL,
+  `code_id` varchar(100) NOT NULL,
+  `comment` text,
   PRIMARY KEY (`security_exposure_status_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
@@ -1334,6 +1344,22 @@ CREATE TABLE IF NOT EXISTS `security_issuers` (
   `issuer_name` varchar(200) DEFAULT NULL,
   `comment` text,
   PRIMARY KEY (`security_issuer_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `security_exchanges`
+--
+
+CREATE TABLE IF NOT EXISTS `security_exchanges` (
+  `security_exchange_id` int(11) NOT NULL AUTO_INCREMENT,
+  `exchange_name` varchar(200) DEFAULT NULL,
+  `wikidata_id` varchar(20) DEFAULT NULL,
+  `yahoo_symbol` varchar(20) DEFAULT NULL,
+  `bloomberg_symbol` varchar(20) DEFAULT NULL,
+  `comment` text,
+  PRIMARY KEY (`security_exchange_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
@@ -1406,6 +1432,8 @@ CREATE TABLE IF NOT EXISTS `security_prices` (
 CREATE TABLE IF NOT EXISTS `security_price_feed_types` (
   `feed_type_id` int(11) NOT NULL AUTO_INCREMENT,
   `type_name` varchar(200) NOT NULL,
+  `code_id` varchar(100) NOT NULL,
+  `comment` text,
   PRIMARY KEY (`feed_type_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
@@ -1501,12 +1529,28 @@ CREATE TABLE IF NOT EXISTS `security_underlyings` (
   `security_underlying_id` int(11) NOT NULL AUTO_INCREMENT,
   `security_id` int(11) NOT NULL,
   `underlying_id` int(11) NOT NULL,
+  `security_link_type_id` int(11) DEFAULT NULL,
   `weight` double DEFAULT NULL,
   `delta` double DEFAULT NULL,
   `comment` text,
   PRIMARY KEY (`security_underlying_id`),
   KEY `security_id` (`security_id`),
-  KEY `underlying_id` (`underlying_id`)
+  KEY `underlying_id` (`underlying_id`),
+  KEY `security_link_type_id` (`security_link_type_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `security_link_types`
+--
+
+CREATE TABLE IF NOT EXISTS `security_link_types` (
+  `security_link_type_id` int(11) NOT NULL AUTO_INCREMENT,
+  `type_name` varchar(200) NOT NULL,
+  `code_id` varchar(100) DEFAULT NULL,
+  `comment` text,
+  PRIMARY KEY (`security_link_type_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
@@ -1599,6 +1643,8 @@ DROP TABLE IF EXISTS `trade_confirmation_types`;
 CREATE TABLE IF NOT EXISTS `trade_confirmation_types` (
   `trade_confirmation_type_id` int(11) NOT NULL AUTO_INCREMENT,
   `type_name` varchar(200) DEFAULT NULL,
+  `trade_status_id` int(11) DEFAULT NULL,
+  `comment` text,
   PRIMARY KEY (`trade_confirmation_type_id`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
@@ -1736,6 +1782,8 @@ CREATE TABLE IF NOT EXISTS `values` (
 CREATE TABLE IF NOT EXISTS `value_stati` (
   `value_status_id` int(11) NOT NULL AUTO_INCREMENT,
   `status_text` varchar(200) NOT NULL,
+  `code_id` varchar(100) DEFAULT NULL,
+  `comment` text,
   PRIMARY KEY (`value_status_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
@@ -1748,6 +1796,8 @@ CREATE TABLE IF NOT EXISTS `value_stati` (
 CREATE TABLE IF NOT EXISTS `value_types` (
   `value_type_id` int(11) NOT NULL AUTO_INCREMENT,
   `description` varchar(200) NOT NULL,
+  `code_id` varchar(100) DEFAULT NULL,
+  `comment` text,
   PRIMARY KEY (`value_type_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
@@ -2626,6 +2676,15 @@ CREATE TABLE IF NOT EXISTS `v_security_issuers` (
 -- --------------------------------------------------------
 
 --
+-- Stand-in structure for view `v_security_exchanges`
+--
+CREATE TABLE IF NOT EXISTS `v_security_exchanges` (
+`security_exchange_id` int(11)
+,`exchange_name` varchar(200)
+);
+-- --------------------------------------------------------
+
+--
 -- Stand-in structure for view `v_security_payment_types`
 --
 DROP VIEW IF EXISTS `v_security_payment_types`;
@@ -3369,6 +3428,15 @@ CREATE TABLE IF NOT EXISTS `v_trade_type_bank_codes` (
 CREATE TABLE IF NOT EXISTS `v_underlyings` (
 `underlying_id` int(11)
 ,`name` varchar(200)
+);
+-- --------------------------------------------------------
+
+--
+-- Stand-in structure for view `v_security_link_types`
+--
+CREATE TABLE IF NOT EXISTS `v_security_link_types` (
+`security_link_type_id` int(11)
+,`type_name` varchar(200)
 );
 -- --------------------------------------------------------
 
@@ -4618,7 +4686,32 @@ CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW 
 --
 DROP TABLE IF EXISTS `v_security_issuers`;
 
-CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `v_security_issuers` AS select NULL AS `security_issuer_id`,' not set' AS `issuer_name` union select `security_issuers`.`security_issuer_id` AS `security_issuer_id`,`security_issuers`.`issuer_name` AS `issuer_name` from `security_issuers`;
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `v_security_issuers` AS
+select 
+  NULL AS `security_issuer_id`,
+  ' not set' AS `issuer_name` 
+union select 
+  `security_issuers`.`security_issuer_id` AS `security_issuer_id`,
+  `security_issuers`.`issuer_name` AS `issuer_name`
+from 
+  `security_issuers`;
+
+-- --------------------------------------------------------
+
+--
+-- Structure for view `v_security_exchanges`
+--
+DROP TABLE IF EXISTS `v_security_exchanges`;
+
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `v_security_exchanges` AS
+select 
+  NULL AS `security_exchange_id`,
+  ' not set' AS `exchange_name` 
+union select 
+  `security_exchanges`.`security_exchange_id` AS `security_exchange_id`,
+  `security_exchanges`.`exchange_name` AS `exchange_name`
+from 
+  `security_exchanges`;
 
 -- --------------------------------------------------------
 
@@ -5907,7 +6000,27 @@ CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW 
 --
 DROP TABLE IF EXISTS `v_underlyings`;
 
-CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `v_underlyings` AS select `securities`.`security_id` AS `underlying_id`,`securities`.`name` AS `name` from `securities`;
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `v_underlyings` AS 
+select 
+  `securities`.`security_id` AS `underlying_id`,
+  `securities`.`name` AS `name` from `securities`;
+
+-- --------------------------------------------------------
+
+--
+-- Structure for view `v_security_link_types`
+--
+DROP TABLE IF EXISTS `v_security_link_types`;
+
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `v_security_link_types` AS 
+select 
+  NULL AS `security_link_type_id`,
+  ' not set' AS `type_name` 
+union select 
+  `security_link_types`.`security_link_type_id` AS `security_link_type_id`,
+  `security_link_types`.`type_name` AS `type_name` 
+from 
+  `security_link_types`;
 
 -- --------------------------------------------------------
 
@@ -5916,7 +6029,15 @@ CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW 
 --
 DROP TABLE IF EXISTS `v_user_types`;
 
-CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `v_user_types` AS select NULL AS `user_type_id`,' not set' AS `type_name` union select `log_user_types`.`user_type_id` AS `user_type_id`,`log_user_types`.`type_name` AS `type_name` from `log_user_types`;
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `v_user_types` AS 
+select 
+  NULL AS `user_type_id`,
+  ' not set' AS `type_name` 
+union select 
+  `log_user_types`.`user_type_id` AS `user_type_id`,
+  `log_user_types`.`type_name` AS `type_name` 
+from 
+  `log_user_types`;
 
 --
 -- Constraints for dumped tables

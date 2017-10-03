@@ -180,41 +180,40 @@ class Tream extends P4A
 		$this->menu->items->trade_menu->addItem("trade_cash")
 			->setLabel("Cash")
 			->implement("onclick", $this, "menuClick");
+                $this->menu->items->trade_menu->addItem("trade_payments")
+                        ->implement("onclick", $this, "menuClick");
 /*
 		$this->menu->addItem("link_masks", "links");
 		$this->menu->items->link_masks->addItem("address_number_links")
 			->implement("onclick", $this, "menuClick");
 */
 		$this->menu->addItem("security_tables", "Securities");
-		$this->menu->items->security_tables->addItem("securities")
-			->implement("onclick", $this, "menuClick");
-		$this->menu->items->security_tables->addItem("security_underlyings")
+		$this->menu->items->security_tables->addItem("securities_equity")
+			->setLabel("Equities")
 			->implement("onclick", $this, "menuClick");
 		$this->menu->items->security_tables->addItem("currencies")
 			->implement("onclick", $this, "menuClick");
 		$this->menu->items->security_tables->addItem("currency_pairs")
 			->implement("onclick", $this, "menuClick");
-		$this->menu->items->security_tables->addItem("security_field_values")
+		$this->menu->items->security_tables->addItem("securities_other")
+			->setLabel("Other")
 			->implement("onclick", $this, "menuClick");
-		$this->menu->items->security_tables->addItem("security_fields")
+		$this->menu->items->security_tables->addItem("securities")
+			->setLabel("All")
 			->implement("onclick", $this, "menuClick");
 		$this->menu->items->security_tables->addItem("security_types")
 			->implement("onclick", $this, "menuClick");
+		$this->menu->items->security_tables->addItem("security_underlyings")
+			->implement("onclick", $this, "menuClick");
+		$this->menu->items->security_tables->addItem("security_link_types")
+			->implement("onclick", $this, "menuClick");
 		$this->menu->items->security_tables->addItem("security_quote_types")
-			->implement("onclick", $this, "menuClick");
-		$this->menu->items->security_tables->addItem("security_field_source_types")
-			->implement("onclick", $this, "menuClick");
-		$this->menu->items->security_tables->addItem("security_trigger_types")
-			->implement("onclick", $this, "menuClick");
-		$this->menu->items->security_tables->addItem("security_price_feed_types")
 			->implement("onclick", $this, "menuClick");
 		$this->menu->items->security_tables->addItem("security_issuers")
 			->implement("onclick", $this, "menuClick");
 		$this->menu->items->security_tables->addItem("security_payments")
 			->implement("onclick", $this, "menuClick");
-		$this->menu->items->security_tables->addItem("security_payment_types")
-			->implement("onclick", $this, "menuClick");
-		$this->menu->items->security_tables->addItem("security_amount_types")
+		$this->menu->items->security_tables->addItem("security_exchanges")
 			->implement("onclick", $this, "menuClick");
 	}
 	
@@ -251,59 +250,77 @@ class Tream extends P4A
 	public function menu_settings()
 	{
                 $this->menu->addItem("support_tables", "Settings");
+                $this->menu->items->support_tables->addItem("countries")
+                        ->implement("onclick", $this, "menuClick");
+                $this->menu->items->support_tables->addItem("banks")
+                        ->implement("onclick", $this, "menuClick");
+                $this->menu->items->support_tables->addItem("account_types")
+			->setLabel("Mandate types")
+                        ->implement("onclick", $this, "menuClick");
+                $this->menu->items->support_tables->addItem("account_person_types")
+			->setLabel("Mandate relationships")
+                        ->implement("onclick", $this, "menuClick");
+                $this->menu->items->support_tables->addItem("document_categories")
+                        ->implement("onclick", $this, "menuClick");
+                $this->menu->items->support_tables->addItem("document_types")
+                        ->implement("onclick", $this, "menuClick");
+                $this->menu->items->support_tables->addItem("person_types")
+                        ->implement("onclick", $this, "menuClick");
+                $this->menu->items->support_tables->addItem("address_link_types")
+			->setLabel("Address types")
+                        ->implement("onclick", $this, "menuClick");
+                $this->menu->items->support_tables->addItem("contact_categories")
+                        ->implement("onclick", $this, "menuClick");
+                $this->menu->items->support_tables->addItem("contact_types")
+                        ->implement("onclick", $this, "menuClick");
+                $this->menu->items->support_tables->addItem("contact_member_types")
+                        ->implement("onclick", $this, "menuClick");
+                $this->menu->items->support_tables->addItem("contact_number_types")
+                        ->implement("onclick", $this, "menuClick");
                 $this->menu->items->support_tables->addItem("trade_types")
-                        ->implement("onclick", $this, "menuClick");
-                $this->menu->items->support_tables->addItem("trade_stati")
-                        ->implement("onclick", $this, "menuClick");
-                $this->menu->items->support_tables->addItem("trade_payments")
                         ->implement("onclick", $this, "menuClick");
                 $this->menu->items->support_tables->addItem("trade_payment_types")
                         ->implement("onclick", $this, "menuClick");
                 $this->menu->items->support_tables->addItem("trade_confirmation_types")
                         ->implement("onclick", $this, "menuClick");
-                $this->menu->items->support_tables->addItem("event_types")
+		$this->menu->items->support_tables->addItem("security_payment_types")
+			->implement("onclick", $this, "menuClick");
+		$this->menu->items->support_tables->addItem("security_amount_types")
+			->implement("onclick", $this, "menuClick");
+	}
+		
+	public function menu_system()
+	{
+                $this->menu->addItem("system_tables", "System");
+                $this->menu->items->system_tables->addItem("contact_stati")
                         ->implement("onclick", $this, "menuClick");
-                $this->menu->items->support_tables->addItem("event_stati")
+                $this->menu->items->system_tables->addItem("trade_stati")
                         ->implement("onclick", $this, "menuClick");
-                $this->menu->items->support_tables->addItem("account_types")
-			->setLabel("Mandate Types")
-                        ->implement("onclick", $this, "menuClick");
-                $this->menu->items->support_tables->addItem("account_person_types")
-			->setLabel("Mandate relationships")
-                        ->implement("onclick", $this, "menuClick");
-                $this->menu->items->support_tables->addItem("person_types")
-                        ->implement("onclick", $this, "menuClick");
-                $this->menu->items->support_tables->addItem("address_link_types")
-                        ->implement("onclick", $this, "menuClick");
-                $this->menu->items->support_tables->addItem("countries")
-                        ->implement("onclick", $this, "menuClick");
-                $this->menu->items->support_tables->addItem("contact_types")
-                        ->implement("onclick", $this, "menuClick");
-                $this->menu->items->support_tables->addItem("contact_number_types")
-                        ->implement("onclick", $this, "menuClick");
-                $this->menu->items->support_tables->addItem("contact_member_types")
-                        ->implement("onclick", $this, "menuClick");
-                $this->menu->items->support_tables->addItem("contact_categories")
-                        ->implement("onclick", $this, "menuClick");
-                $this->menu->items->support_tables->addItem("contact_stati")
-                        ->implement("onclick", $this, "menuClick");
-                $this->menu->items->support_tables->addItem("document_types")
-                        ->implement("onclick", $this, "menuClick");
-                $this->menu->items->support_tables->addItem("document_categories")
-                        ->implement("onclick", $this, "menuClick");
-                $this->menu->items->support_tables->addItem("messages")
+		$this->menu->items->system_tables->addItem("price_feed_types")
+			->implement("onclick", $this, "menuClick"); 
+		$this->menu->items->system_tables->addItem("security_field_values")
+			->implement("onclick", $this, "menuClick");
+		$this->menu->items->system_tables->addItem("security_fields")
+			->implement("onclick", $this, "menuClick");
+		$this->menu->items->system_tables->addItem("security_field_source_types")
+			->implement("onclick", $this, "menuClick");
+		$this->menu->items->system_tables->addItem("security_trigger_types")
+			->implement("onclick", $this, "menuClick");
+                $this->menu->items->system_tables->addItem("messages")
                         ->implement("onclick", $this, "menuClick"); 
-                $this->menu->items->support_tables->addItem("message_types")
+                $this->menu->items->system_tables->addItem("message_types")
                         ->implement("onclick", $this, "menuClick");
-                $this->menu->items->support_tables->addItem("contract_types")
+                $this->menu->items->system_tables->addItem("values")
                         ->implement("onclick", $this, "menuClick");
-                $this->menu->items->support_tables->addItem("banks")
+                $this->menu->items->system_tables->addItem("value_types")
                         ->implement("onclick", $this, "menuClick");
-                $this->menu->items->support_tables->addItem("values")
+                $this->menu->items->system_tables->addItem("value_stati")
                         ->implement("onclick", $this, "menuClick");
-                $this->menu->items->support_tables->addItem("value_types")
+                $this->menu->items->system_tables->addItem("event_types")
                         ->implement("onclick", $this, "menuClick");
-                $this->menu->items->support_tables->addItem("value_stati")
+                $this->menu->items->system_tables->addItem("event_stati")
+                        ->implement("onclick", $this, "menuClick");
+                $this->menu->items->system_tables->addItem("contract_types")
                         ->implement("onclick", $this, "menuClick");
 	}
 
@@ -602,12 +619,28 @@ class Tream extends P4A
 			->setPK("security_id")
 			->load();
 			
-		$this->build("p4a_db_source", "security_underlyings")
+		$this->build("p4a_db_source", "security_link_types")
+			->setTable("security_link_types")
+			->addOrder("type_name")
+			->setPageLimit(30)
+			->setPK("security_link_type_id")
+			->load();
+
+		$this->build("p4a_db_source", "security_link_types_select")
+			->setTable("v_security_link_types")
+			->addOrder("type_name")
+			->setPageLimit(30)
+			->setPK("security_link_type_id")
+			->load();
+
+                $this->build("p4a_db_source", "security_underlyings")
 			->setTable("security_underlyings")
 			->addJoinLeft("securities", "security_underlyings.security_id  = securities.security_id",
 					  array('name'=>'security'))
 			->addJoinLeft("v_underlyings", "security_underlyings.underlying_id  = v_underlyings.underlying_id",
 					  array('name'=>'underlying'))
+			->addJoinLeft("v_security_link_types", "security_underlyings.security_link_type_id  = v_security_link_types.security_link_type_id",
+					  array('type_name'=>'type'))
 			->addOrder("security_id")
 			->load();
 
@@ -795,7 +828,19 @@ class Tream extends P4A
 			->addOrder("type_name")
 			->setPK("security_quote_type_id")
 			->load();
-		$this->build("p4a_db_source", "security_payments")
+
+		$this->build("p4a_db_source", "security_exchanges")
+			->setTable("security_exchanges")
+			->addOrder("exchange_name")
+			->load();
+
+		$this->build("p4a_db_source", "select_security_exchanges")
+			->setTable("v_security_exchanges")
+			->addOrder("exchange_name")
+			->setPK("security_exchange_id")
+			->load();
+
+                $this->build("p4a_db_source", "security_payments")
 			->setTable("security_payments")
 			->addJoinLeft("securities", "security_payments.security_id  = securities.security_id",
 					  array('name'=>'security'))
@@ -1555,6 +1600,7 @@ class Tream extends P4A
                         or $_SESSION['user_type'] == 'risk') {
                                 $this->menu_risk();
                                 $this->menu_settings();
+                                $this->menu_system();
                         }
 
                         if ($_SESSION['user_type'] == 'root' 

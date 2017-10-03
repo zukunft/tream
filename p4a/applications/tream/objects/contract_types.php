@@ -19,12 +19,11 @@ along with TREAM. If not, see <http://www.gnu.org/licenses/gpl.html>.
 To contact the authors write to: 
 Timon Zielonka <timon@zukunft.com>
 
-Copyright (c) 2013-2015 zukunft.com AG, Zurich
+Copyright (c) 2013-2017 zukunft.com AG, Zurich
 Heang Lor <heang@zukunft.com>
+*/
 
-http://tream.biz
-
- * This file is based on P4A - PHP For Applications.
+/** This file is based on P4A - PHP For Applications.
  *
  * To contact the authors write to:                                     
  * Fabrizio Balliano <fabrizio@fabrizioballiano.it>                    
@@ -33,7 +32,9 @@ http://tream.biz
  * https://github.com/fballiano/p4a
  *
  * @author Timon Zielonka <timon@zukunft.com>
- * @copyright Copyright (c) 2013-2015 zukunft.com AG, Zurich
+ * @copyright Copyright (c) 2013-2017 zukunft.com AG, Zurich
+ * @link http://tream.biz
+ * @license http://www.gnu.org/licenses/gpl.html GNU General Public License
 
 */
 class Contract_types extends P4A_Base_Mask
@@ -50,6 +51,9 @@ class Contract_types extends P4A_Base_Mask
 		$this->setSource($p4a->contract_types);
 		$this->firstRow();
 
+		$this->fields->code_id->disable();
+		$this->fields->comment->setWidth(400);
+
 		$this->build("p4a_full_toolbar", "toolbar")
 			->setMask($this);
 
@@ -58,14 +62,17 @@ class Contract_types extends P4A_Base_Mask
 
 		$this->build("p4a_table", "table")
 			->setSource($p4a->contract_types)
-			->setWidth(500)
+			->setVisibleCols(array("type_name","code_id","comment"))
+			->setWidth(700)
 			->showNavigationBar();
 
 		$this->setRequiredField("type_name");
 
 		$this->build("p4a_fieldset", "fs_details")
 			->setLabel("Contact type detail")
-			->anchor($this->fields->type_name);
+			->anchor($this->fields->type_name)
+			->anchor($this->fields->code_id)
+			->anchor($this->fields->comment);
 		
 		$this->frame
 			->anchor($this->table)

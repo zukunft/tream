@@ -108,6 +108,14 @@ INSERT INTO `log_users` (`user_id`, `username`, `password`, `code_id`, `user_typ
 
 
 --
+-- `message_types` - to group the internal messages
+--
+
+INSERT INTO `message_types` (`message_type_id`, `type_name`, `code_id`, `comment`) VALUES
+(1, 'Reconciliation', 'reconciliation', 'Messages created by the reconciliation'),
+(2, 'Asset Allocation', 'asset_allocation', 'Messages created by the asset allocation check');
+
+--
 -- `account_types` - some sample mandate types
 --
 
@@ -135,6 +143,14 @@ INSERT INTO `account_person_types` (`account_person_type_id`, `type_name`, `code
 (2, 'Advisor', 'advisor', NULL);
 
 --
+-- `address_link_types` - some sample address types
+--
+
+INSERT INTO `address_link_types` (`address_link_type_id`, `type_name`, `comment`) VALUES
+(1, 'Office', NULL),
+(2, 'Home', NULL);
+
+--
 -- `banks` - some sample banks
 --
 
@@ -153,6 +169,13 @@ INSERT INTO `currencies` (`currency_id`, `symbol`, `decimals`, `decimals_trading
 (4, 'JPY', 0, 2, NULL),
 (5, 'GBP', 2, 4, NULL),
 (6, 'NOK', 2, 4, NULL);
+
+--
+-- `countries` - some samples
+--
+
+INSERT INTO `countries` (`country_id`, `name`, `symbol`) VALUES
+(1, 'Switzerland', 'CH');
 
 --
 -- `accounts` - some sample mandates
@@ -246,12 +269,31 @@ INSERT INTO `security_types` (`security_type_id`, `description`, `security_quote
 (12, 'FX Swap', 4, 'FX_swap');
 
 --
+-- `security_link_types` - Samples for security links or underlyings
+--
+
+INSERT INTO `security_link_types` (`security_link_type_id`, `type_name`, `code_id`, `comment`) VALUES
+(1, 'underlying', 'underlying', 'a normal option or future underlying'),
+(2, 'quotation', 'quotation', 'second quotation of the same security'),
+(3, 'ADR', NULL, 'the ADR quotation ');
+
+--
 -- `security_payment_types` - Samples of payment types based on the amount of securities at a certain point in time
 --
 
 INSERT INTO `security_payment_types` (`security_payment_type_id`, `type_name`, `code_id`, `use_for_simulation`, `use_for_tax`, `use_for_performance_brutto`, `use_for_performance_netto`, `use_for_performance_netto_all`, `use_for_reconciliation`, `reconciliation_id`, `comment`) VALUES
 (1, 'Dividend', 'dividend', 0, 1, 0, 1, 1, 0, NULL, NULL),
 (2, 'Capital repayment', NULL, 0, 0, 0, 1, 1, 0, NULL, NULL);
+
+--
+-- `security_price_feed_types` - the possible price feeds at the moment
+--
+
+INSERT INTO `security_price_feed_types` (`feed_type_id`, `type_name`, `code_id`, `comment`) VALUES
+(1, 'Bloomberg', 'bloomberg', NULL),
+(2, 'Reuters', 'reuters', NULL),
+(3, 'Market Map', 'market_map', NULL),
+(4, 'Yahoo', 'yahoo', NULL);
 
 --
 -- `exposure_types` - the root of the different asset allocation trees
@@ -320,6 +362,32 @@ INSERT INTO `exposure_items` (`exposure_item_id`, `exposure_type_id`, `order_nbr
 (48, 2, 5, 'JPY', 4, 13, NULL, 6, NULL),
 (49, 2, 6, 'NOK', 6, 13, NULL, 6, NULL),
 (50, 2, 999, 'other currencies', NULL, 11, NULL, NULL, NULL);
+
+--
+-- `security_exposure_stati` - the predefined exposure stati
+--
+
+INSERT INTO `security_exposure_stati` (`security_exposure_status_id`, `status_text`, `code_id`, `comment`) VALUES
+(1, 'OK', 'ok', 'The exposure is in line with the asset allocation matrix'),
+(2, 'breached', 'breached', 'The exposure has breached a limit for at least one portfolio at the portfolio manager has been informed'),
+(3, 'confirmed', 'confirmed', 'The client and portfolio manager have a confirmed that the breach is OK for the moment.');
+
+--
+-- `value_stati` - the predefined value stati
+--
+
+INSERT INTO `value_stati` (`value_status_id`, `status_text`, `code_id`, `comment`) VALUES
+(1, 'OK', 'ok', 'No action has been triggered'),
+(2, 'triggered', 'triggered', NULL),
+(3, 'confirmed', 'confirmed', 'The value has been triggered and is not yet ok, but no more messages should be send');
+
+--
+-- `value_types` - the predefined value types
+--
+
+INSERT INTO `value_types` (`value_type_id`, `description`, `code_id`, `comment`) VALUES
+(1, 'Limit Down', 'limit_down', 'A simple downward limit for securities to send a warning'),
+(2, 'Limit Up', 'limit_up', 'A simple upward limit for securities e.g. to trigger profit taking');
 
 --
 -- `action_stati` - predefined row to allow the system to track the client contacts
@@ -428,7 +496,15 @@ INSERT INTO `trade_payment_types` (`trade_payment_type_id`, `type_name`, `code_i
 (2, 'Stamp', NULL, 0, 1, 0, 1, 1, 0, NULL, NULL);
 
 --
--- `trades` some sample trades
+--`security_amount_types` - the predefined security amount types
+--
+
+INSERT INTO `security_amount_types` (`security_amount_type_id`, `type_name`, `code_id`, `comment`) VALUES
+(1, 'absolut per unit', 'absolut', 'an absolut amount for each security is payed'),
+(2, 'percent', 'percent', 'for the security a percent of the nominal is payed');
+
+--
+-- `trades` - some sample trades
 --
 
 INSERT INTO `trades` (`trade_id`, `account_id`, `creation_time`, `internal_person_id`, `security_id`, `currency_id`, `price`, `size`, `rational`, `settlement_date`, `trade_type_id`, `trade_date`, `premium`, `fees`, `portfolio_id`, `trade_status_id`, `checked`, `comment`, `bank_ref_id`, `counterparty_ref_id`, `valid_until`, `fx_rate`, `premium_settlement_currency`, `settlement_currency_id`, `fees_internal`, `fees_bank`, `fees_extern`, `contact_type_id`, `date_placed`, `date_client`, `related_trade_id`) VALUES

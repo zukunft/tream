@@ -19,12 +19,11 @@ along with TREAM. If not, see <http://www.gnu.org/licenses/gpl.html>.
 To contact the authors write to: 
 Timon Zielonka <timon@zukunft.com>
 
-Copyright (c) 2013-2015 zukunft.com AG, Zurich
+Copyright (c) 2013-2017 zukunft.com AG, Zurich
 Heang Lor <heang@zukunft.com>
+*/
 
-http://tream.biz
-
- * This file is based on P4A - PHP For Applications.
+/** This file is based on P4A - PHP For Applications.
  *
  * To contact the authors write to:                                     
  * Fabrizio Balliano <fabrizio@fabrizioballiano.it>                    
@@ -34,6 +33,8 @@ http://tream.biz
  *
  * @author Timon Zielonka <timon@zukunft.com>
  * @copyright Copyright (c) 2013-2017 zukunft.com AG, Zurich
+ * @link http://tream.biz
+ * @license http://www.gnu.org/licenses/gpl.html GNU General Public License
 
 */
 class Security_underlyings extends P4A_Base_Mask
@@ -48,6 +49,7 @@ class Security_underlyings extends P4A_Base_Mask
 		$p4a = p4a::singleton();
 
 		$this->setSource($p4a->security_underlyings);
+		$this->setTitle("Security underlyings or other security links");
 		$this->firstRow();
 
 		$this->build("p4a_full_toolbar", "toolbar")
@@ -65,6 +67,12 @@ class Security_underlyings extends P4A_Base_Mask
 			->setSource(P4A::singleton()->underlyings)
 			->setSourceDescriptionField("select_name");
 
+		$this->fields->security_link_type_id
+			->setLabel("Link Type")
+			->setType("select")
+			->setSource(P4A::singleton()->security_link_types_select)
+			->setSourceDescriptionField("type_name");
+
 		/* usually a record does not need to be deleted */
 		$this->toolbar->buttons->delete->disable();
 
@@ -80,6 +88,7 @@ class Security_underlyings extends P4A_Base_Mask
 			->setLabel("Security type detail")
 			->anchor($this->fields->security_id)
 			->anchor($this->fields->underlying_id)
+			->anchor($this->fields->security_link_type_id)
 			->anchor($this->fields->weight)
 			->anchor($this->fields->delta)
 			->anchor($this->fields->comment);

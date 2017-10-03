@@ -1,4 +1,5 @@
 <?php
+/**
 /* 
 
 This file is part of TREAM - Portfolio Management Software.
@@ -19,7 +20,7 @@ along with TREAM. If not, see <http://www.gnu.org/licenses/gpl.html>.
 To contact the authors write to: 
 Timon Zielonka <timon@zukunft.com>
 
-Copyright (c) 2013-2015 zukunft.com AG, Zurich
+Copyright (c) 2013-2017 zukunft.com AG, Zurich
 Heang Lor <heang@zukunft.com>
 
 http://tream.biz
@@ -33,7 +34,7 @@ http://tream.biz
  * https://github.com/fballiano/p4a
  *
  * @author Timon Zielonka <timon@zukunft.com>
- * @copyright Copyright (c) 2013-2015 zukunft.com AG, Zurich
+ * @copyright Copyright (c) 2013-2017 zukunft.com AG, Zurich
 
 */
 class Currencies extends P4A_Base_Mask
@@ -50,6 +51,8 @@ class Currencies extends P4A_Base_Mask
 		$this->setSource($p4a->currencies);
 		$this->firstRow();
 
+		$this->fields->comment->setWidth(400);
+
 		$this->build("p4a_full_toolbar", "toolbar")
 			->setMask($this);
 
@@ -58,7 +61,8 @@ class Currencies extends P4A_Base_Mask
 
 		$this->build("p4a_table", "table")
 			->setSource($p4a->currencies)
-			->setWidth(500)
+			->setVisibleCols(array("symbol","decimals","decimals_trading","comment"))
+			->setWidth(700)
 			->showNavigationBar();
 
 		$this->setRequiredField("symbol");
@@ -67,6 +71,7 @@ class Currencies extends P4A_Base_Mask
 			->setLabel("Currency detail")
 			->anchor($this->fields->symbol)
 			->anchor($this->fields->decimals)
+			->anchor($this->fields->decimals_trading)
 			->anchor($this->fields->comment);
 		
 		$this->frame

@@ -48,7 +48,16 @@ class Trade_confirmation_types extends P4A_Base_Mask
 		$p4a = p4a::singleton();
 
 		$this->setSource($p4a->trade_confirmation_types);
+		$this->setTitle("Trade stati defined by the Bank or Broker");
 		$this->firstRow();
+
+		$this->fields->trade_status_id
+			->setLabel("Lead to trade status")
+			->setType("select")
+			->setSource(P4A::singleton()->select_trade_stati)
+			->setSourceDescriptionField("status_text");
+
+		$this->fields->comment->setWidth(400);
 
 		$this->build("p4a_full_toolbar", "toolbar")
 			->setMask($this);
@@ -58,14 +67,17 @@ class Trade_confirmation_types extends P4A_Base_Mask
 
 		$this->build("p4a_table", "table")
 			->setSource($p4a->trade_confirmation_types)
-			->setWidth(500)
+			->setVisibleCols(array("type_name","comment"))
+			->setWidth(700)
 			->showNavigationBar();
 
 		$this->setRequiredField("type_name");
 
 		$this->build("p4a_fieldset", "fs_details")
 			->setLabel("Trade type detail")
-			->anchor($this->fields->type_name);
+			->anchor($this->fields->type_name)
+			->anchor($this->fields->trade_status_id)
+			->anchor($this->fields->comment);
 		
 		$this->frame
 			->anchor($this->table)

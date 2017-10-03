@@ -1,4 +1,5 @@
 <?php
+/**
 /* 
 
 This file is part of TREAM - Portfolio Management Software.
@@ -19,7 +20,7 @@ along with TREAM. If not, see <http://www.gnu.org/licenses/gpl.html>.
 To contact the authors write to: 
 Timon Zielonka <timon@zukunft.com>
 
-Copyright (c) 2013-2015 zukunft.com AG, Zurich
+Copyright (c) 2013-2017 zukunft.com AG, Zurich
 Heang Lor <heang@zukunft.com>
 
 http://tream.biz
@@ -33,7 +34,7 @@ http://tream.biz
  * https://github.com/fballiano/p4a
  *
  * @author Timon Zielonka <timon@zukunft.com>
- * @copyright Copyright (c) 2013-2015 zukunft.com AG, Zurich
+ * @copyright Copyright (c) 2013-2017 zukunft.com AG, Zurich
 
 */
 class Security_issuers extends P4A_Base_Mask
@@ -55,6 +56,8 @@ class Security_issuers extends P4A_Base_Mask
 		$this->setSource($p4a->security_issuers);
 		$this->firstRow();
 
+		$this->fields->comment->setWidth(400);
+
 		$this->build("p4a_full_toolbar", "toolbar")
 			->setMask($this);
 
@@ -63,7 +66,8 @@ class Security_issuers extends P4A_Base_Mask
 
 		$this->build("p4a_table", "table")
 			->setSource($p4a->security_issuers)
-			->setWidth(500)
+			->setVisibleCols(array("issuer_name","comment"))
+			->setWidth(700)
 			->showNavigationBar();
 
 		$this->build("p4a_table", "table_security_pos")

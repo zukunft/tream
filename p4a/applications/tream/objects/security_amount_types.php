@@ -1,4 +1,5 @@
 <?php
+/**
 /* 
 
 This file is part of TREAM - Portfolio Management Software.
@@ -19,7 +20,7 @@ along with TREAM. If not, see <http://www.gnu.org/licenses/gpl.html>.
 To contact the authors write to: 
 Timon Zielonka <timon@zukunft.com>
 
-Copyright (c) 2013-2015 zukunft.com AG, Zurich
+Copyright (c) 2013-2017 zukunft.com AG, Zurich
 Heang Lor <heang@zukunft.com>
 
 http://tream.biz
@@ -33,7 +34,7 @@ http://tream.biz
  * https://github.com/fballiano/p4a
  *
  * @author Timon Zielonka <timon@zukunft.com>
- * @copyright Copyright (c) 2013-2015 zukunft.com AG, Zurich
+ * @copyright Copyright (c) 2013-2017 zukunft.com AG, Zurich
 
 */
 class Security_amount_types extends P4A_Base_Mask
@@ -50,6 +51,9 @@ class Security_amount_types extends P4A_Base_Mask
 		$this->setSource($p4a->security_amount_types);
 		$this->firstRow();
 
+		$this->fields->code_id->disable();
+		$this->fields->comment->setWidth(400);
+
 		$this->build("p4a_full_toolbar", "toolbar")
 			->setMask($this);
 
@@ -58,7 +62,8 @@ class Security_amount_types extends P4A_Base_Mask
 
 		$this->build("p4a_table", "table")
 			->setSource($p4a->security_amount_types)
-			->setWidth(500)
+			->setVisibleCols(array("type_name","code_id","comment"))
+			->setWidth(700)
 			->showNavigationBar();
 
 		$this->setRequiredField("type_name");
@@ -66,6 +71,7 @@ class Security_amount_types extends P4A_Base_Mask
 		$this->build("p4a_fieldset", "fs_details")
 			->setLabel("Security payment type detail")
 			->anchor($this->fields->type_name)
+			->anchor($this->fields->code_id)
 			->anchor($this->fields->comment);
 		
 		$this->frame

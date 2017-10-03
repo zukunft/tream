@@ -80,6 +80,7 @@ class Securities extends P4A_Base_Mask
 			->load();
 
 		$this->setSource($this->securities);
+		$this->setTitle("All securities - use only in case of problems with the other security masks");
 		$this->firstRow();
 
 		$this->fields->currency_id
@@ -100,6 +101,12 @@ class Securities extends P4A_Base_Mask
 			->setType("select")
 			->setSource(P4A::singleton()->select_security_types)
 			->setSourceDescriptionField("description");
+
+		$this->fields->security_exchange_id
+			->setLabel("Main exchange")
+			->setType("select")
+			->setSource(P4A::singleton()->select_security_exchanges)
+			->setSourceDescriptionField("exchange_name");
 
 		$this->fields->exposure_item_asset_class_id
 			->setLabel("Asset Class")
@@ -184,6 +191,7 @@ class Securities extends P4A_Base_Mask
 			->anchor($this->fields->valor)
 			->anchor($this->fields->currency_id)
 			->anchor($this->fields->currency_pair_id)
+			->anchor($this->fields->symbol_wikidata)
 			->anchor($this->fields->symbol_bloomberg)
 			->anchor($this->fields->symbol_reuters)
 			->anchor($this->fields->symbol_market_map)
@@ -193,6 +201,7 @@ class Securities extends P4A_Base_Mask
 			->anchor($this->fields->last_price)
 			->anchor($this->fields->update_time)
 			->anchor($this->fields->hist_update_time)
+			->anchor($this->fields->security_exchange_id)
 			->anchor($this->fields->security_quote_type_id)
 			->anchor($this->fields->price_feed_type_id)
 			->anchor($this->fields->security_exposure_status_id)

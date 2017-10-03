@@ -59,6 +59,8 @@ class Event_types extends P4A_Base_Mask
 			->setSource(P4A::singleton()->user_type_select)
 			->setSourceDescriptionField("type_name"); 
 
+		$this->fields->comment->setWidth(400);
+
 		$this->build("p4a_full_toolbar", "toolbar")
 			->setMask($this);
 
@@ -67,7 +69,8 @@ class Event_types extends P4A_Base_Mask
 
 		$this->build("p4a_table", "table")
 			->setSource($p4a->event_types)
-			->setWidth(500)
+			->setVisibleCols(array("type_name","code_id","push_message","comment"))
+			->setWidth(700)
 			->showNavigationBar();
 
 		$this->setRequiredField("type_name");
