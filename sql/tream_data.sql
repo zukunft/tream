@@ -116,23 +116,34 @@ INSERT INTO `message_types` (`message_type_id`, `type_name`, `code_id`, `comment
 (2, 'Asset Allocation', 'asset_allocation', 'Messages created by the asset allocation check');
 
 --
--- `account_types` - some sample mandate types
+-- `account_types` - some sample mandate stati
 --
 
-INSERT INTO `account_types` (`account_type_id`, `description`, `comment`) VALUES
-(1, 'Prospect', NULL),
-(2, 'Discretionary', NULL),
-(3, 'Advisorary', NULL),
-(4, 'Retired', NULL);
+INSERT INTO `account_types` (`account_type_id`, `description`, `code_id`, `comment`) VALUES
+(1, 'Prospect', 'not_yet_active', NULL),
+(2, 'Discretionary', NULL, NULL),
+(3, 'Advisorary', NULL, NULL),
+(4, 'Retired', 'not_active_any_more', NULL);
+
+--
+-- `portfolio_types` - samples for risk profiles
+--
+
+INSERT INTO `portfolio_types` (`portfolio_type_id`, `type_name`, `level`, `code_id`, `comment`) VALUES
+(1, 'Balanced', 2, NULL, NULL),
+(2, 'Conservative', 1, NULL, NULL),
+(3, 'Growth', 3, NULL, NULL),
+(4, 'Agressive', 4, NULL, NULL);
 
 --
 -- `account_mandates` - some sample asset allocation types
 --
 
-INSERT INTO `account_mandates` (`account_mandat_id`, `description`, `comment`) VALUES
-(1, 'Discretionary Conservative', NULL),
-(2, 'Discretionary Growth', NULL),
-(3, 'Advisory Growth', NULL);
+INSERT INTO `account_mandates` (`account_mandat_id`, `description`, `portfolio_type_id`, `account_type_id`, `comment`) VALUES
+(1, 'Discretionary Conservative', 2, 2, NULL),
+(2, 'Discretionary Growth', 3, 2, NULL),
+(3, 'Advisory Growth', 3, 3, NULL),
+(4, 'Advisory Aggressive', 4, 3, NULL);
 
 --
 -- `account_person_types` - the possible relationships between persons and a mandate
@@ -248,7 +259,8 @@ INSERT INTO `security_quote_types` (`security_quote_type_id`, `type_name`, `quan
 (3, 'ounces', 1, NULL),
 (4, '1 contract', 1, NULL),
 (5, '100 contracts', 1, NULL),
-(6, '100 contracts margin allowed', 1, 1);
+(6, '100 contracts margin allowed', 1, 1, NULL),
+(7, 'point', 1, 0, 'index point');
 
 --
 -- `security_types` mainly to use in different forms/masks for the trade handling
@@ -266,7 +278,8 @@ INSERT INTO `security_types` (`security_type_id`, `description`, `security_quote
 (9, 'Future', 6, 'future'),
 (10, 'Alternative Investment', 1, 'alternative'),
 (11, 'FX', 1, 'FX'),
-(12, 'FX Swap', 4, 'FX_swap');
+(12, 'FX Swap', 4, 'FX_swap', NULL),
+(13, 'Index', 7, 'index', NULL);
 
 --
 -- `security_link_types` - Samples for security links or underlyings

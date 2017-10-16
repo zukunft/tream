@@ -158,10 +158,6 @@ class Tream extends P4A
 
 		$this->menu->addItem("trade_menu", "Trades")
 			->setFontColor("DarkGreen");
-		$this->menu->items->trade_menu->addItem("trades")
-			//->setAccessKey("t")
-			->setLabel("All trades")
-			->implement("onclick", $this, "menuClick");
                 $this->menu->items->trade_menu->addItem("trade_equities")
 			->setLabel("Equities")
 			->implement("onclick", $this, "menuClick");
@@ -179,6 +175,14 @@ class Tream extends P4A
 			->implement("onclick", $this, "menuClick");
 		$this->menu->items->trade_menu->addItem("trade_cash")
 			->setLabel("Cash")
+			->implement("onclick", $this, "menuClick");
+		$this->menu->items->trade_menu->addItem("trade_check")
+			//->setAccessKey("t")
+			->setLabel("Trade check")
+			->implement("onclick", $this, "menuClick");
+		$this->menu->items->trade_menu->addItem("trades")
+			//->setAccessKey("t")
+			->setLabel("All trades")
 			->implement("onclick", $this, "menuClick");
                 $this->menu->items->trade_menu->addItem("trade_payments")
                         ->implement("onclick", $this, "menuClick");
@@ -222,10 +226,10 @@ class Tream extends P4A
                 $this->menu->addItem("risk_menu", "Risk")
                     ->setFontColor("YellowGreen");
                 $this->menu->items->risk_menu->addItem("account_mandates")
+			->setLabel("Mandate types")
                         ->implement("onclick", $this, "menuClick");
                 $this->menu->items->risk_menu->addItem("portfolio_types")
-                        ->implement("onclick", $this, "menuClick");
-                $this->menu->items->risk_menu->addItem("portfolio_security_fixings")
+			->setLabel("Risk profiles")
                         ->implement("onclick", $this, "menuClick");
                 $this->menu->items->risk_menu->addItem("exposure_types")
                         ->implement("onclick", $this, "menuClick");
@@ -255,7 +259,7 @@ class Tream extends P4A
                 $this->menu->items->support_tables->addItem("banks")
                         ->implement("onclick", $this, "menuClick");
                 $this->menu->items->support_tables->addItem("account_types")
-			->setLabel("Mandate types")
+			->setLabel("Mandate stati")
                         ->implement("onclick", $this, "menuClick");
                 $this->menu->items->support_tables->addItem("account_person_types")
 			->setLabel("Mandate relationships")
@@ -306,6 +310,8 @@ class Tream extends P4A
 			->implement("onclick", $this, "menuClick");
 		$this->menu->items->system_tables->addItem("security_trigger_types")
 			->implement("onclick", $this, "menuClick");
+                $this->menu->items->risk_menu->addItem("portfolio_security_fixings")
+                        ->implement("onclick", $this, "menuClick");
                 $this->menu->items->system_tables->addItem("messages")
                         ->implement("onclick", $this, "menuClick"); 
                 $this->menu->items->system_tables->addItem("message_types")
@@ -673,14 +679,12 @@ class Tream extends P4A
 			->setPK("security_id")
 			->load();
 
-
 		$this->build("p4a_db_source", "security_bond")
 			->setTable("v_securities")
 			->setWhere("v_securities.type_code_id = 'bond'") 
 			->addOrder("select_name")
 			->setPK("security_id")
 			->load();
-
 
 		$this->build("p4a_db_source", "security_equity")
 			->setTable("v_securities")
@@ -689,14 +693,12 @@ class Tream extends P4A
 			->setPK("security_id")
 			->load();
 
-
 		$this->build("p4a_db_source", "security_fund")
 			->setTable("v_securities")
 			->setWhere("v_securities.type_code_id = 'fund'") 
 			->addOrder("select_name")
 			->setPK("security_id")
 			->load();
-
 
 		$this->build("p4a_db_source", "security_ETF")
 			->setTable("v_securities")
@@ -705,6 +707,12 @@ class Tream extends P4A
 			->setPK("security_id")
 			->load();
 
+		$this->build("p4a_db_source", "security_index")
+			->setTable("v_securities")
+			->setWhere("v_securities.type_code_id = 'index' OR v_securities.type_code_id = ''") 
+			->addOrder("select_name")
+			->setPK("security_id")
+			->load();
 
 		$this->build("p4a_db_source", "security_metal")
 			->setTable("v_securities")
@@ -713,14 +721,12 @@ class Tream extends P4A
 			->setPK("security_id")
 			->load();
 
-
 		$this->build("p4a_db_source", "security_structi")
 			->setTable("v_securities")
 			->setWhere("v_securities.type_code_id = 'structi'") 
 			->addOrder("select_name")
 			->setPK("security_id")
 			->load();
-
 
 		$this->build("p4a_db_source", "security_option")
 			->setTable("v_securities")
@@ -729,14 +735,12 @@ class Tream extends P4A
 			->setPK("security_id")
 			->load();
 
-
 		$this->build("p4a_db_source", "security_future")
 			->setTable("v_securities")
 			->setWhere("v_securities.type_code_id = 'future'") 
 			->addOrder("select_name")
 			->setPK("security_id")
 			->load();
-
 
 		$this->build("p4a_db_source", "security_alternative")
 			->setTable("v_securities")
@@ -990,8 +994,27 @@ class Tream extends P4A
 			->addOrder("description")
 			->load();
 
+		// data sources for selection the trade values
 		$this->build("p4a_db_source", "select_trade_types")
 			->setTable("v_trade_types")
+			->addOrder("description")
+			->setPK("trade_type_id")
+			->load();
+
+		$this->build("p4a_db_source", "trade_types_equity")
+			->setTable("v_trade_types_equity")
+			->addOrder("description")
+			->setPK("trade_type_id")
+			->load();
+
+		$this->build("p4a_db_source", "trade_types_bond")
+			->setTable("v_trade_types_bond")
+			->addOrder("description")
+			->setPK("trade_type_id")
+			->load();
+
+		$this->build("p4a_db_source", "trade_types_fund")
+			->setTable("v_trade_types_fund")
 			->addOrder("description")
 			->setPK("trade_type_id")
 			->load();
@@ -1338,7 +1361,7 @@ class Tream extends P4A
 		$this->build("p4a_db_source", "internal_persons")
 			->setTable("v_persons")
 			->addOrder("select_name")
-			->setWhere("v_persons.internal = 1") 
+			->setWhere("v_persons.internal = 1 OR v_persons.person_id is NULL") 
 			->setPK("person_id")
 			->load();
 
@@ -1566,7 +1589,7 @@ class Tream extends P4A
 		$login_status = 0;
 		
 		// the default admin users; remove in case of a live installation
-		if ($username == "timon" and $password == md5("xxx")) {
+		if ($username == "timon" and $password == md5("wind")) {
 			$login_status = 1;
 		}
 		if ($username == "heang" and $password == md5("xxx")) {

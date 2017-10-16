@@ -19,12 +19,11 @@ along with TREAM. If not, see <http://www.gnu.org/licenses/gpl.html>.
 To contact the authors write to: 
 Timon Zielonka <timon@zukunft.com>
 
-Copyright (c) 2013-2015 zukunft.com AG, Zurich
+Copyright (c) 2013-2017 zukunft.com AG, Zurich
 Heang Lor <heang@zukunft.com>
+*/
 
-http://tream.biz
-
- * This file is based on P4A - PHP For Applications.
+/** This file is based on P4A - PHP For Applications.
  *
  * To contact the authors write to:                                     
  * Fabrizio Balliano <fabrizio@fabrizioballiano.it>                    
@@ -33,7 +32,9 @@ http://tream.biz
  * https://github.com/fballiano/p4a
  *
  * @author Timon Zielonka <timon@zukunft.com>
- * @copyright Copyright (c) 2013-2015 zukunft.com AG, Zurich
+ * @copyright Copyright (c) 2013-2017 zukunft.com AG, Zurich
+ * @link http://tream.biz
+ * @license http://www.gnu.org/licenses/gpl.html GNU General Public License
 
 */
 class Portfolio_types extends P4A_Base_Mask
@@ -47,8 +48,25 @@ class Portfolio_types extends P4A_Base_Mask
 		parent::__construct();
 		$p4a = p4a::singleton();
 
+		$this->build("p4a_db_source", "exposure_target_list")
+			->setTable("exposure_targets")
+			->addJoinLeft("exposure_items", "exposure_targets.exposure_item_id  = exposure_items.exposure_item_id",
+					  array('description'=>'exposure'))
+			->addJoinLeft("account_mandates", "exposure_targets.account_mandat_id  = account_mandates.account_mandat_id",
+					  array('description'=>'mandat','portfolio_type_id'=>'portfolio_type_id'))
+			->addJoinLeft("currencies", "exposure_targets.currency_id  = currencies.currency_id",
+					  array('symbol'=>'fx'))
+			->addOrder("account_mandat_id")
+			->load();
+
 		$this->setSource($p4a->portfolio_types);
+		$this->setTitle("Risk profile");
 		$this->firstRow();
+
+		$this->fields->type_name->setLabel("Profile name");
+		$this->fields->level->setTooltip("to enable the system to detect higher risks in a lower level");
+		$this->fields->code_id->disable();
+		$this->fields->comment->setWidth(400);
 
 		$this->build("p4a_full_toolbar", "toolbar")
 			->setMask($this);
@@ -58,19 +76,29 @@ class Portfolio_types extends P4A_Base_Mask
 
 		$this->build("p4a_table", "table")
 			->setSource($p4a->portfolio_types)
-			->setWidth(500)
+			->setVisibleCols(array("type_name","level","comment"))
+			->setWidth(700)
 			->showNavigationBar();
+
+		$this->build("p4a_table", "table_targets")
+			->setSource($this->exposure_target_list)
+			->setWidth(700)
+			->setVisibleCols(array("mandat","fx","exposure","target","limit_up","limit_down","comment")) 
+			->showNavigationBar(); 
+		$this->exposure_target_list->addFilter("portfolio_type_id = ?", $p4a->portfolio_types->fields->portfolio_type_id); 
 
 		$this->setRequiredField("type_name");
 
 		$this->build("p4a_fieldset", "fs_details")
-			->setLabel("Trade type detail")
+			->setLabel("Risk profile details")
 			->anchor($this->fields->type_name)
+			->anchor($this->fields->level)
 			->anchor($this->fields->comment);
 		
 		$this->frame
 			->anchor($this->table)
- 			->anchor($this->fs_details);
+ 			->anchor($this->fs_details)
+ 			->anchor($this->table_targets);
 
 		$this
 			->display("menu", $p4a->menu)

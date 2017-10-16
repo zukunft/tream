@@ -64,7 +64,7 @@ class Documents extends P4A_Base_Mask
 			->setSourceDescriptionField("select_name");
 
 		$this->fields->account_id
-			->setLabel("Account")
+			->setLabel("Mandate")
 			->setType("select")
 			->setSource(P4A::singleton()->select_accounts)
 			->setSourceDescriptionField("account_select_name"); 

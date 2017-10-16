@@ -47,7 +47,20 @@ class Exposure_items extends P4A_Base_Mask
 		parent::__construct();
 		$p4a = p4a::singleton();
 
-		$this->setSource($p4a->exposure_items);
+		$this->build("p4a_db_source", "exposure_items")
+			->setTable("exposure_items")
+			->addOrder("description")
+			->addJoinLeft("currencies", "exposure_items.currency_id  = currencies.currency_id",
+					  array('symbol'=>'fx'))
+			->addJoinLeft("exposure_types", "exposure_items.exposure_type_id  = exposure_types.exposure_type_id",
+					  array('type_name'=>'type'))
+			->addJoinLeft("v_exposure_item_parts", "exposure_items.is_part_of  = v_exposure_item_parts.exposure_item_id",
+					  array('part_of'=>'part_of'))
+			->setPageLimit(30)
+			->load();
+
+		$this->setSource($this->exposure_items);
+		$this->setTitle("Exposure items");
 		$this->firstRow();
 
 		// Customizing fields properties
@@ -79,6 +92,7 @@ class Exposure_items extends P4A_Base_Mask
 
 		// Customizing fields properties
 		$this->fields->part_weight->setLabel("with weight");
+		$this->fields->comment->setWidth(400);
 
 		$this->build("p4a_full_toolbar", "toolbar")
 			->setMask($this);
@@ -87,8 +101,8 @@ class Exposure_items extends P4A_Base_Mask
 		$this->toolbar->buttons->delete->disable();
 
 		$this->build("p4a_table", "table")
-			->setSource($p4a->exposure_items)
-			->setVisibleCols(array("type","description","is_part_of","part_weight")) 
+			->setSource($this->exposure_items)
+			->setVisibleCols(array("type","description","part_of","part_weight")) 
 			->setWidth(700)
 			->showNavigationBar();
 

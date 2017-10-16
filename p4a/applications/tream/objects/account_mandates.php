@@ -19,12 +19,11 @@ along with TREAM. If not, see <http://www.gnu.org/licenses/gpl.html>.
 To contact the authors write to: 
 Timon Zielonka <timon@zukunft.com>
 
-Copyright (c) 2013-2015 zukunft.com AG, Zurich
+Copyright (c) 2013-2017 zukunft.com AG, Zurich
 Heang Lor <heang@zukunft.com>
+*/
 
-http://tream.biz
-
- * This file is based on P4A - PHP For Applications.
+/** This file is based on P4A - PHP For Applications.
  *
  * To contact the authors write to:                                     
  * Fabrizio Balliano <fabrizio@fabrizioballiano.it>                    
@@ -33,7 +32,9 @@ http://tream.biz
  * https://github.com/fballiano/p4a
  *
  * @author Timon Zielonka <timon@zukunft.com>
- * @copyright Copyright (c) 2013-2015 zukunft.com AG, Zurich
+ * @copyright Copyright (c) 2013-2017 zukunft.com AG, Zurich
+ * @link http://tream.biz
+ * @license http://www.gnu.org/licenses/gpl.html GNU General Public License
 
 */
 class Account_mandates extends P4A_Base_Mask
@@ -48,7 +49,22 @@ class Account_mandates extends P4A_Base_Mask
 		$p4a = p4a::singleton();
 
 		$this->setSource($p4a->account_mandates);
+		$this->setTitle("Mandate Types");
 		$this->firstRow();
+
+		$this->fields->account_type_id
+			->setLabel("Default mandate status")
+			->setType("select")
+			->setSource(P4A::singleton()->select_account_types)
+			->setSourceDescriptionField("description");
+
+		$this->fields->portfolio_type_id
+			->setLabel("Default risk profile")
+			->setType("select")
+			->setSource(P4A::singleton()->select_portfolio_types)
+			->setSourceDescriptionField("type_name");
+
+		$this->fields->comment->setWidth(400);
 
 		$this->build("p4a_full_toolbar", "toolbar")
 			->setMask($this);
@@ -58,14 +74,18 @@ class Account_mandates extends P4A_Base_Mask
 
 		$this->build("p4a_table", "table")
 			->setSource($p4a->account_mandates)
-			->setWidth(500)
+			->setVisibleCols(array("description","comment"))
+			->setWidth(700)
 			->showNavigationBar();
 
 		$this->setRequiredField("description");
 
 		$this->build("p4a_fieldset", "fs_details")
-			->setLabel("Account mandat detail")
-			->anchor($this->fields->description);
+			->setLabel("Mandate type details")
+			->anchor($this->fields->description)
+			->anchor($this->fields->account_type_id)
+			->anchor($this->fields->portfolio_type_id)
+			->anchor($this->fields->comment);
 		
 		$this->frame
 			->anchor($this->table)

@@ -93,7 +93,9 @@ CREATE TABLE IF NOT EXISTS `accounts` (
 CREATE TABLE IF NOT EXISTS `account_mandates` (
   `account_mandat_id` int(11) NOT NULL AUTO_INCREMENT,
   `description` varchar(200) NOT NULL,
-  `comment` text,
+  `portfolio_type_id` int(11) DEFAULT NULL,
+  `account_type_id` int(11) DEFAULT NULL,
+  `comment` text
   PRIMARY KEY (`account_mandat_id`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
@@ -138,6 +140,7 @@ CREATE TABLE IF NOT EXISTS `account_person_types` (
 CREATE TABLE IF NOT EXISTS `account_types` (
   `account_type_id` int(11) NOT NULL AUTO_INCREMENT,
   `description` varchar(200) NOT NULL,
+  `code_id` varchar(100) DEFAULT NULL,
   `comment` text,
   PRIMARY KEY (`account_type_id`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
@@ -1048,6 +1051,7 @@ DROP TABLE IF EXISTS `portfolio_types`;
 CREATE TABLE IF NOT EXISTS `portfolio_types` (
   `portfolio_type_id` int(11) NOT NULL AUTO_INCREMENT,
   `type_name` varchar(200) DEFAULT NULL,
+  `level` int(11) NOT NULL,
   `code_id` varchar(200) DEFAULT NULL,
   `comment` text,
   PRIMARY KEY (`portfolio_type_id`)
@@ -3795,6 +3799,23 @@ from
 -- --------------------------------------------------------
 
 --
+-- Structure for view `v_exposure_item_parts`
+--
+DROP TABLE IF EXISTS `v_exposure_item_parts`;
+
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `v_exposure_item_parts` AS 
+select 
+  NULL AS `exposure_item_id`,
+  '' AS `part_of` 
+union select 
+  i.`exposure_item_id` AS `exposure_item_id`,
+  i.`description` AS `part_of` 
+from 
+  `exposure_items` i;
+
+-- --------------------------------------------------------
+
+--
 -- Structure for view `v_exposure_asset_classes`
 --
 DROP TABLE IF EXISTS `v_exposure_asset_classes`;
@@ -5047,6 +5068,60 @@ union
     `trade_types`
   where
     `trade_types`.`use_cash` = 1;
+
+-- --------------------------------------------------------
+
+--
+-- Structure for view `v_trade_types_bond`
+--
+DROP TABLE IF EXISTS `v_trade_types_bond`;
+
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `v_trade_types_bond` AS 
+select 
+  NULL AS `trade_type_id`,
+  ' not set' AS `description` 
+union select 
+  `trade_types`.`trade_type_id` AS `trade_type_id`,
+  `trade_types`.`description` AS `description` 
+from 
+  `trade_types` 
+where (`trade_types`.`use_bond` = 1); 
+
+-- --------------------------------------------------------
+
+--
+-- Structure for view `v_trade_types_equity`
+--
+DROP TABLE IF EXISTS `v_trade_types_equity`;
+
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `v_trade_types_equity` AS 
+select 
+  NULL AS `trade_type_id`,
+  ' not set' AS `description` 
+union select 
+  `trade_types`.`trade_type_id` AS `trade_type_id`,
+  `trade_types`.`description` AS `description` 
+from 
+  `trade_types` 
+where (`trade_types`.`use_equity` = 1); 
+
+-- --------------------------------------------------------
+
+--
+-- Structure for view `v_trade_types_fund`
+--
+DROP TABLE IF EXISTS `v_trade_types_fund`;
+
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `v_trade_types_fund` AS 
+select 
+  NULL AS `trade_type_id`,
+  ' not set' AS `description` 
+union select 
+  `trade_types`.`trade_type_id` AS `trade_type_id`,
+  `trade_types`.`description` AS `description` 
+from 
+  `trade_types` 
+where (`trade_types`.`use_fund` = 1); 
 
 -- --------------------------------------------------------
 

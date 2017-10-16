@@ -19,12 +19,11 @@ along with TREAM. If not, see <http://www.gnu.org/licenses/gpl.html>.
 To contact the authors write to: 
 Timon Zielonka <timon@zukunft.com>
 
-Copyright (c) 2013-2015 zukunft.com AG, Zurich
+Copyright (c) 2013-2017 zukunft.com AG, Zurich
 Heang Lor <heang@zukunft.com>
+*/
 
-http://tream.biz
-
- * This file is based on P4A - PHP For Applications.
+/** This file is based on P4A - PHP For Applications.
  *
  * To contact the authors write to:                                     
  * Fabrizio Balliano <fabrizio@fabrizioballiano.it>                    
@@ -33,7 +32,9 @@ http://tream.biz
  * https://github.com/fballiano/p4a
  *
  * @author Timon Zielonka <timon@zukunft.com>
- * @copyright Copyright (c) 2013-2015 zukunft.com AG, Zurich
+ * @copyright Copyright (c) 2013-2017 zukunft.com AG, Zurich
+ * @link http://tream.biz
+ * @license http://www.gnu.org/licenses/gpl.html GNU General Public License
 
 */
 class Currency_pairs extends P4A_Base_Mask
@@ -83,7 +84,7 @@ class Currency_pairs extends P4A_Base_Mask
 
 		$this->build("p4a_table", "table")
 			->setSource($p4a->currency_pairs)
-			->setVisibleCols(array("from_fx","to_fx","fx_rate"))
+			->setVisibleCols(array("description","from_fx","to_fx","fx_rate"))
 			->setWidth(500)
 			->showNavigationBar();
 
@@ -91,21 +92,21 @@ class Currency_pairs extends P4A_Base_Mask
 
 		$this->build("p4a_fieldset", "fs_details")
 			->setLabel("Currency pair detail")
+			->anchor($this->fields->description)
 			->anchor($this->fields->currency1_id)
 			->anchor($this->fields->currency2_id)
 			->anchor($this->fields->fx_rate)
 			->anchor($this->fields->factor)
 			->anchor($this->fields->decimals)
 			->anchor($this->fields->price_feed_type_id)
-			->anchor($this->fields->symbol_market_map)
 			->anchor($this->fields->symbol_yahoo)
+			->anchor($this->fields->symbol_market_map)
 			->anchor($this->fields->hist_return)
 			->anchor($this->fields->market_return)
 			->anchor($this->fields->expected_return)
 			->anchor($this->fields->hist_volatility)
 			->anchor($this->fields->implied_volatility)
 			->anchor($this->fields->expected_volatility)
-			->anchor($this->fields->description)
 			->anchor($this->fields->comment);
 		
 		$this->frame

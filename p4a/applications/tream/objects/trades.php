@@ -64,7 +64,6 @@ class Trades extends P4A_Base_Mask
 					  array('description'=>'trade_type'))
 			->addJoinLeft("trade_stati", "trades.trade_status_id  = trade_stati.trade_status_id",
 					  array('status_text'=>'status'))
-			->setWhere('trades.security_id is Not Null') 
 			->setPageLimit(20)
 			->load();
 
