@@ -40,7 +40,7 @@ http://tream.biz
 include_once './tream_db_adapter.php';
 include_once './tream_db.php';
 include_once './tream_messages.php';
-include_once './check_portfolio.php';
+include_once './tream_portfolio_check.php';
 
   echo 'TREAM - create Target Result in External Asset Managment<br>';
 
