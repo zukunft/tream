@@ -4,7 +4,7 @@ TREAM database setup - to create the TREAM database with MySQL
 
 Contains tables and views.
 
-Version 0.0.4 - 25. Sep 2017
+Version 0.0.5 - 19. Oct 2017
 
 Initial dump created with phpMyAdmin SQL Dump version 3.4.11.1deb2+deb7u1 - http://www.phpmyadmin.net
 Server version: 5.5.40 - PHP Version: 5.4.4-14+deb7u14
@@ -756,6 +756,7 @@ CREATE TABLE IF NOT EXISTS `exposure_target_values` (
   `exposure_target_id` int(11) DEFAULT NULL,
   `portfolio_id` int(11) DEFAULT NULL,
   `calc_value` double DEFAULT NULL,
+  `calc_value_in_ref_ccy` double DEFAULT NULL,
   PRIMARY KEY (`exposure_target_value_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
@@ -817,6 +818,7 @@ CREATE TABLE IF NOT EXISTS `log_users` (
   `code_id` varchar(50) DEFAULT NULL,
   `user_type_id` int(11) DEFAULT NULL,
   `internal_person_id` int(11) DEFAULT NULL,
+  `secure_url_id` int(11) DEFAULT NULL COMMENT 'unique random ID to secure the call of batch scripts from the GUI',
   `comment` text,
   PRIMARY KEY (`user_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
@@ -1213,6 +1215,9 @@ CREATE TABLE IF NOT EXISTS `securities` (
   `security_exposure_status_id` int(11) DEFAULT NULL,
   `exposure_item_asset_class_id` int(11) DEFAULT NULL,
   `monitoring_security_limit` double DEFAULT NULL,
+  `yield` double DEFAULT NULL,
+  `start_date` date DEFAULT NULL,
+  `end_date` date DEFAULT NULL,
   `archiv` tinyint(1) DEFAULT NULL,
   PRIMARY KEY (`security_id`),
   KEY `currency_id` (`currency_id`),
@@ -3458,7 +3463,24 @@ CREATE TABLE IF NOT EXISTS `v_user_types` (
 --
 DROP TABLE IF EXISTS `v_accounts`;
 
-CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `v_accounts` AS select NULL AS `account_id`,' not set' AS `account_select_name`,' not set' AS `account_name` union select `accounts`.`account_id` AS `account_id`,concat_ws(' ',`accounts`.`account_name`,`account_mandates`.`description`,`banks`.`bank_name`,`currencies`.`symbol`) AS `account_select_name`,cast(`accounts`.`account_name` as unsigned) AS `account_name` from (((`accounts` join `account_mandates`) join `currencies`) join `banks`) where ((`accounts`.`account_mandat_id` = `account_mandates`.`account_mandat_id`) and (`accounts`.`currency_id` = `currencies`.`currency_id`) and (`accounts`.`bank_id` = `banks`.`bank_id`)) order by cast(`account_name` as unsigned);
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `v_accounts` AS 
+select 
+  NULL AS `account_id`,
+  ' not set' AS `account_select_name`,
+  ' not set' AS `account_name` 
+union select 
+  `accounts`.`account_id` AS `account_id`,
+  concat_ws(' ',`accounts`.`account_name`,`account_mandates`.`description`,`banks`.`bank_name`,`currencies`.`symbol`) AS `account_select_name`,
+  cast(`accounts`.`account_name` as unsigned) AS `account_name` 
+from (((`accounts` join `account_mandates`) 
+                   join `currencies`) 
+                   join `banks`) 
+where 
+     ((`accounts`.`account_mandat_id` = `account_mandates`.`account_mandat_id`) 
+  and (`accounts`.`currency_id` = `currencies`.`currency_id`) 
+  and (`accounts`.`bank_id` = `banks`.`bank_id`)) 
+order by 
+  cast(`account_name` as unsigned);
 
 -- --------------------------------------------------------
 
@@ -3597,7 +3619,24 @@ where ((`v`.`value_type_id` = 2)
 --
 DROP TABLE IF EXISTS `v_contacts`;
 
-CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `v_contacts` AS select NULL AS `contact_id`,' not set' AS `contact_select`,' not set' AS `account_name`,NULL AS `contact_time` union select `contacts`.`contact_id` AS `contact_id`,concat_ws(' ','A',`accounts`.`account_name`,date_format(`contacts`.`start`,'%d.%m.%Y'),`contact_types`.`type_name`,`contacts`.`description`) AS `contact_select`,cast(`accounts`.`account_name` as unsigned) AS `account_name`,`contacts`.`start` AS `contact_time` from ((`contacts` join `accounts`) join `contact_types`) where ((`contacts`.`account_id` = `accounts`.`account_id`) and (`contacts`.`contact_type_id` = `contact_types`.`contact_type_id`)) order by cast(`account_name` as unsigned),`contact_time`;
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `v_contacts` AS 
+select 
+  NULL AS `contact_id`,
+  ' not set' AS `contact_select`,
+  ' not set' AS `account_name`,
+  NULL AS `contact_time`
+union select 
+  `contacts`.`contact_id` AS `contact_id`,
+  concat_ws(' ','A',`accounts`.`account_name`,date_format(`contacts`.`start`,'%d.%m.%Y'),`contact_types`.`type_name`,`contacts`.`description`) AS `contact_select`,
+  cast(`accounts`.`account_name` as unsigned) AS `account_name`,
+  `contacts`.`start` AS `contact_time`
+from ((`contacts` join `accounts`) 
+                  join `contact_types`) 
+where
+     ((`contacts`.`account_id` = `accounts`.`account_id`) 
+  and (`contacts`.`contact_type_id` = `contact_types`.`contact_type_id`)) 
+order by 
+  cast(`account_name` as unsigned),`contact_time`;
 
 -- --------------------------------------------------------
 
@@ -5460,7 +5499,51 @@ WHERE p.`asset_code` <> 'FX';
 --
 DROP TABLE IF EXISTS `v_trade_pnl_calc_cash`;
 
-CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `v_trade_pnl_calc_cash` AS select `v_trade_pnl_get_prices`.`portfolio_id` AS `portfolio_id`,`v_trade_pnl_get_prices`.`security_id` AS `security_id`,`v_trade_pnl_get_prices`.`sec_curr` AS `security_name`,`v_trade_pnl_get_prices`.`security_type_id` AS `security_type_id`,`v_trade_pnl_get_prices`.`asset_class` AS `asset_class`,`v_trade_pnl_get_prices`.`asset_code` AS `asset_code`,`v_trade_pnl_get_prices`.`currency_id` AS `currency_id`,`v_trade_pnl_get_prices`.`trade_curr` AS `trade_curr`,`v_trade_pnl_get_prices`.`sec_currency_id` AS `sec_currency_id`,`v_trade_pnl_get_prices`.`security_issuer_id` AS `security_issuer_id`,`v_trade_pnl_get_prices`.`sec_curr` AS `sec_curr`,`v_trade_pnl_get_prices`.`trade_date` AS `trade_date`,`v_trade_pnl_get_prices`.`price` AS `price`,`v_trade_pnl_get_prices`.`last_price` AS `price_ref`,`v_trade_pnl_get_prices`.`price_ref_open` AS `price_ref_open`,`v_trade_pnl_get_prices`.`size` AS `size`,`v_trade_pnl_get_prices`.`security_quote_type_id` AS `security_quote_type_id`,`v_trade_pnl_get_prices`.`quantity_factor` AS `quantity_factor`,`v_trade_pnl_get_prices`.`calc_premium` AS `calc_premium`,(`v_trade_pnl_get_prices`.`size` * `v_trade_pnl_get_prices`.`last_price`) AS `calc_premium_ref`,`v_trade_pnl_get_prices`.`calc_premium_ref_open` AS `calc_premium_ref_open`,`v_trade_pnl_get_prices`.`premium` AS `premium`,`v_trade_pnl_get_prices`.`update_time` AS `update_time`,`v_trade_pnl_get_prices`.`bid` AS `bid`,`v_trade_pnl_get_prices`.`ask` AS `ask`,if(isnull(`v_trade_pnl_get_prices`.`last_price`),1,`v_trade_pnl_get_prices`.`last_price`) AS `last_price`,if(isnull(`v_trade_pnl_get_prices`.`sell_price`),1,`v_trade_pnl_get_prices`.`sell_price`) AS `sell_price`,((if(isnull(`v_trade_pnl_get_prices`.`sell_price`),1,`v_trade_pnl_get_prices`.`sell_price`) * `v_trade_pnl_get_prices`.`size`) * `v_trade_pnl_get_prices`.`quantity_factor`) AS `pos_value`,((if(isnull(`v_trade_pnl_get_prices`.`sell_price`),1,`v_trade_pnl_get_prices`.`sell_price`) * `v_trade_pnl_get_prices`.`size`) * `v_trade_pnl_get_prices`.`quantity_factor`) AS `pos_value_ref`,((if(isnull(`v_trade_pnl_get_prices`.`sell_price`),1,`v_trade_pnl_get_prices`.`sell_price`) * `v_trade_pnl_get_prices`.`size`) * `v_trade_pnl_get_prices`.`quantity_factor`) AS `pos_value_ref_open`,(if(isnull(`v_trade_pnl_get_prices`.`last_price`),1,`v_trade_pnl_get_prices`.`last_price`) * `v_trade_pnl_get_prices`.`size`) AS `pos_value_last`,((if(isnull(`v_trade_pnl_get_prices`.`last_price`),1,`v_trade_pnl_get_prices`.`last_price`) * `v_trade_pnl_get_prices`.`size`) * `v_trade_pnl_get_prices`.`quantity_factor`) AS `pos_value_last_ref`,((if(isnull(`v_trade_pnl_get_prices`.`last_price`),1,`v_trade_pnl_get_prices`.`last_price`) * `v_trade_pnl_get_prices`.`size`) * `v_trade_pnl_get_prices`.`quantity_factor`) AS `pos_value_last_ref_open`,(((if(isnull(`v_trade_pnl_get_prices`.`sell_price`),1,`v_trade_pnl_get_prices`.`sell_price`) * `v_trade_pnl_get_prices`.`size`) * `v_trade_pnl_get_prices`.`quantity_factor`) + `v_trade_pnl_get_prices`.`calc_premium`) AS `pnl`,(((if(isnull(`v_trade_pnl_get_prices`.`sell_price`),1,`v_trade_pnl_get_prices`.`sell_price`) * `v_trade_pnl_get_prices`.`size`) * `v_trade_pnl_get_prices`.`quantity_factor`) + `v_trade_pnl_get_prices`.`calc_premium`) AS `pnl_ref`,(((if(isnull(`v_trade_pnl_get_prices`.`sell_price`),1,`v_trade_pnl_get_prices`.`sell_price`) * `v_trade_pnl_get_prices`.`size`) * `v_trade_pnl_get_prices`.`quantity_factor`) + `v_trade_pnl_get_prices`.`calc_premium`) AS `pnl_ref_open`,(((if(isnull(`v_trade_pnl_get_prices`.`last_price`),1,`v_trade_pnl_get_prices`.`last_price`) * `v_trade_pnl_get_prices`.`size`) * `v_trade_pnl_get_prices`.`quantity_factor`) + `v_trade_pnl_get_prices`.`calc_premium`) AS `pnl_last`,`v_trade_pnl_get_prices`.`decimals` AS `decimals`,`v_trade_pnl_get_prices`.`ref_decimals` AS `ref_decimals` from `v_trade_pnl_get_prices` where (`v_trade_pnl_get_prices`.`asset_code` = 'FX');
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `v_trade_pnl_calc_cash` AS 
+select 
+  p.`portfolio_id`,
+  p.`security_id`,
+  p.`sec_curr` AS `security_name`,
+  p.`security_type_id`,
+  p.`asset_class`,
+  p.`asset_code`,
+  p.`currency_id`,
+  p.`trade_curr`,
+  p.`sec_currency_id`,
+  p.`security_issuer_id`,
+  p.`sec_curr`,
+  p.`trade_date`,
+  p.`price`,
+  p.`last_price` AS `price_ref`,
+  p.`price_ref_open`,
+  p.`size`,
+  p.`security_quote_type_id`,
+  p.`quantity_factor`,
+  p.`calc_premium`,
+  p.`size` * p.`last_price` AS `calc_premium_ref`,
+  p.`calc_premium_ref_open` AS `calc_premium_ref_open`,
+  p.`premium`,
+  p.`update_time`,
+  p.`bid`,
+  p.`ask`,
+  if(p.`last_price` IS NULL,1,p.`last_price`) AS `last_price`,
+  if(p.`sell_price` IS NULL,1,p.`sell_price`) AS `sell_price`,
+ (if(p.`sell_price` IS NULL,1,p.`sell_price`) * p.`size` * p.`quantity_factor`) AS `pos_value`,
+ (if(p.`sell_price` IS NULL,1,p.`sell_price`) * p.`size` * p.`quantity_factor`) AS `pos_value_ref`,
+ (if(p.`sell_price` IS NULL,1,p.`sell_price`) * p.`size` * p.`quantity_factor`) AS `pos_value_ref_open`,
+ (if(p.`last_price` IS NULL,1,p.`last_price`) * p.`size`                      ) AS `pos_value_last`,
+ (if(p.`last_price` IS NULL,1,p.`last_price`) * p.`size` * p.`quantity_factor`) AS `pos_value_last_ref`,
+ (if(p.`last_price` IS NULL,1,p.`last_price`) * p.`size` * p.`quantity_factor`) AS `pos_value_last_ref_open`,
+((if(p.`sell_price` IS NULL,1,p.`sell_price`) * p.`size` * p.`quantity_factor`) + p.`calc_premium`) AS `pnl`,
+((if(p.`sell_price` IS NULL,1,p.`sell_price`) * p.`size` * p.`quantity_factor`) + p.`calc_premium`) AS `pnl_ref`,
+((if(p.`sell_price` IS NULL,1,p.`sell_price`) * p.`size` * p.`quantity_factor`) + p.`calc_premium`) AS `pnl_ref_open`,
+((if(p.`last_price` IS NULL,1,p.`last_price`) * p.`size` * p.`quantity_factor`) + p.`calc_premium`) AS `pnl_last`,
+  p.`decimals`,
+  p.`ref_decimals` 
+from 
+  `v_trade_pnl_get_prices` p
+WHERE 
+  p.`asset_code` = 'FX';
 
 -- --------------------------------------------------------
 

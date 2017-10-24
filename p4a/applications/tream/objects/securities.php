@@ -51,6 +51,8 @@ class Securities extends P4A_Base_Mask
 		parent::__construct();
 		$p4a = p4a::singleton();
 
+		$this->setTitle("All securities - use only in case of problems with the other security masks");
+		
 		$this->build("p4a_db_source", "securities")
 			->setTable("securities")
 			->addOrder("name")
@@ -79,8 +81,12 @@ class Securities extends P4A_Base_Mask
 			->addOrder("portfolio")
 			->load();
 
+		// data sources to set the default values
+		$this->build("p4a_db_source", "type_data")
+			->setTable("security_types")
+			->load();
+
 		$this->setSource($this->securities);
-		$this->setTitle("All securities - use only in case of problems with the other security masks");
 		$this->firstRow();
 
 		$this->fields->currency_id
@@ -251,6 +257,23 @@ class Securities extends P4A_Base_Mask
 		}
 	} 	
 
+	function saveRow()
+	{
+		// set the security type default values e.g. cash price is always 1
+		$type_id = $this->fields->security_type_id->getNewValue();
+		if ($type_id > 0) {
+			$this->type_data
+				->setWhere("security_type_id = ".$type_id)
+				->firstRow();
+			$type_code_id = $this->type_data->fields->code_id->getValue();
+			if ($type_code_id == 'cash') {
+				$this->fields->last_price->setNewValue(1);
+			}
+		} 
+		
+		parent::saveRow(); 
+	}
+	
 	public function _btn_update_yahoo()
 	{
 		// update prices

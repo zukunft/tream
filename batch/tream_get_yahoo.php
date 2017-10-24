@@ -3,7 +3,7 @@
 
 /* 
 
-tream_get_yahoo.php - Yahoo link
+tream_get_yahoo.php - Yahoo link (get prices)
 
 TO DO: 
 

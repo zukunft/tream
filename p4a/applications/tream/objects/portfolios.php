@@ -201,6 +201,14 @@ class Portfolios extends P4A_Base_Mask
 			->showNavigationBar();
 		$this->exposure_target_values->addFilter("portfolio_id = ?", $this->portfolios->fields->portfolio_id);  
 
+		$this->build("p4a_button", "btn_set_filter") 
+			->setLabel("Use only this portfolio") 
+			->implement("onclick", $this,"_btn_set_filter");
+
+		$this->build("p4a_button", "btn_unset_filter") 
+			->setLabel("Use all portfolios") 
+			->implement("onclick", $this,"_btn_unset_filter");
+
 		$this->build("p4a_fieldset", "fs_details")
 //			->setLabel($p4a->Tream->menu->loguser->getLabel())
 			->setLabel("Portfolio details")
@@ -224,8 +232,10 @@ class Portfolios extends P4A_Base_Mask
 		$this->frame
 			->anchor($this->table)
  			->anchorLeft($this->fs_details)
- 			->anchorLeft($this->table_portfolio_pnl)
- 			->anchor($this->table_trades)
+			->anchorLeft($this->btn_set_filter)
+			->anchorLeft($this->btn_unset_filter)
+ 			->anchor($this->table_portfolio_pnl)
+ 			->anchorLeft($this->table_trades)
  			->anchorLeft($this->table_portfolio_pos)
  			->anchor($this->table_portfolio_pos_closed)
  			->anchorLeft($this->table_target_values); 
@@ -234,5 +244,31 @@ class Portfolios extends P4A_Base_Mask
 			->display("menu", $p4a->menu)
 			->display("top", $this->toolbar)
 			->setFocus($this->fields->portfolio_name);
+	}
+
+	public function _btn_set_filter()
+	{
+/*		$p4a->menu->portfolio_filter
+			->setLabel("select portfolio")
+			->setFontColor("Red"); */
+		$this->warning("Portfolio ".$this->portfolios->fields->portfolio_name->getValue()." selected");
+		$_SESSION['portfolio_id'] = $this->portfolios->fields->portfolio_id->getValue();
+		//$p4a->messageInfo('Portfolio selected', 'info');
+/*		$this
+			->display("menu", $p4a->menu)
+			->display("top", $this->toolbar); */
+	}
+
+	public function _btn_unset_filter()
+	{
+/*		$p4a->menu->portfolio_filter
+			->setLabel("all portfolios")
+			->setFontColor("Grey"); */
+		$this->warning("Use all portfolios");
+		$_SESSION['portfolio_id'] = 0;
+		//$p4a->messageInfo('All portfolios selected', 'info');
+/*		$this
+			->display("menu", $p4a->menu)
+			->display("top", $this->toolbar); */
 	}
 }

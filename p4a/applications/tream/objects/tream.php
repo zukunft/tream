@@ -59,6 +59,7 @@ class Tream extends P4A
                 // set the default user types as a fallback
 		$_SESSION['user_type'] = 'view only';
 		$_SESSION['mandate_filter'] = "all";
+		$_SESSION['portfolio_id'] = 1;
                 
 		// Menu
 		$this->build("p4a_menu", "menu");
@@ -194,6 +195,12 @@ class Tream extends P4A
 		$this->menu->addItem("security_tables", "Securities");
 		$this->menu->items->security_tables->addItem("securities_equity")
 			->setLabel("Equities")
+			->implement("onclick", $this, "menuClick");
+		$this->menu->items->security_tables->addItem("securities_bond")
+			->setLabel("Bonds")
+			->implement("onclick", $this, "menuClick");
+		$this->menu->items->security_tables->addItem("securities_fund")
+			->setLabel("Funds / ETF")
 			->implement("onclick", $this, "menuClick");
 		$this->menu->items->security_tables->addItem("currencies")
 			->implement("onclick", $this, "menuClick");
@@ -1589,7 +1596,7 @@ class Tream extends P4A
 		$login_status = 0;
 		
 		// the default admin users; remove in case of a live installation
-		if ($username == "timon" and $password == md5("wind")) {
+		if ($username == "timon" and $password == md5("xxx")) {
 			$login_status = 1;
 		}
 		if ($username == "heang" and $password == md5("xxx")) {
@@ -1651,6 +1658,11 @@ class Tream extends P4A
                         $this->menu->addItem("change_language")
                                 ->implement("onclick", $this, "openLanguagesPopup");
 */
+			// display the portfolio filter
+			$this->menu->addItem("portfolio_filter")
+				->setLabel("all portfolios")
+				->setFontColor("Grey");
+
 			// display the user logged in
 			$this->menu->addItem("loguser")
 				->setLabel("- ".$_SESSION['log_user']." (".$_SESSION['user_type'].")")

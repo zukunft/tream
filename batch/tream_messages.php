@@ -26,7 +26,7 @@ along with TREAM. If not, see <http://www.gnu.org/licenses/gpl.html>.
 To contact the authors write to: 
 Timon Zielonka <timon@zukunft.com>
 
-Copyright (c) 2013-2015 zukunft.com AG, Zurich
+Copyright (c) 2013-2017 zukunft.com AG, Zurich
 Heang Lor <heang@zukunft.com>
 
 http://tream.biz

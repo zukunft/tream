@@ -86,7 +86,7 @@ class Exposure_targets extends P4A_Base_Mask
 			->setSourceDescriptionField("description");
 
 		$this->fields->currency_id
-			->setLabel("Currency")
+			->setLabel("Ref. currency")
 			->setType("select")
 			->setSource(P4A::singleton()->select_currencies)
 			->setSourceDescriptionField("symbol");
