@@ -2,7 +2,7 @@
  
 /* 
 
-check_portfolio.php - Calculate the portfolio exposures and create warning messages if needed
+tream_portfolio_check.php - Calculate the portfolio exposures and create warning messages if needed
 
 ...
 

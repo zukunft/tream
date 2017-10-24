@@ -33,8 +33,8 @@ asset allocation monitoring
 ---------------------------
 
 portfolio_overview.php         - wrapper to shows the details of one portfolio for testing using the internal TREAM functions
-check_portfolio.php            - check one portfolio (can be called from the GUI); Calculate the portfolio exposures and create warning messages if needed; is called also by check.php
-check_exposure_tree.php        - check the exposure tree consistency and create warning messages if needed
+check_exposure_tree.php        - check the exposure tree consistency and create warning messages if needed mainly for testing, but can also be called from the GUI
+tream_portfolio_check.php      - functions to check one portfolio; Calculate the portfolio exposures and create warning messages if needed; is called also by check.php
 tream_allocation_optimizer.php - calculates an optimal asset allocation
 
 
@@ -68,7 +68,7 @@ price feeds and security data im-/export
 ----------------------------------------
 
 tream_get_yahoo.php (gyp)      - Yahoo link (get prices)
-tream_get_yahoo_sec.php (gys)  - Yahoo link (get security data)
+tream_get_yahoo_sec.php (gys)  - Yahoo link (get security data and maybe called from the GUI)
 
 
 Charts (can also be called from the GUI)
@@ -78,7 +78,6 @@ tream_chart.php                - called from the p4a user interface and returns 
 tream_chart_pie.php            - create a pie chart with TREAM settings
 tream_chart_xy.php             - create a XY chart with TREAM settings
 tream_chart_exposure_type.php  - show the risk reward chart (These scripts can be called from the GUI but needs to be review, because they have there own db call)
-tream_charts.php               - link to the library pChart
 
 
 general
@@ -98,6 +97,7 @@ old modules
 
 tream_jb_link.php              - to be moved to the reconciliation configuration
 check.php                      - Consistency check script that fixes automatically some issues or creates a message for the user; to be splitted to tream_timer, tream_messages and other
+tream_charts.php               - maybe not needed any more
 
 
 */

@@ -1,4 +1,5 @@
 <?php   
+
 /*  
 
 tream_chart_exposure_type.php - show the risk reward chart

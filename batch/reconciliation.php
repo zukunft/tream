@@ -36,7 +36,7 @@ http://tream.biz
  
 define("THIS_SCRIPT_VERBOSE_LEVEL", 2); // 0 = show only actions, 1 = show warnings also, 2 = show also infos
 
-include_once './php_general_library.php';
+include_once './tream_library.php';
 include_once './tream_db_adapter.php';
 include_once './tream_db.php';
 include_once './tream_mm_link.php';
