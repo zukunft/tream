@@ -522,15 +522,16 @@ function event_close($event_key, $debug) {
 }
  
 // saves the expore for on portfolio in the database for faster calculation
-function exposure_save($portfolio_id, $target_id, $usage) {
+function exposure_save($portfolio_id, $target_id, $usage, $value_ref_ccy) {
   if ($target_id > 0 AND $portfolio_id > 0) {
     $target_value_id = sql_get("SELECT exposure_target_value_id FROM exposure_target_values WHERE exposure_target_id = ".$target_id." AND portfolio_id = ".$portfolio_id.";");
     if ($target_value_id > 0) {
       sql_set_no_log("exposure_target_values", "exposure_target_value_id", $target_value_id, "calc_value", $usage, "");
+      sql_set_no_log("exposure_target_values", "exposure_target_value_id", $target_value_id, "calc_value_in_ref_ccy", $value_ref_ccy, "");
     } else {
-      $sql ="INSERT INTO exposure_target_values (exposure_target_id, portfolio_id, calc_value) VALUES ('".$target_id."', '".$portfolio_id."', '".$usage."');";
+      $sql ="INSERT INTO exposure_target_values (exposure_target_id, portfolio_id, calc_value, calc_value_in_ref_ccy) VALUES ('".$target_id."', '".$portfolio_id."', '".$usage."', '".$value_ref_ccy."');";
       echo 'insert '.$sql.' .';
-      $result = mysql_query("INSERT INTO exposure_target_values (exposure_target_id, portfolio_id, calc_value) VALUES ('".$target_id."', '".$portfolio_id."', '".$usage."');");
+      $result = mysql_query("INSERT INTO exposure_target_values (exposure_target_id, portfolio_id, calc_value, calc_value_in_ref_ccy) VALUES ('".$target_id."', '".$portfolio_id."', '".$usage."', '".$value_ref_ccy."');");
     }
   } else {
     echo 'target '.$target_id.' is missing';
@@ -541,7 +542,7 @@ function exposure_save($portfolio_id, $target_id, $usage) {
 // check get the exposure limit and create a event if outside the limit
 // the portfolio is used to check exceptions
 // and save the value in the database for faster reuse
-function check_exposure($exposure_id, $portfolio_id, $usage_in_pct, $debug) {
+function check_exposure($exposure_id, $portfolio_id, $usage_in_pct, $sum_in_ref_ccy, $debug) {
   $result = '';
   $exposure_name = sql_get_value("exposure_items", "exposure_item_id", $exposure_id, "description");
   $ref_currency_id = sql_get_value("portfolios", "portfolio_id", $portfolio_id, "currency_id");
@@ -554,7 +555,7 @@ function check_exposure($exposure_id, $portfolio_id, $usage_in_pct, $debug) {
   $limit_down = sql_get("SELECT limit_down         FROM exposure_targets WHERE exposure_item_id = ".$exposure_id." AND currency_id = ".$ref_currency_id." AND account_mandat_id = ".$mandate_id.";");
   $result = ' check limits if '.$exposure_name.' '.round($usage_in_pct).'% is between '.$limit_up.' and '.$limit_down.', should be '.$target.' ';
   if ($target_id > 0 AND $portfolio_id > 0) {
-    exposure_save($portfolio_id, $target_id, $usage_in_pct);
+    exposure_save($portfolio_id, $target_id, $usage_in_pct, $sum_in_ref_ccy);
   } else {
     echo 'target for '.$exposure_name.' is missing';
   }

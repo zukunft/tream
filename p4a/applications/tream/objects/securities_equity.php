@@ -277,9 +277,9 @@ class Securities_equity extends P4A_Base_Mask
 		//$this->yahoo_result->setLabel(http_parse_message(http_get("https://tream.biz/batch/tream_get_security_from_yahoo.php"))->body); 
 		$sec_id = $this->securities->fields->security_id->getValue();
 		if ($sec_id > 0) {
-                        $yahoo_result = file_get_contents("https://tream.biz/batch/tream_get_security_from_yahoo.php?id=".$sec_id);
+                        $yahoo_result = file_get_contents("https://tream.biz/batch/tream_get_yahoo_sec.php?id=".$sec_id);
 		} else {
-                        $yahoo_result = file_get_contents("https://tream.biz/batch/tream_get_security_from_yahoo.php");
+                        $yahoo_result = file_get_contents("https://tream.biz/batch/tream_get_yahoo_sec.php");
 		}
 		$this->yahoo_result
                         ->setWidth(600)

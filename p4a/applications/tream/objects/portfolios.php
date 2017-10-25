@@ -197,7 +197,7 @@ class Portfolios extends P4A_Base_Mask
 		$this->build("p4a_table", "table_target_values")
 			->setSource($this->exposure_target_values)
 			->setWidth(600)
-			->setVisibleCols(array("item_name","limit_up","limit_down","neutral","calc_value","diff_neutral")) 
+			->setVisibleCols(array("item_name","in_ref_ccy","calc_value","neutral","diff_neutral","limit_up","limit_down")) 
 			->showNavigationBar();
 		$this->exposure_target_values->addFilter("portfolio_id = ?", $this->portfolios->fields->portfolio_id);  
 

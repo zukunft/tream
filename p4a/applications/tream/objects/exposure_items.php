@@ -109,9 +109,10 @@ class Exposure_items extends P4A_Base_Mask
 		$this->setRequiredField("description");
 
 		$this->build("p4a_fieldset", "fs_details")
-			->setLabel("Exposure type detail")
+			->setLabel("Exposure item detail")
 			->anchor($this->fields->exposure_type_id)
 			->anchor($this->fields->description)
+			->anchor($this->fields->wikidata_id)
 			->anchor($this->fields->is_part_of)
 			->anchorLeft($this->fields->part_weight)
 			->anchor($this->fields->currency_id)

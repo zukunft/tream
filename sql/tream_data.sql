@@ -381,9 +381,9 @@ INSERT INTO `exposure_items` (`exposure_item_id`, `exposure_type_id`, `order_nbr
 --
 
 INSERT INTO `security_exposure_stati` (`security_exposure_status_id`, `status_text`, `code_id`, `comment`) VALUES
-(1, 'OK', 'ok', 'The exposure is in line with the asset allocation matrix'),
-(2, 'breached', 'breached', 'The exposure has breached a limit for at least one portfolio at the portfolio manager has been informed'),
-(3, 'confirmed', 'confirmed', 'The client and portfolio manager have a confirmed that the breach is OK for the moment.');
+(1, 'manual', 'manual', 'The exposure is set manual by the user'),
+(2, 'zukunft.com', 'zukunft', 'This exposure is automatically sourced from zukunft.com'),
+(3, 'estimate', 'estimate', 'this is a manual estimate that should be overwritten by zukunft.com values as soon as the values from zukunft.com are reliable');
 
 --
 -- `value_stati` - the predefined value stati

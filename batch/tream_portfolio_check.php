@@ -177,7 +177,7 @@ function exposures($portfolio_id, $exposure_id, $description, $currency_id, $sec
 	tream_display ('<h3>'.$description.' '.round($usage_in_pct,2).' pct ('.$ref_curr.' '.round($position_usage[$level-1]).')</h3><br>', $display);
 	// get exposure limits
 	//tream_display (check_exposure($exposure_id, $portfolio_id, $usage_in_pct, $display)."<br><br>", $display);
-	tream_display (check_exposure($exposure_id, $portfolio_id, $usage_in_pct)."<br><br>", $display);
+	tream_display (check_exposure($exposure_id, $portfolio_id, $usage_in_pct, $position_usage[$level-1], $display)."<br><br>", $display);
       }
     }
   }  

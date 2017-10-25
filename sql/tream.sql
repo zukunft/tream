@@ -670,10 +670,11 @@ CREATE TABLE IF NOT EXISTS `exposure_items` (
   `exposure_type_id` int(11) DEFAULT NULL,
   `order_nbr` int(11) DEFAULT NULL,
   `description` varchar(200) NOT NULL,
-  `currency_id` int(11) DEFAULT NULL COMMENT 'used only for currencies to link to the cash position',
+  `wikidata_id` varchar(50) DEFAULT NULL,
   `is_part_of` int(11) DEFAULT NULL COMMENT 'self reference to create a tree',
   `part_weight` double DEFAULT NULL COMMENT 'weight used for aggregation the single exposures',
-  `security_type_id` int(11) DEFAULT NULL COMMENT 'only used for Asset class exposure types to set the default expore item',
+  `currency_id` int(11) DEFAULT NULL COMMENT 'used only for currencies to link to the cash position',
+  `security_type_id` int(11) DEFAULT NULL COMMENT 'used only for Asset class exposure types to set the default expore item',
   `comment` text,
   PRIMARY KEY (`exposure_item_id`),
   KEY `exposure_type_id` (`exposure_type_id`),
@@ -771,7 +772,7 @@ CREATE TABLE IF NOT EXISTS `exposure_types` (
   `type_name` varchar(200) NOT NULL,
   `description` text,
   `comment` text,
-  `code_id` varchar(50),
+  `code_id` varchar(50) DEFAULT NULL,
   PRIMARY KEY (`exposure_type_id`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
@@ -3807,7 +3808,15 @@ CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW 
 --
 DROP TABLE IF EXISTS `v_event_stati`;
 
-CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `v_event_stati` AS select NULL AS `event_status_id`,' not set' AS `status_text` union select `event_stati`.`event_status_id` AS `event_status_id`,`event_stati`.`status_text` AS `status_text` from `event_stati`;
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `v_event_stati` AS 
+select 
+  NULL AS `event_status_id`,
+  ' not set' AS `status_text` 
+union select 
+  s.`event_status_id` AS `event_status_id`,
+  s.`status_text` AS `status_text`
+from 
+  `event_stati` s;
 
 -- --------------------------------------------------------
 
@@ -3827,13 +3836,20 @@ DROP TABLE IF EXISTS `v_exposure_items`;
 
 CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `v_exposure_items` AS 
 select 
-  NULL AS `exposure_item_id`,
-  ' not set' AS `description` 
+  NULL       AS `exposure_item_id`,
+  ' not set' AS `description`, 
+  NULL       AS `exposure_type_id`,
+  ' not set' AS `type_name`
 union select 
   i.`exposure_item_id` AS `exposure_item_id`,
-  i.`description` AS `description` 
+  i.`description`      AS `description` 
+  i.`exposure_type_id` AS `exposure_type_id`,
+  t.`type_name`        AS `type_name`
 from 
-  `exposure_items` i;
+  `exposure_items` i,
+  `exposure_types` t
+where
+  i.`exposure_type_id` = t.`exposure_type_id`;
 
 -- --------------------------------------------------------
 
@@ -3910,6 +3926,7 @@ SELECT
   `portfolios`.`portfolio_name`                                                   AS `portfolio_name`,
   `exposure_items`.`description`                                                  AS `item_name`,
   round(`exposure_target_values`.`calc_value`,1)                                  AS `calc_value`,
+  round(`exposure_target_values`.`calc_value_in_ref_ccy`,0)                       AS `in_ref_ccy`,
   round(`exposure_targets`.`optimized`,1)                                         AS `optimized`,
   round(`exposure_targets`.`optimized` - `exposure_target_values`.`calc_value`,1) AS `diff`,
   round(`exposure_targets`.`target`,1)                                            AS `neutral`,

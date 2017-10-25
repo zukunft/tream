@@ -47,7 +47,16 @@ class Security_exposures extends P4A_Base_Mask
 		parent::__construct();
 		$p4a = p4a::singleton();
 
-		$this->setSource($p4a->security_exposures);
+		$this->build("p4a_db_source", "security_exposures")
+			->setTable("security_exposures")
+			->addJoinLeft("securities", "security_exposures.security_id  = securities.security_id",
+					  array('name'=>'security'))
+			->addJoinLeft("v_exposure_items", "security_exposures.exposure_item_id  = v_exposure_items.exposure_item_id",
+					  array('description'=>'exposure', 'type_name'=>'type_name'))
+			->addOrder("exposure_item_id")
+			->load();
+
+		$this->setSource($this->security_exposures);
 		$this->firstRow();
 
 		// Customizing fields properties
@@ -69,6 +78,26 @@ class Security_exposures extends P4A_Base_Mask
 			->setSource(P4A::singleton()->security_exposure_stati_select)
 			->setSourceDescriptionField("status_text");
 
+		// Search Fieldset
+		$this->build("p4a_field", "sec_search")
+			->setLabel("Security name")
+			->implement("onreturnpress", $this, "search");
+		$this->build("p4a_field", "type_search")
+			->setLabel("or type name")
+			->implement("onreturnpress", $this, "search");
+		$this->build("p4a_field", "expo_search")
+			->setLabel("or exposure")
+			->implement("onreturnpress", $this, "search");
+		$this->build("p4a_button", "cmd_search")
+			->setLabel("Go")
+			->implement("onclick", $this, "search");
+		$this->build("p4a_fieldset", "fs_search")
+			->setLabel("Search")
+			->anchor($this->sec_search)
+			->anchor($this->type_search)
+			->anchor($this->expo_search)
+			->anchorLeft($this->cmd_search);
+
 		$this->build("p4a_full_toolbar", "toolbar")
 			->setMask($this);
 
@@ -76,15 +105,15 @@ class Security_exposures extends P4A_Base_Mask
 		$this->toolbar->buttons->delete->disable();
 
 		$this->build("p4a_table", "table")
-			->setSource($p4a->security_exposures)
-			->setVisibleCols(array("security","exposure","exposure_in_pct","comment")) 
+			->setSource($this->security_exposures)
+			->setVisibleCols(array("security","type_name","exposure","exposure_in_pct","comment")) 
 			->setWidth(500)
 			->showNavigationBar();
 
 		//$this->setRequiredField("description");
 
 		$this->build("p4a_fieldset", "fs_details")
-			->setLabel("Exposure target detail")
+			->setLabel("Security exposure detail")
 			->anchor($this->fields->security_id)
 			->anchor($this->fields->exposure_item_id)
 			->anchor($this->fields->exposure_in_pct)
@@ -92,6 +121,7 @@ class Security_exposures extends P4A_Base_Mask
 			->anchor($this->fields->comment);
 		
 		$this->frame
+			->anchor($this->fs_search)
 			->anchor($this->table)
  			->anchor($this->fs_details);
 
@@ -100,4 +130,58 @@ class Security_exposures extends P4A_Base_Mask
 			->display("top", $this->toolbar)
 			->setFocus($this->fields->exposure_in_pct);
 	}
+
+	public function search()
+	{
+		$value = $this->sec_search->getSQLNewValue();
+		if ($value <> "") {
+			$this->security_exposures
+				->setWhere(P4A_DB::singleton()->getCaseInsensitiveLikeSQL("`securities`.`name`", "%{$value}%"))
+				->firstRow();
+
+			if (!$this->security_exposures->getNumRows()) {
+				$this->warning("No results with security ".$value." found");
+				$this->security_exposures->setWhere(null);
+				$this->security_exposures->firstRow();
+			}
+		}
+        
+		if ($value == "") {
+			$value = $this->type_search->getSQLNewValue();
+			if ($value <> "") {
+				$this->security_exposures
+					->setWhere(P4A_DB::singleton()->getCaseInsensitiveLikeSQL("`v_exposure_items`.`type_name`", "%{$value}%"))
+					->firstRow();
+
+				if (!$this->security_exposures->getNumRows()) {
+					$this->warning("No results with type ".$value." found");
+					$this->security_exposures->setWhere(null);
+					$this->security_exposures->firstRow();
+				}
+			}
+		}
+        
+		if ($value == "") {
+			$value = $this->expo_search->getSQLNewValue();
+			if ($value <> "") {
+				$this->security_exposures
+					->setWhere(P4A_DB::singleton()->getCaseInsensitiveLikeSQL("`v_exposure_items`.`description`", "%{$value}%"))
+					->firstRow();
+
+				if (!$this->security_exposures->getNumRows()) {
+					$this->warning("No results with exposure ".$value." found");
+					$this->security_exposures->setWhere(null);
+					$this->security_exposures->firstRow();
+				}
+			}
+		}
+		
+		if ($value == "") {
+			$this->security_exposures->setWhere(null);
+			$this->security_exposures->firstRow();
+		}
+	} 	
+
+	
+	
 }
