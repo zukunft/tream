@@ -771,6 +771,7 @@ CREATE TABLE IF NOT EXISTS `exposure_types` (
   `exposure_type_id` int(11) NOT NULL AUTO_INCREMENT,
   `type_name` varchar(200) NOT NULL,
   `description` text,
+  `zukunftcom_formula` varchar(200) DEFAULT NULL,
   `comment` text,
   `code_id` varchar(50) DEFAULT NULL,
   PRIMARY KEY (`exposure_type_id`)
@@ -1205,6 +1206,7 @@ CREATE TABLE IF NOT EXISTS `securities` (
   `security_type_id` int(11) DEFAULT NULL,
   `currency_pair_id` int(11) DEFAULT NULL,
   `security_exchange_id` int(11) DEFAULT NULL,
+  `name_zukunftcom` varchar(200) DEFAULT NULL,
   `symbol_wikidata` varchar(200) DEFAULT NULL,
   `symbol_bloomberg` varchar(200) DEFAULT NULL,
   `symbol_reuters` varchar(200) DEFAULT NULL,
@@ -3842,7 +3844,7 @@ select
   ' not set' AS `type_name`
 union select 
   i.`exposure_item_id` AS `exposure_item_id`,
-  i.`description`      AS `description` 
+  i.`description`      AS `description`, 
   i.`exposure_type_id` AS `exposure_type_id`,
   t.`type_name`        AS `type_name`
 from 

@@ -74,8 +74,9 @@ define("EVENT_TYPE_SYSTEM_EVENT",   "event_type_system_event");
 define("EVENT_TYPE_USER_DAILY",     "event_type_daily_user");
 define("EVENT_TYPE_EXPOSURE_LIMIT", "event_type_exposure_limit");
 
-define("USER_SYSTEM",       "user_system");
-define("USER_CHECK_SCRIPT", "user_check_script");
+define("USER_SYSTEM",       "system");
+define("USER_CHECK_SCRIPT", "batch");
+define("USER_ZUKUNFT",      "zukunft"); // code id for the zukunft.com feed user
 
 define("SYSTEM_MM_FEED",       "markertmap_xls_feed");
 define("SYSTEM_YAHOO_FEED",    "yahoo_feed");
@@ -94,6 +95,8 @@ define("SEC_TRIGGER_STATUS_NEW",   "new");
 define("SEC_TRIGGER_STATUS_ACTIVE",   "active");
 define("SEC_TRIGGER_STATUS_TRIGGERED",   "done");
 define("SEC_TRIGGER_STATUS_CLOSED",   "closed");
+
+define("SEC_EXP_SOURCE_ZUKUNFT", "zukunft"); // code id for the zukunft.com feed
 
 
 // IDs to be replaced
@@ -161,10 +164,24 @@ function sql_get_value($table, $id_field, $id_value, $value_field) {
   return $result;
 }
  
+function sql_get_user_name($user_id) {
+  $user_name = sql_get_value('log_users', 'user_id', $user_id, 'username');
+  return $user_name;
+}
+
 // set a value in an sql table and report the changes
 function sql_log($table, $id_field, $id_value, $value_field, $old_value, $new_value) {
   if ($old_value <> $new_value) {
     mysql_query("INSERT INTO log_data (table_name, row_id, field_name, old_value, new_value, user_id) VALUES ('".$table."', '".$id_value."', '".$value_field."', '".$old_value."', '".$new_value."', ".THIS_SCRIPT_USER_ID.");");
+  }
+  return $new_value;
+}
+
+// similar to sql_log but for system users independend from the script USER
+function sql_log_sys($table, $id_value, $value_field, $old_value, $new_value, $user_id) {
+  if ($old_value <> $new_value) {
+    $user_name = sql_get_user_name($user_id);
+    mysql_query("INSERT INTO log_data (table_name, row_id, field_name, old_value, new_value, user_id, user_name) VALUES ('".$table."', '".$id_value."', '".$value_field."', '".$old_value."', '".$new_value."', ".$user_id.", '".$user_name."');");
   }
   return $new_value;
 }
@@ -310,7 +327,8 @@ function sql_code_link($code_id, $name_field, $description, $debug) {
     $id_field   = "event_type_id";
   }
   if ($code_id == USER_SYSTEM
-   OR $code_id == USER_CHECK_SCRIPT) {
+   OR $code_id == USER_CHECK_SCRIPT
+   OR $code_id == USER_ZUKUNFT) {
     $table_name = "log_users";
     $id_field   = "user_id";
     tream_debug ('users<br>', $debug);

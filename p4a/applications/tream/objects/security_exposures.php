@@ -73,7 +73,7 @@ class Security_exposures extends P4A_Base_Mask
 			->setSourceDescriptionField("select_name");
 
 		$this->fields->security_exposure_status_id
-			->setLabel("Status")
+			->setLabel("Source")
 			->setType("select")
 			->setSource(P4A::singleton()->security_exposure_stati_select)
 			->setSourceDescriptionField("status_text");
@@ -102,7 +102,7 @@ class Security_exposures extends P4A_Base_Mask
 			->setMask($this);
 
 		/* usually a record does not need to be deleted */
-		$this->toolbar->buttons->delete->disable();
+		//$this->toolbar->buttons->delete->disable();
 
 		$this->build("p4a_table", "table")
 			->setSource($this->security_exposures)
@@ -110,6 +110,11 @@ class Security_exposures extends P4A_Base_Mask
 			->setWidth(500)
 			->showNavigationBar();
 
+		$this->build('p4a_button','btn_zukunftcom_update')
+			->implement("onclick", $this, "zukunftcom_update");;
+		$this->btn_zukunftcom_update->setLabel('Refresh based on zukunft.com');		
+		
+		$this->build("p4a_label", "zukunftcom_result"," ");
 		//$this->setRequiredField("description");
 
 		$this->build("p4a_fieldset", "fs_details")
@@ -123,12 +128,22 @@ class Security_exposures extends P4A_Base_Mask
 		$this->frame
 			->anchor($this->fs_search)
 			->anchor($this->table)
- 			->anchor($this->fs_details);
+ 			->anchor($this->fs_details)
+ 			->anchor($this->btn_zukunftcom_update)
+ 			->anchorLeft($this->zukunftcom_result);
 
 		$this
 			->display("menu", $p4a->menu)
 			->display("top", $this->toolbar)
 			->setFocus($this->fields->exposure_in_pct);
+	}
+
+	public function zukunftcom_update()
+	{
+		//$this->chart->setIcon("/batch/batch/tream_get_zukunft.php");
+                $zukunftcom_result = file_get_contents("https://tream.biz/batch/tream_get_zukunft.php");
+		$this->zukunftcom_result->setWidth(600)
+                        ->setLabel($zukunftcom_result); 
 	}
 
 	public function search()

@@ -51,6 +51,7 @@ define("TRADE_STATUS_EXECUTED", 5); // move this const to two functions: get row
 
 define("SQL_TABLE_PK_NBR", 0); // at the moment the first field in a table must always be the primary key
 
+
 // ----------------
 // search functions
 // ----------------
@@ -95,6 +96,16 @@ function sql_get_curr_id($curr_symbol) {
   return sql_get_value('currencies', 'symbol', $curr_symbol, 'currency_id');
 }
 
+function sql_get_sec_exp_source_id($code_id) {
+  $source_id = sql_get_value('security_exposure_stati', 'code_id', $code_id, 'security_exposure_status_id');
+  return $source_id;
+}
+
+function sql_get_user_id($code_id) {
+  $user_id = sql_get_value('log_users', 'code_id', $code_id, 'user_id');
+  return $user_id;
+}
+
 // get the trade id based on the bank trade id
 function sql_trade_find_bank($bank_ref_id, $portfolio_id) {
   // by selecting the portfolio it is not a problem if two banks use the same trade id
@@ -137,6 +148,11 @@ function sql_find_event($event_key) {
 function sql_find_curr($curr_symbol) {
   $curr_id = sql_get("SELECT currency_id FROM currencies WHERE symbol = '".$curr_symbol."';");
   return $curr_id;
+}
+
+function sql_find_exposure_item($item_name) {
+  $item_id = sql_get("SELECT exposure_item_id FROM exposure_items WHERE description = '".$item_name."';");
+  return $item_id;
 }
 
 // -------------------------------------------
@@ -221,6 +237,10 @@ function sql_add_trade_field($trade_id, $value_field, $new_value, $value_type) {
 
 function sql_add_security_field($sec_id, $value_field, $new_value, $value_type) {
   return sql_add("securities", "security_id", $sec_id, $value_field, $new_value, $value_type);
+}
+
+function sql_add_exposure_item_field($item_id, $value_field, $new_value, $value_type) {
+  return sql_add("exposure_items", "exposure_item_id", $sec_id, $value_field, $new_value, $value_type);
 }
 
 function sql_add_event_field($event_id, $value_field, $new_value, $value_type) {
@@ -329,6 +349,11 @@ function sql_add_event($value_field, $new_value, $value_type) {
 function sql_add_curr($value_field, $new_value, $value_type) {
   $curr_id = sql_insert("currencies", "currency_id", $value_field, $new_value, $value_type);
   return $curr_id;
+}
+
+function sql_add_exposure_item($value_field, $new_value, $value_type) {
+  $item_id = sql_insert("exposure_items", "exposure_item_id", $value_field, $new_value, $value_type);
+  return $item_id;
 }
 
 // --------------------------------------

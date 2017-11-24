@@ -78,10 +78,15 @@ class Exposure_types extends P4A_Base_Mask
 		//$this->build("p4a_image", "chart","/batch/tream_chart_xy.php?title=Assets&xaxis=risk&yaxis=return&labels=CHF,EUR,USD&xvalues=40,30,10&yvalues=2,3,4");
 
 		$this->build("p4a_image", "chart","chart");
-		$this->build('p4a_button','show_chart_btn')
+		$this->build('p4a_button','btn_show_chart')
 			->implement("onclick", $this, "show_chart");;
-		$this->show_chart_btn->setLabel('Update chart');		
+		$this->btn_show_chart->setLabel('Update chart');		
+		$this->build('p4a_button','btn_zukunftcom_update')
+			->implement("onclick", $this, "zukunftcom_update");;
+		$this->btn_zukunftcom_update->setLabel('Refresh based on zukunft.com');		
 		
+		$this->build("p4a_label", "zukunftcom_result"," ");
+
 		// add this change to documentaion!!!
 		$this->build("p4a_field", "ref_fx")
 			->setLabel("Ref. currency")
@@ -98,14 +103,16 @@ class Exposure_types extends P4A_Base_Mask
 			->setLabel("Exposure type detail")
 			->anchor($this->fields->type_name)
 			->anchor($this->fields->description)
+			->anchor($this->fields->zukunftcom_formula)
 			->anchor($this->fields->comment);
 		
 		$this->frame
 			->anchor($this->table)
  			->anchor($this->fs_details)
-			//->anchor($this->show_chart_btn)
+ 			->anchor($this->btn_zukunftcom_update)
+ 			->anchorLeft($this->zukunftcom_result)
 			->anchor($this->ref_fx)
- 			->anchorLeft($this->show_chart_btn)
+ 			->anchorLeft($this->btn_show_chart)
  			->anchor($this->chart);
 
 		$this
@@ -113,10 +120,20 @@ class Exposure_types extends P4A_Base_Mask
 			->display("top", $this->toolbar)
 			->setFocus($this->fields->type_name);
 	}
+
 	public function show_chart()
 	{
 		$this->chart->setIcon("/batch/tream_chart_exposure_type.php?type_id=".$this->exposure_types->fields->exposure_type_id->getValue()."&ref_fx=".$this->ref_fx->getNewValue()."");
 	}
+
+	public function zukunftcom_update()
+	{
+		//$this->chart->setIcon("/batch/batch/tream_get_zukunft.php");
+                $zukunftcom_result = file_get_contents("https://tream.biz/batch/tream_get_zukunft.php");
+		$this->zukunftcom_result->setWidth(600)
+                        ->setLabel($zukunftcom_result); 
+	}
+
 	function main()
 	{
 		parent::main();

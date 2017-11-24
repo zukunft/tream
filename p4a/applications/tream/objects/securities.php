@@ -197,6 +197,7 @@ class Securities extends P4A_Base_Mask
 			->anchor($this->fields->valor)
 			->anchor($this->fields->currency_id)
 			->anchor($this->fields->currency_pair_id)
+			->anchor($this->fields->name_zukunftcom)
 			->anchor($this->fields->symbol_wikidata)
 			->anchor($this->fields->symbol_bloomberg)
 			->anchor($this->fields->symbol_reuters)

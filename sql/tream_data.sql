@@ -102,9 +102,10 @@ INSERT INTO `persons` (`person_id`, `display_name`, `lastname`, `firstname`, `pe
 INSERT INTO `log_users` (`user_id`, `username`, `password`, `code_id`, `user_type_id`, `internal_person_id`, `comment`) VALUES
 (1, 'system', NULL, 'system', 1, NULL, NULL),
 (2, 'batch', NULL, 'batch', 2, NULL, NULL),
-(3, 'reconciliation', NULL, 'reconciliation', 2, NULL, NULL),
-(4, 'Heang', NULL, NULL, 6, 1, NULL),
-(5, 'Timon', NULL, NULL, 7, 2, NULL);
+(3, 'zukunft.com', NULL, 'zukunft', 2, 'predefined user for the data feed from zukunft.com', NULL, NULL),
+(4, 'reconciliation', NULL, 'reconciliation', 2, NULL, NULL),
+(5, 'Heang', NULL, NULL, 6, 1, NULL),
+(6, 'Timon', NULL, NULL, 7, 2, NULL);
 
 
 --
