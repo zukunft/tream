@@ -20,3 +20,8 @@ Folder structure
 /batch - the php code in this folder is used for the backend processing either for scheduled batch jobs or for the gui
 /p4a/applications/tream - the folder tream and the files below it should be dropped into the /p4a/applications folder created by p4a
 /sql - these sql files are just needed to create the database before the first start
+
+Demo system
+-----------
+
+After the installation the system should look similar to this demo setup: https://tream.biz/p4a/applications/tream/
