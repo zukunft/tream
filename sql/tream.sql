@@ -95,7 +95,7 @@ CREATE TABLE IF NOT EXISTS `account_mandates` (
   `description` varchar(200) NOT NULL,
   `portfolio_type_id` int(11) DEFAULT NULL,
   `account_type_id` int(11) DEFAULT NULL,
-  `comment` text
+  `comment` text,
   PRIMARY KEY (`account_mandat_id`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
