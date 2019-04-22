@@ -4,7 +4,7 @@ TREAM database setup - to create the TREAM database with MySQL
 
 Contains tables and views.
 
-Version 0.0.5 - 19. Oct 2017
+Version 0.0.6 - 22. Apr 2019
 
 Initial dump created with phpMyAdmin SQL Dump version 3.4.11.1deb2+deb7u1 - http://www.phpmyadmin.net
 Server version: 5.5.40 - PHP Version: 5.4.4-14+deb7u14
@@ -34,7 +34,7 @@ http://tream.biz
 
 */ 
 
-SET SQL_MODE="NO_AUTO_VALUE_ON_ZERO";
+SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 SET time_zone = "+00:00";
 
 
@@ -47,12 +47,16 @@ SET time_zone = "+00:00";
 -- Database: `tream`
 --
 
+CREATE DATABASE IF NOT EXISTS `tream` DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
+USE `tream`;
+
 -- --------------------------------------------------------
 
 --
 -- Table structure for table `accounts`
 --
 
+DROP TABLE IF EXISTS `accounts`;
 CREATE TABLE IF NOT EXISTS `accounts` (
   `account_id` int(11) NOT NULL AUTO_INCREMENT,
   `account_name` varchar(200) NOT NULL,
@@ -90,12 +94,13 @@ CREATE TABLE IF NOT EXISTS `accounts` (
 -- Table structure for table `account_mandates`
 --
 
+DROP TABLE IF EXISTS `account_mandates`;
 CREATE TABLE IF NOT EXISTS `account_mandates` (
   `account_mandat_id` int(11) NOT NULL AUTO_INCREMENT,
   `description` varchar(200) NOT NULL,
   `portfolio_type_id` int(11) DEFAULT NULL,
   `account_type_id` int(11) DEFAULT NULL,
-  `comment` text
+  `comment` text,
   PRIMARY KEY (`account_mandat_id`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
@@ -105,6 +110,7 @@ CREATE TABLE IF NOT EXISTS `account_mandates` (
 -- Table structure for table `account_persons`
 --
 
+DROP TABLE IF EXISTS `account_persons`;
 CREATE TABLE IF NOT EXISTS `account_persons` (
   `account_person_id` int(11) NOT NULL AUTO_INCREMENT,
   `account_id` int(11) DEFAULT NULL,
@@ -123,6 +129,7 @@ CREATE TABLE IF NOT EXISTS `account_persons` (
 -- Table structure for table `account_person_types`
 --
 
+DROP TABLE IF EXISTS `account_person_types`;
 CREATE TABLE IF NOT EXISTS `account_person_types` (
   `account_person_type_id` int(11) NOT NULL AUTO_INCREMENT,
   `type_name` varchar(200) NOT NULL,
@@ -137,6 +144,7 @@ CREATE TABLE IF NOT EXISTS `account_person_types` (
 -- Table structure for table `account_types`
 --
 
+DROP TABLE IF EXISTS `account_types`;
 CREATE TABLE IF NOT EXISTS `account_types` (
   `account_type_id` int(11) NOT NULL AUTO_INCREMENT,
   `description` varchar(200) NOT NULL,
@@ -151,6 +159,7 @@ CREATE TABLE IF NOT EXISTS `account_types` (
 -- Table structure for table `actions`
 --
 
+DROP TABLE IF EXISTS `actions`;
 CREATE TABLE IF NOT EXISTS `actions` (
   `action_id` int(11) NOT NULL AUTO_INCREMENT,
   `action_type_id` int(11) DEFAULT NULL,
@@ -177,10 +186,11 @@ CREATE TABLE IF NOT EXISTS `actions` (
 -- Table structure for table `action_stati`
 --
 
+DROP TABLE IF EXISTS `action_stati`;
 CREATE TABLE IF NOT EXISTS `action_stati` (
   `action_status_id` int(11) NOT NULL AUTO_INCREMENT,
   `status_text` varchar(200) NOT NULL,
-  `code_id` varchar(50),
+  `code_id` varchar(50) NOT NULL,
   `comment` text,
   PRIMARY KEY (`action_status_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
@@ -191,6 +201,7 @@ CREATE TABLE IF NOT EXISTS `action_stati` (
 -- Table structure for table `action_types`
 --
 
+DROP TABLE IF EXISTS `action_types`;
 CREATE TABLE IF NOT EXISTS `action_types` (
   `action_type_id` int(11) NOT NULL AUTO_INCREMENT,
   `type_name` varchar(200) CHARACTER SET utf8 NOT NULL,
@@ -203,6 +214,7 @@ CREATE TABLE IF NOT EXISTS `action_types` (
 -- Table structure for table `addresses`
 --
 
+DROP TABLE IF EXISTS `addresses`;
 CREATE TABLE IF NOT EXISTS `addresses` (
   `address_id` int(11) NOT NULL AUTO_INCREMENT,
   `street` varchar(300) DEFAULT NULL,
@@ -222,6 +234,7 @@ CREATE TABLE IF NOT EXISTS `addresses` (
 -- Table structure for table `address_links`
 --
 
+DROP TABLE IF EXISTS `address_links`;
 CREATE TABLE IF NOT EXISTS `address_links` (
   `address_link_id` int(11) NOT NULL AUTO_INCREMENT,
   `address_id` int(11) NOT NULL,
@@ -241,6 +254,7 @@ CREATE TABLE IF NOT EXISTS `address_links` (
 -- Table structure for table `address_link_types`
 --
 
+DROP TABLE IF EXISTS `address_link_types`;
 CREATE TABLE IF NOT EXISTS `address_link_types` (
   `address_link_type_id` int(11) NOT NULL AUTO_INCREMENT,
   `type_name` varchar(100) NOT NULL,
@@ -254,6 +268,7 @@ CREATE TABLE IF NOT EXISTS `address_link_types` (
 -- Table structure for table `banks`
 --
 
+DROP TABLE IF EXISTS `banks`;
 CREATE TABLE IF NOT EXISTS `banks` (
   `bank_id` int(11) NOT NULL AUTO_INCREMENT,
   `bank_name` varchar(200) NOT NULL,
@@ -267,6 +282,7 @@ CREATE TABLE IF NOT EXISTS `banks` (
 -- Table structure for table `bill_periods`
 --
 
+DROP TABLE IF EXISTS `bill_periods`;
 CREATE TABLE IF NOT EXISTS `bill_periods` (
   `bill_period_id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(200) DEFAULT NULL,
@@ -281,6 +297,7 @@ CREATE TABLE IF NOT EXISTS `bill_periods` (
 -- Table structure for table `contacts`
 --
 
+DROP TABLE IF EXISTS `contacts`;
 CREATE TABLE IF NOT EXISTS `contacts` (
   `contact_id` int(11) NOT NULL AUTO_INCREMENT,
   `start` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
@@ -308,6 +325,7 @@ CREATE TABLE IF NOT EXISTS `contacts` (
 -- Table structure for table `contact_categories`
 --
 
+DROP TABLE IF EXISTS `contact_categories`;
 CREATE TABLE IF NOT EXISTS `contact_categories` (
   `contact_category_id` int(11) NOT NULL AUTO_INCREMENT,
   `category_name` varchar(300) NOT NULL,
@@ -321,6 +339,7 @@ CREATE TABLE IF NOT EXISTS `contact_categories` (
 -- Table structure for table `contact_members`
 --
 
+DROP TABLE IF EXISTS `contact_members`;
 CREATE TABLE IF NOT EXISTS `contact_members` (
   `contact_member_id` int(11) NOT NULL AUTO_INCREMENT,
   `person_id` int(11) NOT NULL,
@@ -339,6 +358,7 @@ CREATE TABLE IF NOT EXISTS `contact_members` (
 -- Table structure for table `contact_member_types`
 --
 
+DROP TABLE IF EXISTS `contact_member_types`;
 CREATE TABLE IF NOT EXISTS `contact_member_types` (
   `contact_member_type_id` int(11) NOT NULL AUTO_INCREMENT,
   `member_type` varchar(200) NOT NULL,
@@ -352,6 +372,7 @@ CREATE TABLE IF NOT EXISTS `contact_member_types` (
 -- Table structure for table `contact_notes`
 --
 
+DROP TABLE IF EXISTS `contact_notes`;
 CREATE TABLE IF NOT EXISTS `contact_notes` (
   `contact_note_id` int(11) NOT NULL AUTO_INCREMENT,
   `contact_id` int(11) DEFAULT NULL,
@@ -366,6 +387,7 @@ CREATE TABLE IF NOT EXISTS `contact_notes` (
 -- Table structure for table `contact_numbers`
 --
 
+DROP TABLE IF EXISTS `contact_numbers`;
 CREATE TABLE IF NOT EXISTS `contact_numbers` (
   `contact_number_id` int(11) NOT NULL AUTO_INCREMENT,
   `contact_number` varchar(100) NOT NULL,
@@ -384,6 +406,7 @@ CREATE TABLE IF NOT EXISTS `contact_numbers` (
 -- Table structure for table `contact_number_types`
 --
 
+DROP TABLE IF EXISTS `contact_number_types`;
 CREATE TABLE IF NOT EXISTS `contact_number_types` (
   `contact_number_type_id` int(11) NOT NULL AUTO_INCREMENT,
   `type_name` varchar(100) NOT NULL,
@@ -396,6 +419,7 @@ CREATE TABLE IF NOT EXISTS `contact_number_types` (
 -- Table structure for table `contact_topics`
 --
 
+DROP TABLE IF EXISTS `contact_topics`;
 CREATE TABLE IF NOT EXISTS `contact_topics` (
   `contact_topic_id` int(11) NOT NULL AUTO_INCREMENT,
   `topic_type_id` int(11) NOT NULL,
@@ -409,6 +433,7 @@ CREATE TABLE IF NOT EXISTS `contact_topics` (
 -- Table structure for table `contact_types`
 --
 
+DROP TABLE IF EXISTS `contact_types`;
 CREATE TABLE IF NOT EXISTS `contact_types` (
   `contact_type_id` int(11) NOT NULL AUTO_INCREMENT,
   `type_name` varchar(200) NOT NULL,
@@ -422,6 +447,7 @@ CREATE TABLE IF NOT EXISTS `contact_types` (
 -- Table structure for table `contract`
 --
 
+DROP TABLE IF EXISTS `contract`;
 CREATE TABLE IF NOT EXISTS `contract` (
   `contract_id` int(11) NOT NULL AUTO_INCREMENT,
   `description` varchar(300) NOT NULL,
@@ -436,6 +462,7 @@ CREATE TABLE IF NOT EXISTS `contract` (
 -- Table structure for table `contract_types`
 --
 
+DROP TABLE IF EXISTS `contract_types`;
 CREATE TABLE IF NOT EXISTS `contract_types` (
   `contract_type_id` int(11) NOT NULL AUTO_INCREMENT,
   `type_name` varchar(200) NOT NULL,
@@ -450,6 +477,7 @@ CREATE TABLE IF NOT EXISTS `contract_types` (
 -- Table structure for table `countries`
 --
 
+DROP TABLE IF EXISTS `countries`;
 CREATE TABLE IF NOT EXISTS `countries` (
   `country_id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(200) NOT NULL,
@@ -463,6 +491,7 @@ CREATE TABLE IF NOT EXISTS `countries` (
 -- Table structure for table `currencies`
 --
 
+DROP TABLE IF EXISTS `currencies`;
 CREATE TABLE IF NOT EXISTS `currencies` (
   `currency_id` int(11) NOT NULL AUTO_INCREMENT,
   `symbol` varchar(20) NOT NULL,
@@ -478,6 +507,7 @@ CREATE TABLE IF NOT EXISTS `currencies` (
 -- Table structure for table `currency_pairs`
 --
 
+DROP TABLE IF EXISTS `currency_pairs`;
 CREATE TABLE IF NOT EXISTS `currency_pairs` (
   `currency_pair_id` int(11) NOT NULL AUTO_INCREMENT,
   `currency1_id` int(11) DEFAULT NULL,
@@ -508,6 +538,7 @@ CREATE TABLE IF NOT EXISTS `currency_pairs` (
 -- Table structure for table `documents`
 --
 
+DROP TABLE IF EXISTS `documents`;
 CREATE TABLE IF NOT EXISTS `documents` (
   `document_id` int(11) NOT NULL AUTO_INCREMENT,
   `document_type_id` int(11) DEFAULT NULL,
@@ -536,6 +567,7 @@ CREATE TABLE IF NOT EXISTS `documents` (
 -- Table structure for table `document_categories`
 --
 
+DROP TABLE IF EXISTS `document_categories`;
 CREATE TABLE IF NOT EXISTS `document_categories` (
   `document_category_id` int(11) NOT NULL AUTO_INCREMENT,
   `category_name` varchar(200) NOT NULL,
@@ -549,6 +581,7 @@ CREATE TABLE IF NOT EXISTS `document_categories` (
 -- Table structure for table `document_types`
 --
 
+DROP TABLE IF EXISTS `document_types`;
 CREATE TABLE IF NOT EXISTS `document_types` (
   `document_type_id` int(11) NOT NULL AUTO_INCREMENT,
   `type_name` varchar(200) NOT NULL,
@@ -564,6 +597,7 @@ CREATE TABLE IF NOT EXISTS `document_types` (
 -- Table structure for table `events`
 --
 
+DROP TABLE IF EXISTS `events`;
 CREATE TABLE IF NOT EXISTS `events` (
   `event_id` int(11) NOT NULL AUTO_INCREMENT,
   `event_type_id` int(11) DEFAULT NULL,
@@ -599,6 +633,7 @@ CREATE TABLE IF NOT EXISTS `events` (
 -- Table structure for table `event_stati`
 --
 
+DROP TABLE IF EXISTS `event_stati`;
 CREATE TABLE IF NOT EXISTS `event_stati` (
   `event_status_id` int(11) NOT NULL AUTO_INCREMENT,
   `status_text` varchar(200) NOT NULL,
@@ -613,6 +648,7 @@ CREATE TABLE IF NOT EXISTS `event_stati` (
 -- Table structure for table `event_types`
 --
 
+DROP TABLE IF EXISTS `event_types`;
 CREATE TABLE IF NOT EXISTS `event_types` (
   `event_type_id` int(11) NOT NULL AUTO_INCREMENT,
   `type_name` varchar(200) NOT NULL,
@@ -629,6 +665,7 @@ CREATE TABLE IF NOT EXISTS `event_types` (
 -- Table structure for table `exposure_exceptions`
 --
 
+DROP TABLE IF EXISTS `exposure_exceptions`;
 CREATE TABLE IF NOT EXISTS `exposure_exceptions` (
   `exposure_exception_id` int(11) NOT NULL AUTO_INCREMENT,
   `portfolio_id` int(11) NOT NULL,
@@ -645,26 +682,10 @@ CREATE TABLE IF NOT EXISTS `exposure_exceptions` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `exposure_references`
---
-
-CREATE TABLE IF NOT EXISTS `exposure_references` (
-  `exposure_reference_id` int(11) NOT NULL AUTO_INCREMENT,
-  `account_mandate_id` int(11) DEFAULT NULL,
-  `currency_id` int(11) DEFAULT NULL,
-  `sec_ref_neutral_id` int(11) DEFAULT NULL,
-  `sec_ref_taa_id` int(11) DEFAULT NULL,
-  `sec_benchmark_id` int(11) DEFAULT NULL,
-  `comment` text,
-  PRIMARY KEY (`exposure_reference_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
-
--- --------------------------------------------------------
-
---
 -- Table structure for table `exposure_items`
 --
 
+DROP TABLE IF EXISTS `exposure_items`;
 CREATE TABLE IF NOT EXISTS `exposure_items` (
   `exposure_item_id` int(11) NOT NULL AUTO_INCREMENT,
   `exposure_type_id` int(11) DEFAULT NULL,
@@ -674,7 +695,7 @@ CREATE TABLE IF NOT EXISTS `exposure_items` (
   `is_part_of` int(11) DEFAULT NULL COMMENT 'self reference to create a tree',
   `part_weight` double DEFAULT NULL COMMENT 'weight used for aggregation the single exposures',
   `currency_id` int(11) DEFAULT NULL COMMENT 'used only for currencies to link to the cash position',
-  `security_type_id` int(11) DEFAULT NULL COMMENT 'used only for Asset class exposure types to set the default expore item',
+  `security_type_id` int(11) DEFAULT NULL COMMENT 'only used for Asset class exposure types to set the default expore item',
   `comment` text,
   PRIMARY KEY (`exposure_item_id`),
   KEY `exposure_type_id` (`exposure_type_id`),
@@ -726,9 +747,28 @@ CREATE TABLE IF NOT EXISTS `exposure_item_value_correlations` (
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `exposure_references`
+--
+
+DROP TABLE IF EXISTS `exposure_references`;
+CREATE TABLE IF NOT EXISTS `exposure_references` (
+  `exposure_reference_id` int(11) NOT NULL AUTO_INCREMENT,
+  `account_mandate_id` int(11) DEFAULT NULL,
+  `currency_id` int(11) DEFAULT NULL,
+  `sec_ref_neutral_id` int(11) DEFAULT NULL,
+  `sec_ref_taa_id` int(11) DEFAULT NULL,
+  `sec_benchmark_id` int(11) DEFAULT NULL,
+  `comment` text,
+  PRIMARY KEY (`exposure_reference_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `exposure_targets`
 --
 
+DROP TABLE IF EXISTS `exposure_targets`;
 CREATE TABLE IF NOT EXISTS `exposure_targets` (
   `exposure_target_id` int(11) NOT NULL AUTO_INCREMENT,
   `exposure_item_id` int(11) DEFAULT NULL,
@@ -767,6 +807,7 @@ CREATE TABLE IF NOT EXISTS `exposure_target_values` (
 -- Table structure for table `exposure_types`
 --
 
+DROP TABLE IF EXISTS `exposure_types`;
 CREATE TABLE IF NOT EXISTS `exposure_types` (
   `exposure_type_id` int(11) NOT NULL AUTO_INCREMENT,
   `type_name` varchar(200) NOT NULL,
@@ -783,6 +824,7 @@ CREATE TABLE IF NOT EXISTS `exposure_types` (
 -- Table structure for table `log_data`
 --
 
+DROP TABLE IF EXISTS `log_data`;
 CREATE TABLE IF NOT EXISTS `log_data` (
   `table_id` int(11) NOT NULL,
   `table_name` varchar(200) NOT NULL,
@@ -801,6 +843,7 @@ CREATE TABLE IF NOT EXISTS `log_data` (
 -- Table structure for table `log_tables`
 --
 
+DROP TABLE IF EXISTS `log_tables`;
 CREATE TABLE IF NOT EXISTS `log_tables` (
   `table_id` int(11) NOT NULL AUTO_INCREMENT,
   `table_name` varchar(200) DEFAULT NULL,
@@ -813,6 +856,7 @@ CREATE TABLE IF NOT EXISTS `log_tables` (
 -- Table structure for table `log_users`
 --
 
+DROP TABLE IF EXISTS `log_users`;
 CREATE TABLE IF NOT EXISTS `log_users` (
   `user_id` int(11) NOT NULL AUTO_INCREMENT,
   `username` varchar(200) NOT NULL,
@@ -831,6 +875,7 @@ CREATE TABLE IF NOT EXISTS `log_users` (
 -- Table structure for table `log_user_assigns`
 --
 
+DROP TABLE IF EXISTS `log_user_assigns`;
 CREATE TABLE IF NOT EXISTS `log_user_assigns` (
   `user_assign_id` int(11) NOT NULL AUTO_INCREMENT,
   `user_id` int(11) DEFAULT NULL,
@@ -845,6 +890,7 @@ CREATE TABLE IF NOT EXISTS `log_user_assigns` (
 -- Table structure for table `log_user_groups`
 --
 
+DROP TABLE IF EXISTS `log_user_groups`;
 CREATE TABLE IF NOT EXISTS `log_user_groups` (
   `user_group_id` int(11) NOT NULL AUTO_INCREMENT,
   `group_name` varchar(300) DEFAULT NULL,
@@ -858,6 +904,7 @@ CREATE TABLE IF NOT EXISTS `log_user_groups` (
 -- Table structure for table `log_user_rights`
 --
 
+DROP TABLE IF EXISTS `log_user_rights`;
 CREATE TABLE IF NOT EXISTS `log_user_rights` (
   `user_right_id` int(11) NOT NULL AUTO_INCREMENT,
   `right_name` varchar(200) DEFAULT NULL,
@@ -872,6 +919,7 @@ CREATE TABLE IF NOT EXISTS `log_user_rights` (
 -- Table structure for table `log_user_types`
 --
 
+DROP TABLE IF EXISTS `log_user_types`;
 CREATE TABLE IF NOT EXISTS `log_user_types` (
   `user_type_id` int(11) NOT NULL AUTO_INCREMENT,
   `type_name` varchar(200) DEFAULT NULL,
@@ -917,6 +965,7 @@ CREATE TABLE IF NOT EXISTS `message_types` (
 -- Table structure for table `parameters`
 --
 
+DROP TABLE IF EXISTS `parameters`;
 CREATE TABLE IF NOT EXISTS `parameters` (
   `parameter_id` int(11) NOT NULL AUTO_INCREMENT,
   `parameter_type_id` int(11) NOT NULL,
@@ -932,6 +981,7 @@ CREATE TABLE IF NOT EXISTS `parameters` (
 -- Table structure for table `parameter_types`
 --
 
+DROP TABLE IF EXISTS `parameter_types`;
 CREATE TABLE IF NOT EXISTS `parameter_types` (
   `parameter_type_id` int(11) NOT NULL AUTO_INCREMENT,
   `description` varchar(200) DEFAULT NULL,
@@ -944,6 +994,7 @@ CREATE TABLE IF NOT EXISTS `parameter_types` (
 -- Table structure for table `persons`
 --
 
+DROP TABLE IF EXISTS `persons`;
 CREATE TABLE IF NOT EXISTS `persons` (
   `person_id` int(11) NOT NULL AUTO_INCREMENT,
   `title` varchar(200) DEFAULT NULL,
@@ -966,6 +1017,7 @@ CREATE TABLE IF NOT EXISTS `persons` (
 -- Table structure for table `person_types`
 --
 
+DROP TABLE IF EXISTS `person_types`;
 CREATE TABLE IF NOT EXISTS `person_types` (
   `person_type_id` int(11) NOT NULL AUTO_INCREMENT,
   `description` varchar(200) NOT NULL,
@@ -980,6 +1032,7 @@ CREATE TABLE IF NOT EXISTS `person_types` (
 -- Table structure for table `portfolios`
 --
 
+DROP TABLE IF EXISTS `portfolios`;
 CREATE TABLE IF NOT EXISTS `portfolios` (
   `portfolio_id` int(11) NOT NULL AUTO_INCREMENT,
   `account_id` int(11) NOT NULL,
@@ -1041,10 +1094,6 @@ CREATE TABLE IF NOT EXISTS `portfolio_security_fixings` (
   PRIMARY KEY (`portfolio_security_fixing_id`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
---
--- Dumping data for table `portfolio_security_fixings`
---
-
 -- --------------------------------------------------------
 
 --
@@ -1055,7 +1104,7 @@ DROP TABLE IF EXISTS `portfolio_types`;
 CREATE TABLE IF NOT EXISTS `portfolio_types` (
   `portfolio_type_id` int(11) NOT NULL AUTO_INCREMENT,
   `type_name` varchar(200) DEFAULT NULL,
-  `level` int(11) NOT NULL,
+  `level` int(11) NOT NULL COMMENT 'to enable the system to detect higher risks in a lower level',
   `code_id` varchar(200) DEFAULT NULL,
   `comment` text,
   PRIMARY KEY (`portfolio_type_id`)
@@ -1071,6 +1120,7 @@ CREATE TABLE IF NOT EXISTS `portfolio_types` (
 -- Table structure for table `recon_files`
 --
 
+DROP TABLE IF EXISTS `recon_files`;
 CREATE TABLE IF NOT EXISTS `recon_files` (
   `recon_file_id` int(11) NOT NULL AUTO_INCREMENT,
   `file_name` varchar(200) DEFAULT NULL,
@@ -1092,6 +1142,7 @@ CREATE TABLE IF NOT EXISTS `recon_files` (
 -- Table structure for table `recon_file_entries`
 --
 
+DROP TABLE IF EXISTS `recon_file_entries`;
 CREATE TABLE IF NOT EXISTS `recon_file_entries` (
   `recon_file_entry_id` int(11) NOT NULL AUTO_INCREMENT,
   `file_path` varchar(400) DEFAULT NULL,
@@ -1106,6 +1157,7 @@ CREATE TABLE IF NOT EXISTS `recon_file_entries` (
 -- Table structure for table `recon_file_types`
 --
 
+DROP TABLE IF EXISTS `recon_file_types`;
 CREATE TABLE IF NOT EXISTS `recon_file_types` (
   `recon_file_type_id` int(11) NOT NULL AUTO_INCREMENT,
   `type_name` varchar(200) DEFAULT NULL,
@@ -1120,6 +1172,7 @@ CREATE TABLE IF NOT EXISTS `recon_file_types` (
 -- Table structure for table `recon_steps`
 --
 
+DROP TABLE IF EXISTS `recon_steps`;
 CREATE TABLE IF NOT EXISTS `recon_steps` (
   `recon_step_id` int(11) NOT NULL AUTO_INCREMENT,
   `recon_file_id` int(11) DEFAULT NULL,
@@ -1154,6 +1207,7 @@ CREATE TABLE IF NOT EXISTS `recon_steps` (
 -- Table structure for table `recon_step_types`
 --
 
+DROP TABLE IF EXISTS `recon_step_types`;
 CREATE TABLE IF NOT EXISTS `recon_step_types` (
   `recon_step_type_id` int(11) NOT NULL AUTO_INCREMENT,
   `type_name` varchar(200) DEFAULT NULL,
@@ -1167,6 +1221,7 @@ CREATE TABLE IF NOT EXISTS `recon_step_types` (
 -- Table structure for table `recon_value_types`
 --
 
+DROP TABLE IF EXISTS `recon_value_types`;
 CREATE TABLE IF NOT EXISTS `recon_value_types` (
   `recon_value_type_id` int(11) NOT NULL AUTO_INCREMENT,
   `type_name` varchar(200) DEFAULT NULL,
@@ -1180,6 +1235,7 @@ CREATE TABLE IF NOT EXISTS `recon_value_types` (
 -- Table structure for table `risk_profiles`
 --
 
+DROP TABLE IF EXISTS `risk_profiles`;
 CREATE TABLE IF NOT EXISTS `risk_profiles` (
   `risk_profile_id` int(11) NOT NULL AUTO_INCREMENT,
   `profile_name` varchar(200) NOT NULL,
@@ -1192,6 +1248,7 @@ CREATE TABLE IF NOT EXISTS `risk_profiles` (
 -- Table structure for table `securities`
 --
 
+DROP TABLE IF EXISTS `securities`;
 CREATE TABLE IF NOT EXISTS `securities` (
   `security_id` int(11) NOT NULL AUTO_INCREMENT,
   `security_issuer_id` int(11) DEFAULT NULL,
@@ -1267,9 +1324,27 @@ CREATE TABLE IF NOT EXISTS `security_daily_prices` (
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `security_exchanges`
+--
+
+DROP TABLE IF EXISTS `security_exchanges`;
+CREATE TABLE IF NOT EXISTS `security_exchanges` (
+  `security_exchange_id` int(11) NOT NULL AUTO_INCREMENT,
+  `exchange_name` varchar(200) DEFAULT NULL,
+  `wikidata_id` varchar(20) DEFAULT NULL,
+  `yahoo_symbol` varchar(20) DEFAULT NULL,
+  `bloomberg_symbol` varchar(20) DEFAULT NULL,
+  `comment` text,
+  PRIMARY KEY (`security_exchange_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `security_exposures`
 --
 
+DROP TABLE IF EXISTS `security_exposures`;
 CREATE TABLE IF NOT EXISTS `security_exposures` (
   `security_exposure_id` int(11) NOT NULL AUTO_INCREMENT,
   `security_id` int(11) NOT NULL,
@@ -1291,6 +1366,7 @@ CREATE TABLE IF NOT EXISTS `security_exposures` (
 -- Table structure for table `security_exposure_stati`
 --
 
+DROP TABLE IF EXISTS `security_exposure_stati`;
 CREATE TABLE IF NOT EXISTS `security_exposure_stati` (
   `security_exposure_status_id` int(11) NOT NULL AUTO_INCREMENT,
   `status_text` varchar(200) NOT NULL,
@@ -1305,6 +1381,7 @@ CREATE TABLE IF NOT EXISTS `security_exposure_stati` (
 -- Table structure for table `security_fields`
 --
 
+DROP TABLE IF EXISTS `security_fields`;
 CREATE TABLE IF NOT EXISTS `security_fields` (
   `security_field_id` int(11) NOT NULL AUTO_INCREMENT,
   `description` varchar(200) NOT NULL,
@@ -1334,6 +1411,7 @@ CREATE TABLE IF NOT EXISTS `security_field_source_types` (
 -- Table structure for table `security_field_values`
 --
 
+DROP TABLE IF EXISTS `security_field_values`;
 CREATE TABLE IF NOT EXISTS `security_field_values` (
   `security_field_value_id` int(11) NOT NULL AUTO_INCREMENT,
   `security_id` int(11) NOT NULL,
@@ -1351,6 +1429,7 @@ CREATE TABLE IF NOT EXISTS `security_field_values` (
 -- Table structure for table `security_issuers`
 --
 
+DROP TABLE IF EXISTS `security_issuers`;
 CREATE TABLE IF NOT EXISTS `security_issuers` (
   `security_issuer_id` int(11) NOT NULL AUTO_INCREMENT,
   `issuer_name` varchar(200) DEFAULT NULL,
@@ -1361,17 +1440,16 @@ CREATE TABLE IF NOT EXISTS `security_issuers` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `security_exchanges`
+-- Table structure for table `security_link_types`
 --
 
-CREATE TABLE IF NOT EXISTS `security_exchanges` (
-  `security_exchange_id` int(11) NOT NULL AUTO_INCREMENT,
-  `exchange_name` varchar(200) DEFAULT NULL,
-  `wikidata_id` varchar(20) DEFAULT NULL,
-  `yahoo_symbol` varchar(20) DEFAULT NULL,
-  `bloomberg_symbol` varchar(20) DEFAULT NULL,
+DROP TABLE IF EXISTS `security_link_types`;
+CREATE TABLE IF NOT EXISTS `security_link_types` (
+  `security_link_type_id` int(11) NOT NULL AUTO_INCREMENT,
+  `type_name` varchar(200) NOT NULL,
+  `code_id` varchar(100) DEFAULT NULL,
   `comment` text,
-  PRIMARY KEY (`security_exchange_id`)
+  PRIMARY KEY (`security_link_type_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
@@ -1427,6 +1505,7 @@ CREATE TABLE IF NOT EXISTS `security_payment_types` (
 -- Table structure for table `security_prices`
 --
 
+DROP TABLE IF EXISTS `security_prices`;
 CREATE TABLE IF NOT EXISTS `security_prices` (
   `security_id` int(11) NOT NULL,
   `quote_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -1441,6 +1520,7 @@ CREATE TABLE IF NOT EXISTS `security_prices` (
 -- Table structure for table `security_price_feed_types`
 --
 
+DROP TABLE IF EXISTS `security_price_feed_types`;
 CREATE TABLE IF NOT EXISTS `security_price_feed_types` (
   `feed_type_id` int(11) NOT NULL AUTO_INCREMENT,
   `type_name` varchar(200) NOT NULL,
@@ -1455,6 +1535,7 @@ CREATE TABLE IF NOT EXISTS `security_price_feed_types` (
 -- Table structure for table `security_quote_types`
 --
 
+DROP TABLE IF EXISTS `security_quote_types`;
 CREATE TABLE IF NOT EXISTS `security_quote_types` (
   `security_quote_type_id` int(11) NOT NULL AUTO_INCREMENT,
   `type_name` varchar(200) NOT NULL,
@@ -1470,6 +1551,7 @@ CREATE TABLE IF NOT EXISTS `security_quote_types` (
 -- Table structure for table `security_triggers`
 --
 
+DROP TABLE IF EXISTS `security_triggers`;
 CREATE TABLE IF NOT EXISTS `security_triggers` (
   `security_trigger_id` int(11) NOT NULL AUTO_INCREMENT,
   `trigger_type_id` int(11) DEFAULT NULL,
@@ -1492,6 +1574,7 @@ CREATE TABLE IF NOT EXISTS `security_triggers` (
 -- Table structure for table `security_trigger_stati`
 --
 
+DROP TABLE IF EXISTS `security_trigger_stati`;
 CREATE TABLE IF NOT EXISTS `security_trigger_stati` (
   `trigger_status_id` int(11) NOT NULL AUTO_INCREMENT,
   `status_text` varchar(200) NOT NULL,
@@ -1506,6 +1589,7 @@ CREATE TABLE IF NOT EXISTS `security_trigger_stati` (
 -- Table structure for table `security_trigger_types`
 --
 
+DROP TABLE IF EXISTS `security_trigger_types`;
 CREATE TABLE IF NOT EXISTS `security_trigger_types` (
   `trigger_type_id` int(11) NOT NULL AUTO_INCREMENT,
   `type_name` varchar(200) NOT NULL,
@@ -1521,6 +1605,7 @@ CREATE TABLE IF NOT EXISTS `security_trigger_types` (
 -- Table structure for table `security_types`
 --
 
+DROP TABLE IF EXISTS `security_types`;
 CREATE TABLE IF NOT EXISTS `security_types` (
   `security_type_id` int(11) NOT NULL AUTO_INCREMENT,
   `description` varchar(200) NOT NULL,
@@ -1537,6 +1622,7 @@ CREATE TABLE IF NOT EXISTS `security_types` (
 -- Table structure for table `security_underlyings`
 --
 
+DROP TABLE IF EXISTS `security_underlyings`;
 CREATE TABLE IF NOT EXISTS `security_underlyings` (
   `security_underlying_id` int(11) NOT NULL AUTO_INCREMENT,
   `security_id` int(11) NOT NULL,
@@ -1554,23 +1640,10 @@ CREATE TABLE IF NOT EXISTS `security_underlyings` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `security_link_types`
---
-
-CREATE TABLE IF NOT EXISTS `security_link_types` (
-  `security_link_type_id` int(11) NOT NULL AUTO_INCREMENT,
-  `type_name` varchar(200) NOT NULL,
-  `code_id` varchar(100) DEFAULT NULL,
-  `comment` text,
-  PRIMARY KEY (`security_link_type_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
-
--- --------------------------------------------------------
-
---
 -- Table structure for table `systems`
 --
 
+DROP TABLE IF EXISTS `systems`;
 CREATE TABLE IF NOT EXISTS `systems` (
   `system_id` int(11) NOT NULL AUTO_INCREMENT,
   `last_heartbeat` datetime DEFAULT NULL,
@@ -1585,6 +1658,7 @@ CREATE TABLE IF NOT EXISTS `systems` (
 -- Table structure for table `trades`
 --
 
+DROP TABLE IF EXISTS `trades`;
 CREATE TABLE IF NOT EXISTS `trades` (
   `trade_id` int(11) NOT NULL AUTO_INCREMENT,
   `account_id` int(11) DEFAULT NULL,
@@ -1706,6 +1780,7 @@ CREATE TABLE IF NOT EXISTS `trade_payment_types` (
 -- Table structure for table `trade_stati`
 --
 
+DROP TABLE IF EXISTS `trade_stati`;
 CREATE TABLE IF NOT EXISTS `trade_stati` (
   `trade_status_id` int(11) NOT NULL AUTO_INCREMENT,
   `status_text` varchar(200) NOT NULL,
@@ -1723,6 +1798,7 @@ CREATE TABLE IF NOT EXISTS `trade_stati` (
 -- Table structure for table `trade_types`
 --
 
+DROP TABLE IF EXISTS `trade_types`;
 CREATE TABLE IF NOT EXISTS `trade_types` (
   `trade_type_id` int(11) NOT NULL AUTO_INCREMENT,
   `description` varchar(200) NOT NULL,
@@ -1769,6 +1845,7 @@ CREATE TABLE IF NOT EXISTS `trade_type_bank_codes` (
 -- Table structure for table `values`
 --
 
+DROP TABLE IF EXISTS `values`;
 CREATE TABLE IF NOT EXISTS `values` (
   `value_id` int(11) NOT NULL AUTO_INCREMENT,
   `account_id` int(11) DEFAULT NULL,
@@ -1791,6 +1868,7 @@ CREATE TABLE IF NOT EXISTS `values` (
 -- Table structure for table `value_stati`
 --
 
+DROP TABLE IF EXISTS `value_stati`;
 CREATE TABLE IF NOT EXISTS `value_stati` (
   `value_status_id` int(11) NOT NULL AUTO_INCREMENT,
   `status_text` varchar(200) NOT NULL,
@@ -1805,6 +1883,7 @@ CREATE TABLE IF NOT EXISTS `value_stati` (
 -- Table structure for table `value_types`
 --
 
+DROP TABLE IF EXISTS `value_types`;
 CREATE TABLE IF NOT EXISTS `value_types` (
   `value_type_id` int(11) NOT NULL AUTO_INCREMENT,
   `description` varchar(200) NOT NULL,
@@ -1818,6 +1897,7 @@ CREATE TABLE IF NOT EXISTS `value_types` (
 --
 -- Stand-in structure for view `v_accounts`
 --
+DROP VIEW IF EXISTS `v_accounts`;
 CREATE TABLE IF NOT EXISTS `v_accounts` (
 `account_id` int(11)
 ,`account_select_name` text
@@ -1828,6 +1908,7 @@ CREATE TABLE IF NOT EXISTS `v_accounts` (
 --
 -- Stand-in structure for view `v_account_mandates`
 --
+DROP VIEW IF EXISTS `v_account_mandates`;
 CREATE TABLE IF NOT EXISTS `v_account_mandates` (
 `account_mandat_id` int(11)
 ,`description` varchar(200)
@@ -1837,6 +1918,7 @@ CREATE TABLE IF NOT EXISTS `v_account_mandates` (
 --
 -- Stand-in structure for view `v_account_person_types`
 --
+DROP VIEW IF EXISTS `v_account_person_types`;
 CREATE TABLE IF NOT EXISTS `v_account_person_types` (
 `account_person_type_id` int(11)
 ,`type_name` varchar(200)
@@ -1846,6 +1928,7 @@ CREATE TABLE IF NOT EXISTS `v_account_person_types` (
 --
 -- Stand-in structure for view `v_account_types`
 --
+DROP VIEW IF EXISTS `v_account_types`;
 CREATE TABLE IF NOT EXISTS `v_account_types` (
 `account_type_id` int(11)
 ,`description` varchar(200)
@@ -1855,6 +1938,7 @@ CREATE TABLE IF NOT EXISTS `v_account_types` (
 --
 -- Stand-in structure for view `v_action_stati`
 --
+DROP VIEW IF EXISTS `v_action_stati`;
 CREATE TABLE IF NOT EXISTS `v_action_stati` (
 `action_status_id` int(11)
 ,`status_text` varchar(200)
@@ -1864,6 +1948,7 @@ CREATE TABLE IF NOT EXISTS `v_action_stati` (
 --
 -- Stand-in structure for view `v_addresses`
 --
+DROP VIEW IF EXISTS `v_addresses`;
 CREATE TABLE IF NOT EXISTS `v_addresses` (
 `address_id` int(11)
 ,`select_address` text
@@ -1873,6 +1958,7 @@ CREATE TABLE IF NOT EXISTS `v_addresses` (
 --
 -- Stand-in structure for view `v_address_link_types`
 --
+DROP VIEW IF EXISTS `v_address_link_types`;
 CREATE TABLE IF NOT EXISTS `v_address_link_types` (
 `address_link_type_id` int(11)
 ,`type_name` varchar(100)
@@ -1882,6 +1968,7 @@ CREATE TABLE IF NOT EXISTS `v_address_link_types` (
 --
 -- Stand-in structure for view `v_banks`
 --
+DROP VIEW IF EXISTS `v_banks`;
 CREATE TABLE IF NOT EXISTS `v_banks` (
 `bank_id` int(11)
 ,`bank_name` varchar(200)
@@ -1891,6 +1978,7 @@ CREATE TABLE IF NOT EXISTS `v_banks` (
 --
 -- Stand-in structure for view `v_bill`
 --
+DROP VIEW IF EXISTS `v_bill`;
 CREATE TABLE IF NOT EXISTS `v_bill` (
 `account_id` int(11)
 ,`account_name` varchar(200)
@@ -1908,6 +1996,7 @@ CREATE TABLE IF NOT EXISTS `v_bill` (
 --
 -- Stand-in structure for view `v_bill_calc`
 --
+DROP VIEW IF EXISTS `v_bill_calc`;
 CREATE TABLE IF NOT EXISTS `v_bill_calc` (
 `account_id` int(11)
 ,`account_name` varchar(200)
@@ -1924,6 +2013,7 @@ CREATE TABLE IF NOT EXISTS `v_bill_calc` (
 --
 -- Stand-in structure for view `v_bill_data`
 --
+DROP VIEW IF EXISTS `v_bill_data`;
 CREATE TABLE IF NOT EXISTS `v_bill_data` (
 `account_id` int(11)
 ,`account_name` varchar(200)
@@ -1937,6 +2027,7 @@ CREATE TABLE IF NOT EXISTS `v_bill_data` (
 --
 -- Stand-in structure for view `v_contacts`
 --
+DROP VIEW IF EXISTS `v_contacts`;
 CREATE TABLE IF NOT EXISTS `v_contacts` (
 `contact_id` int(11)
 ,`contact_select` mediumtext
@@ -1948,6 +2039,7 @@ CREATE TABLE IF NOT EXISTS `v_contacts` (
 --
 -- Stand-in structure for view `v_contact_categories`
 --
+DROP VIEW IF EXISTS `v_contact_categories`;
 CREATE TABLE IF NOT EXISTS `v_contact_categories` (
 `contact_category_id` int(11)
 ,`category_name` varchar(300)
@@ -1957,6 +2049,7 @@ CREATE TABLE IF NOT EXISTS `v_contact_categories` (
 --
 -- Stand-in structure for view `v_contact_member_types`
 --
+DROP VIEW IF EXISTS `v_contact_member_types`;
 CREATE TABLE IF NOT EXISTS `v_contact_member_types` (
 `contact_member_type_id` int(11)
 ,`member_type` varchar(200)
@@ -1966,6 +2059,7 @@ CREATE TABLE IF NOT EXISTS `v_contact_member_types` (
 --
 -- Stand-in structure for view `v_contact_number_types`
 --
+DROP VIEW IF EXISTS `v_contact_number_types`;
 CREATE TABLE IF NOT EXISTS `v_contact_number_types` (
 `contact_number_type_id` int(11)
 ,`type_name` varchar(100)
@@ -1975,6 +2069,7 @@ CREATE TABLE IF NOT EXISTS `v_contact_number_types` (
 --
 -- Stand-in structure for view `v_contact_report`
 --
+DROP VIEW IF EXISTS `v_contact_report`;
 CREATE TABLE IF NOT EXISTS `v_contact_report` (
 `type` varchar(200)
 ,`person` varchar(300)
@@ -1984,6 +2079,7 @@ CREATE TABLE IF NOT EXISTS `v_contact_report` (
 --
 -- Stand-in structure for view `v_contact_report_actions`
 --
+DROP VIEW IF EXISTS `v_contact_report_actions`;
 CREATE TABLE IF NOT EXISTS `v_contact_report_actions` (
 `contact_id` int(11)
 ,`description` text
@@ -1994,6 +2090,7 @@ CREATE TABLE IF NOT EXISTS `v_contact_report_actions` (
 --
 -- Stand-in structure for view `v_contact_report_head`
 --
+DROP VIEW IF EXISTS `v_contact_report_head`;
 CREATE TABLE IF NOT EXISTS `v_contact_report_head` (
 `contact_id` int(11)
 ,`headline` text
@@ -2005,6 +2102,7 @@ CREATE TABLE IF NOT EXISTS `v_contact_report_head` (
 --
 -- Stand-in structure for view `v_contact_report_members`
 --
+DROP VIEW IF EXISTS `v_contact_report_members`;
 CREATE TABLE IF NOT EXISTS `v_contact_report_members` (
 `contact_id` int(11)
 ,`type` varchar(200)
@@ -2015,6 +2113,7 @@ CREATE TABLE IF NOT EXISTS `v_contact_report_members` (
 --
 -- Stand-in structure for view `v_contact_report_notes`
 --
+DROP VIEW IF EXISTS `v_contact_report_notes`;
 CREATE TABLE IF NOT EXISTS `v_contact_report_notes` (
 `contact_notes` int(11)
 ,`description` text
@@ -2024,6 +2123,7 @@ CREATE TABLE IF NOT EXISTS `v_contact_report_notes` (
 --
 -- Stand-in structure for view `v_contact_types`
 --
+DROP VIEW IF EXISTS `v_contact_types`;
 CREATE TABLE IF NOT EXISTS `v_contact_types` (
 `contact_type_id` int(11)
 ,`type_name` varchar(200)
@@ -2033,6 +2133,7 @@ CREATE TABLE IF NOT EXISTS `v_contact_types` (
 --
 -- Stand-in structure for view `v_contract_types`
 --
+DROP VIEW IF EXISTS `v_contract_types`;
 CREATE TABLE IF NOT EXISTS `v_contract_types` (
 `contract_type_id` int(11)
 ,`type_name` varchar(200)
@@ -2042,6 +2143,7 @@ CREATE TABLE IF NOT EXISTS `v_contract_types` (
 --
 -- Stand-in structure for view `v_countries`
 --
+DROP VIEW IF EXISTS `v_countries`;
 CREATE TABLE IF NOT EXISTS `v_countries` (
 `country_id` int(11)
 ,`name` varchar(200)
@@ -2051,6 +2153,7 @@ CREATE TABLE IF NOT EXISTS `v_countries` (
 --
 -- Stand-in structure for view `v_currencies`
 --
+DROP VIEW IF EXISTS `v_currencies`;
 CREATE TABLE IF NOT EXISTS `v_currencies` (
 `currency_id` int(11)
 ,`symbol` varchar(20)
@@ -2060,6 +2163,7 @@ CREATE TABLE IF NOT EXISTS `v_currencies` (
 --
 -- Stand-in structure for view `v_currencies_2`
 --
+DROP VIEW IF EXISTS `v_currencies_2`;
 CREATE TABLE IF NOT EXISTS `v_currencies_2` (
 `currency_id` int(11)
 ,`symbol` varchar(20)
@@ -2069,6 +2173,7 @@ CREATE TABLE IF NOT EXISTS `v_currencies_2` (
 --
 -- Stand-in structure for view `v_currency_pairs`
 --
+DROP VIEW IF EXISTS `v_currency_pairs`;
 CREATE TABLE IF NOT EXISTS `v_currency_pairs` (
 `currency_pair_id` int(11)
 ,`select_name` varchar(200)
@@ -2079,6 +2184,7 @@ CREATE TABLE IF NOT EXISTS `v_currency_pairs` (
 --
 -- Stand-in structure for view `v_currency_price_feed`
 --
+DROP VIEW IF EXISTS `v_currency_price_feed`;
 CREATE TABLE IF NOT EXISTS `v_currency_price_feed` (
 `currency_pair_id` int(11)
 ,`currency1_id` int(11)
@@ -2097,6 +2203,7 @@ CREATE TABLE IF NOT EXISTS `v_currency_price_feed` (
 --
 -- Stand-in structure for view `v_document_categories`
 --
+DROP VIEW IF EXISTS `v_document_categories`;
 CREATE TABLE IF NOT EXISTS `v_document_categories` (
 `document_category_id` int(11)
 ,`category_name` varchar(200)
@@ -2106,6 +2213,7 @@ CREATE TABLE IF NOT EXISTS `v_document_categories` (
 --
 -- Stand-in structure for view `v_document_types`
 --
+DROP VIEW IF EXISTS `v_document_types`;
 CREATE TABLE IF NOT EXISTS `v_document_types` (
 `document_type_id` int(11)
 ,`type_name` varchar(200)
@@ -2115,6 +2223,7 @@ CREATE TABLE IF NOT EXISTS `v_document_types` (
 --
 -- Stand-in structure for view `v_events_open`
 --
+DROP VIEW IF EXISTS `v_events_open`;
 CREATE TABLE IF NOT EXISTS `v_events_open` (
 `event_id` int(11)
 ,`event_type_id` int(11)
@@ -2126,6 +2235,7 @@ CREATE TABLE IF NOT EXISTS `v_events_open` (
 --
 -- Stand-in structure for view `v_event_stati`
 --
+DROP VIEW IF EXISTS `v_event_stati`;
 CREATE TABLE IF NOT EXISTS `v_event_stati` (
 `event_status_id` int(11)
 ,`status_text` varchar(200)
@@ -2135,6 +2245,7 @@ CREATE TABLE IF NOT EXISTS `v_event_stati` (
 --
 -- Stand-in structure for view `v_event_types`
 --
+DROP VIEW IF EXISTS `v_event_types`;
 CREATE TABLE IF NOT EXISTS `v_event_types` (
 `event_type_id` int(11)
 ,`type_name` varchar(200)
@@ -2142,11 +2253,34 @@ CREATE TABLE IF NOT EXISTS `v_event_types` (
 -- --------------------------------------------------------
 
 --
+-- Stand-in structure for view `v_exposure_asset_classes`
+--
+DROP VIEW IF EXISTS `v_exposure_asset_classes`;
+CREATE TABLE IF NOT EXISTS `v_exposure_asset_classes` (
+`exposure_item_id` int(11)
+,`description` varchar(200)
+);
+-- --------------------------------------------------------
+
+--
 -- Stand-in structure for view `v_exposure_items`
 --
+DROP VIEW IF EXISTS `v_exposure_items`;
 CREATE TABLE IF NOT EXISTS `v_exposure_items` (
 `exposure_item_id` int(11)
 ,`description` varchar(200)
+,`exposure_type_id` int(11)
+,`type_name` varchar(200)
+);
+-- --------------------------------------------------------
+
+--
+-- Stand-in structure for view `v_exposure_item_parts`
+--
+DROP VIEW IF EXISTS `v_exposure_item_parts`;
+CREATE TABLE IF NOT EXISTS `v_exposure_item_parts` (
+`exposure_item_id` int(11)
+,`part_of` varchar(200)
 );
 -- --------------------------------------------------------
 
@@ -2173,6 +2307,7 @@ CREATE TABLE IF NOT EXISTS `v_exposure_target_values` (
 ,`portfolio_name` varchar(200)
 ,`item_name` varchar(200)
 ,`calc_value` double(18,1)
+,`in_ref_ccy` double(17,0)
 ,`optimized` double(18,1)
 ,`diff` double(18,1)
 ,`neutral` double(18,1)
@@ -2199,6 +2334,7 @@ CREATE TABLE IF NOT EXISTS `v_exposure_target_with_exceptions` (
 --
 -- Stand-in structure for view `v_exposure_types`
 --
+DROP VIEW IF EXISTS `v_exposure_types`;
 CREATE TABLE IF NOT EXISTS `v_exposure_types` (
 `exposure_type_id` int(11)
 ,`type_name` varchar(200)
@@ -2258,11 +2394,13 @@ CREATE TABLE IF NOT EXISTS `v_message_types` (
 --
 -- Stand-in structure for view `v_persons`
 --
+DROP VIEW IF EXISTS `v_persons`;
 CREATE TABLE IF NOT EXISTS `v_persons` (
 `person_id` int(11)
 ,`select_name` text
 ,`display_name` varchar(501)
 ,`contact_number` varchar(100)
+,`title` varchar(200)
 ,`person_type_id` int(11)
 ,`internal` tinyint(4)
 );
@@ -2271,6 +2409,7 @@ CREATE TABLE IF NOT EXISTS `v_persons` (
 --
 -- Stand-in structure for view `v_person_types`
 --
+DROP VIEW IF EXISTS `v_person_types`;
 CREATE TABLE IF NOT EXISTS `v_person_types` (
 `person_type_id` int(11)
 ,`description` varchar(200)
@@ -2280,17 +2419,99 @@ CREATE TABLE IF NOT EXISTS `v_person_types` (
 --
 -- Stand-in structure for view `v_portfolios`
 --
+DROP VIEW IF EXISTS `v_portfolios`;
 CREATE TABLE IF NOT EXISTS `v_portfolios` (
 `portfolio_id` int(11)
 ,`portfolio_select_name` varchar(422)
 ,`account_name` varchar(20)
+,`portfolio_number` int(11)
 ,`inactive` tinyint(1)
+);
+-- --------------------------------------------------------
+
+--
+-- Stand-in structure for view `v_portfolios_f`
+--
+DROP VIEW IF EXISTS `v_portfolios_f`;
+CREATE TABLE IF NOT EXISTS `v_portfolios_f` (
+`user_id` int(11)
+,`user_name` varchar(50)
+,`portfolio_id` int(11)
+,`account_id` int(11)
+,`portfolio_number` int(11)
+,`portfolio_name` varchar(200)
+,`currency_id` int(11)
+,`bank_id` int(11)
+,`bank_portfolio_id` varchar(200)
+,`inactive` tinyint(1)
+,`monitoring` tinyint(1)
+,`confirm_to_bank` tinyint(1)
+,`confirm_to_client` tinyint(1)
+,`monitoring_security_limit` double
+,`portfolio_type_id` int(11)
+,`is_part_of` int(11)
+,`IBAN` varchar(100)
+,`domicile` int(11)
+,`nationality` int(11)
+);
+-- --------------------------------------------------------
+
+--
+-- Stand-in structure for view `v_portfolios_r`
+--
+DROP VIEW IF EXISTS `v_portfolios_r`;
+CREATE TABLE IF NOT EXISTS `v_portfolios_r` (
+`user_id` int(11)
+,`user_name` varchar(200)
+,`portfolio_id` int(11)
+,`account_id` int(11)
+,`portfolio_number` int(11)
+,`portfolio_name` varchar(200)
+,`currency_id` int(11)
+,`bank_id` int(11)
+,`bank_portfolio_id` varchar(200)
+,`inactive` tinyint(1)
+,`monitoring` tinyint(1)
+,`confirm_to_bank` tinyint(1)
+,`confirm_to_client` tinyint(1)
+,`monitoring_security_limit` double
+,`portfolio_type_id` int(11)
+,`is_part_of` int(11)
+,`IBAN` varchar(100)
+,`domicile` int(11)
+,`nationality` int(11)
+);
+-- --------------------------------------------------------
+
+--
+-- Stand-in structure for view `v_portfolios_u`
+--
+DROP VIEW IF EXISTS `v_portfolios_u`;
+CREATE TABLE IF NOT EXISTS `v_portfolios_u` (
+`user_id` int(11)
+,`user_name` varchar(200)
+,`portfolio_id` int(11)
+,`account_id` int(11)
+,`portfolio_number` int(11)
+,`portfolio_name` varchar(200)
+,`currency_id` int(11)
+,`bank_id` int(11)
+,`bank_portfolio_id` varchar(200)
+,`inactive` tinyint(4)
+,`monitoring` tinyint(4)
+,`confirm_to_bank` tinyint(4)
+,`confirm_to_client` tinyint(4)
+,`monitoring_security_limit` double
+,`portfolio_type_id` int(11)
+,`is_part_of` int(11)
+,`IBAN` varchar(100)
 );
 -- --------------------------------------------------------
 
 --
 -- Stand-in structure for view `v_portfolio_allocation`
 --
+DROP VIEW IF EXISTS `v_portfolio_allocation`;
 CREATE TABLE IF NOT EXISTS `v_portfolio_allocation` (
 `portfolio_id` int(11)
 ,`security_id` int(11)
@@ -2330,6 +2551,7 @@ CREATE TABLE IF NOT EXISTS `v_portfolio_persons` (
 ,`account_name` varchar(200)
 ,`portfolio_function` varchar(200)
 ,`portfolio_function_code_id` varchar(200)
+,`title` varchar(200)
 ,`person_name` text
 ,`contact_number` varchar(100)
 );
@@ -2338,6 +2560,7 @@ CREATE TABLE IF NOT EXISTS `v_portfolio_persons` (
 --
 -- Stand-in structure for view `v_portfolio_pnl`
 --
+DROP VIEW IF EXISTS `v_portfolio_pnl`;
 CREATE TABLE IF NOT EXISTS `v_portfolio_pnl` (
 `portfolio_id` int(11)
 ,`aum` double
@@ -2349,6 +2572,7 @@ CREATE TABLE IF NOT EXISTS `v_portfolio_pnl` (
 --
 -- Stand-in structure for view `v_portfolio_pos`
 --
+DROP VIEW IF EXISTS `v_portfolio_pos`;
 CREATE TABLE IF NOT EXISTS `v_portfolio_pos` (
 `portfolio_id` int(11)
 ,`security_id` int(11)
@@ -2381,6 +2605,7 @@ CREATE TABLE IF NOT EXISTS `v_portfolio_pos` (
 --
 -- Stand-in structure for view `v_portfolio_pos_calc`
 --
+DROP VIEW IF EXISTS `v_portfolio_pos_calc`;
 CREATE TABLE IF NOT EXISTS `v_portfolio_pos_calc` (
 `portfolio_id` int(11)
 ,`security_id` int(11)
@@ -2412,6 +2637,7 @@ CREATE TABLE IF NOT EXISTS `v_portfolio_pos_calc` (
 --
 -- Stand-in structure for view `v_portfolio_pos_closed`
 --
+DROP VIEW IF EXISTS `v_portfolio_pos_closed`;
 CREATE TABLE IF NOT EXISTS `v_portfolio_pos_closed` (
 `portfolio_id` int(11)
 ,`security_id` int(11)
@@ -2511,6 +2737,15 @@ CREATE TABLE IF NOT EXISTS `v_portfolio_pos_get_prices` (
 -- --------------------------------------------------------
 
 --
+-- Stand-in structure for view `v_portfolio_pos_named`
+--
+DROP VIEW IF EXISTS `v_portfolio_pos_named`;
+CREATE TABLE IF NOT EXISTS `v_portfolio_pos_named` (
+`portfolio_id` int(11)
+);
+-- --------------------------------------------------------
+
+--
 -- Stand-in structure for view `v_portfolio_types`
 --
 DROP VIEW IF EXISTS `v_portfolio_types`;
@@ -2523,6 +2758,7 @@ CREATE TABLE IF NOT EXISTS `v_portfolio_types` (
 --
 -- Stand-in structure for view `v_position_pnl`
 --
+DROP VIEW IF EXISTS `v_position_pnl`;
 CREATE TABLE IF NOT EXISTS `v_position_pnl` (
 `portfolio_id` int(11)
 ,`security_id` int(11)
@@ -2561,6 +2797,7 @@ CREATE TABLE IF NOT EXISTS `v_position_pnl` (
 --
 -- Stand-in structure for view `v_recon_files`
 --
+DROP VIEW IF EXISTS `v_recon_files`;
 CREATE TABLE IF NOT EXISTS `v_recon_files` (
 `recon_file_id` int(11)
 ,`file_name` varchar(200)
@@ -2570,6 +2807,7 @@ CREATE TABLE IF NOT EXISTS `v_recon_files` (
 --
 -- Stand-in structure for view `v_recon_file_types`
 --
+DROP VIEW IF EXISTS `v_recon_file_types`;
 CREATE TABLE IF NOT EXISTS `v_recon_file_types` (
 `recon_file_type_id` int(11)
 ,`type_name` varchar(200)
@@ -2579,6 +2817,7 @@ CREATE TABLE IF NOT EXISTS `v_recon_file_types` (
 --
 -- Stand-in structure for view `v_recon_step_select`
 --
+DROP VIEW IF EXISTS `v_recon_step_select`;
 CREATE TABLE IF NOT EXISTS `v_recon_step_select` (
 `recon_step_id` int(11)
 ,`recon_select_name` varchar(417)
@@ -2590,6 +2829,7 @@ CREATE TABLE IF NOT EXISTS `v_recon_step_select` (
 --
 -- Stand-in structure for view `v_recon_step_types`
 --
+DROP VIEW IF EXISTS `v_recon_step_types`;
 CREATE TABLE IF NOT EXISTS `v_recon_step_types` (
 `recon_step_type_id` int(11)
 ,`type_name` varchar(200)
@@ -2599,6 +2839,7 @@ CREATE TABLE IF NOT EXISTS `v_recon_step_types` (
 --
 -- Stand-in structure for view `v_recon_value_types`
 --
+DROP VIEW IF EXISTS `v_recon_value_types`;
 CREATE TABLE IF NOT EXISTS `v_recon_value_types` (
 `recon_value_type_id` int(11)
 ,`type_name` varchar(200)
@@ -2608,6 +2849,7 @@ CREATE TABLE IF NOT EXISTS `v_recon_value_types` (
 --
 -- Stand-in structure for view `v_securities`
 --
+DROP VIEW IF EXISTS `v_securities`;
 CREATE TABLE IF NOT EXISTS `v_securities` (
 `security_id` int(11)
 ,`select_name` varchar(223)
@@ -2620,7 +2862,6 @@ CREATE TABLE IF NOT EXISTS `v_securities` (
 ,`curr` varchar(20)
 ,`security_type_id` int(11)
 ,`currency_pair_id` int(11)
-,`bsi_id` int(11)
 ,`symbol_market_map` varchar(200)
 ,`price_feed_type_id` int(11)
 ,`valor` varchar(15)
@@ -2635,6 +2876,7 @@ CREATE TABLE IF NOT EXISTS `v_securities` (
 --
 -- Stand-in structure for view `v_securities_mm_symbol_request`
 --
+DROP VIEW IF EXISTS `v_securities_mm_symbol_request`;
 CREATE TABLE IF NOT EXISTS `v_securities_mm_symbol_request` (
 `ISIN` varchar(20)
 );
@@ -2651,8 +2893,20 @@ CREATE TABLE IF NOT EXISTS `v_security_amount_types` (
 -- --------------------------------------------------------
 
 --
+-- Stand-in structure for view `v_security_exchanges`
+--
+DROP VIEW IF EXISTS `v_security_exchanges`;
+CREATE TABLE IF NOT EXISTS `v_security_exchanges` (
+`security_exchange_id` int(11)
+,`exchange_name` varchar(200)
+);
+-- --------------------------------------------------------
+
+
+--
 -- Stand-in structure for view `v_security_exposure_stati`
 --
+DROP VIEW IF EXISTS `v_security_exposure_stati`;
 CREATE TABLE IF NOT EXISTS `v_security_exposure_stati` (
 `security_exposure_status_id` int(11)
 ,`status_text` varchar(200)
@@ -2662,6 +2916,7 @@ CREATE TABLE IF NOT EXISTS `v_security_exposure_stati` (
 --
 -- Stand-in structure for view `v_security_fields`
 --
+DROP VIEW IF EXISTS `v_security_fields`;
 CREATE TABLE IF NOT EXISTS `v_security_fields` (
 `security_field_id` int(11)
 ,`description` varchar(200)
@@ -2681,6 +2936,7 @@ CREATE TABLE IF NOT EXISTS `v_security_field_source_types` (
 --
 -- Stand-in structure for view `v_security_issuers`
 --
+DROP VIEW IF EXISTS `v_security_issuers`;
 CREATE TABLE IF NOT EXISTS `v_security_issuers` (
 `security_issuer_id` int(11)
 ,`issuer_name` varchar(200)
@@ -2688,11 +2944,12 @@ CREATE TABLE IF NOT EXISTS `v_security_issuers` (
 -- --------------------------------------------------------
 
 --
--- Stand-in structure for view `v_security_exchanges`
+-- Stand-in structure for view `v_security_link_types`
 --
-CREATE TABLE IF NOT EXISTS `v_security_exchanges` (
-`security_exchange_id` int(11)
-,`exchange_name` varchar(200)
+DROP VIEW IF EXISTS `v_security_link_types`;
+CREATE TABLE IF NOT EXISTS `v_security_link_types` (
+`security_link_type_id` int(11)
+,`type_name` varchar(200)
 );
 -- --------------------------------------------------------
 
@@ -2709,6 +2966,7 @@ CREATE TABLE IF NOT EXISTS `v_security_payment_types` (
 --
 -- Stand-in structure for view `v_security_pnl`
 --
+DROP VIEW IF EXISTS `v_security_pnl`;
 CREATE TABLE IF NOT EXISTS `v_security_pnl` (
 `portfolio_id` int(11)
 ,`security_id` int(11)
@@ -2740,6 +2998,7 @@ CREATE TABLE IF NOT EXISTS `v_security_pnl` (
 --
 -- Stand-in structure for view `v_security_pos`
 --
+DROP VIEW IF EXISTS `v_security_pos`;
 CREATE TABLE IF NOT EXISTS `v_security_pos` (
 `security_id` int(11)
 ,`security_name` varchar(200)
@@ -2771,6 +3030,7 @@ CREATE TABLE IF NOT EXISTS `v_security_pos` (
 --
 -- Stand-in structure for view `v_security_price_feed`
 --
+DROP VIEW IF EXISTS `v_security_price_feed`;
 CREATE TABLE IF NOT EXISTS `v_security_price_feed` (
 `security_id` int(11)
 ,`name` varchar(200)
@@ -2779,7 +3039,6 @@ CREATE TABLE IF NOT EXISTS `v_security_price_feed` (
 ,`currency_id` int(11)
 ,`security_type_id` int(11)
 ,`currency_pair_id` int(11)
-,`bsi_id` int(11)
 ,`symbol_market_map` varchar(200)
 ,`price_feed_type_id` int(11)
 );
@@ -2788,6 +3047,7 @@ CREATE TABLE IF NOT EXISTS `v_security_price_feed` (
 --
 -- Stand-in structure for view `v_security_price_feed_types`
 --
+DROP VIEW IF EXISTS `v_security_price_feed_types`;
 CREATE TABLE IF NOT EXISTS `v_security_price_feed_types` (
 `feed_type_id` int(11)
 ,`type_name` varchar(200)
@@ -2797,6 +3057,7 @@ CREATE TABLE IF NOT EXISTS `v_security_price_feed_types` (
 --
 -- Stand-in structure for view `v_security_quote_types`
 --
+DROP VIEW IF EXISTS `v_security_quote_types`;
 CREATE TABLE IF NOT EXISTS `v_security_quote_types` (
 `security_quote_type_id` int(11)
 ,`type_name` varchar(200)
@@ -2830,6 +3091,7 @@ CREATE TABLE IF NOT EXISTS `v_security_triggers_open` (
 --
 -- Stand-in structure for view `v_security_trigger_stati`
 --
+DROP VIEW IF EXISTS `v_security_trigger_stati`;
 CREATE TABLE IF NOT EXISTS `v_security_trigger_stati` (
 `trigger_status_id` int(11)
 ,`status_text` varchar(200)
@@ -2839,6 +3101,7 @@ CREATE TABLE IF NOT EXISTS `v_security_trigger_stati` (
 --
 -- Stand-in structure for view `v_security_trigger_types`
 --
+DROP VIEW IF EXISTS `v_security_trigger_types`;
 CREATE TABLE IF NOT EXISTS `v_security_trigger_types` (
 `trigger_type_id` int(11)
 ,`type_name` varchar(200)
@@ -2848,9 +3111,11 @@ CREATE TABLE IF NOT EXISTS `v_security_trigger_types` (
 --
 -- Stand-in structure for view `v_security_types`
 --
+DROP VIEW IF EXISTS `v_security_types`;
 CREATE TABLE IF NOT EXISTS `v_security_types` (
 `security_type_id` int(11)
 ,`description` varchar(200)
+,`code_id` varchar(100)
 ,`security_quote_type_id` int(11)
 ,`quantity_factor` double
 ,`quote_type` varchar(200)
@@ -2961,6 +3226,7 @@ CREATE TABLE IF NOT EXISTS `v_trade_confirmation_types` (
 --
 -- Stand-in structure for view `v_trade_fifo_sum_size`
 --
+DROP VIEW IF EXISTS `v_trade_fifo_sum_size`;
 CREATE TABLE IF NOT EXISTS `v_trade_fifo_sum_size` (
 `portfolio_id` int(11)
 ,`security_id` int(11)
@@ -2988,6 +3254,7 @@ CREATE TABLE IF NOT EXISTS `v_trade_fifo_sum_size_test` (
 --
 -- Stand-in structure for view `v_trade_fifo_type`
 --
+DROP VIEW IF EXISTS `v_trade_fifo_type`;
 CREATE TABLE IF NOT EXISTS `v_trade_fifo_type` (
 `portfolio_id` int(11)
 ,`security_id` int(11)
@@ -3003,6 +3270,7 @@ CREATE TABLE IF NOT EXISTS `v_trade_fifo_type` (
 --
 -- Stand-in structure for view `v_trade_fifo_upl`
 --
+DROP VIEW IF EXISTS `v_trade_fifo_upl`;
 CREATE TABLE IF NOT EXISTS `v_trade_fifo_upl` (
 `portfolio_id` int(11)
 ,`security_id` int(11)
@@ -3029,6 +3297,7 @@ CREATE TABLE IF NOT EXISTS `v_trade_payment_types` (
 --
 -- Stand-in structure for view `v_trade_pnl`
 --
+DROP VIEW IF EXISTS `v_trade_pnl`;
 CREATE TABLE IF NOT EXISTS `v_trade_pnl` (
 `portfolio_id` int(11)
 ,`security_id` int(11)
@@ -3076,6 +3345,7 @@ CREATE TABLE IF NOT EXISTS `v_trade_pnl` (
 --
 -- Stand-in structure for view `v_trade_pnl_calc`
 --
+DROP VIEW IF EXISTS `v_trade_pnl_calc`;
 CREATE TABLE IF NOT EXISTS `v_trade_pnl_calc` (
 `portfolio_id` int(11)
 ,`security_id` int(11)
@@ -3122,6 +3392,7 @@ CREATE TABLE IF NOT EXISTS `v_trade_pnl_calc` (
 --
 -- Stand-in structure for view `v_trade_pnl_calc_cash`
 --
+DROP VIEW IF EXISTS `v_trade_pnl_calc_cash`;
 CREATE TABLE IF NOT EXISTS `v_trade_pnl_calc_cash` (
 `portfolio_id` int(11)
 ,`security_id` int(11)
@@ -3166,8 +3437,56 @@ CREATE TABLE IF NOT EXISTS `v_trade_pnl_calc_cash` (
 -- --------------------------------------------------------
 
 --
+-- Stand-in structure for view `v_trade_pnl_calc_cash_direct`
+--
+DROP VIEW IF EXISTS `v_trade_pnl_calc_cash_direct`;
+CREATE TABLE IF NOT EXISTS `v_trade_pnl_calc_cash_direct` (
+`portfolio_id` int(11)
+,`security_id` int(11)
+,`security_name` varchar(200)
+,`security_type_id` int(11)
+,`asset_class` varchar(200)
+,`asset_code` varchar(2)
+,`currency_id` int(11)
+,`trade_curr` varchar(20)
+,`sec_currency_id` int(11)
+,`security_issuer_id` binary(0)
+,`sec_curr` binary(0)
+,`trade_date` datetime
+,`price` double
+,`price_ref` int(1)
+,`price_ref_open` double
+,`size` double
+,`security_quote_type_id` binary(0)
+,`quantity_factor` double
+,`calc_premium` double
+,`calc_premium_ref` double
+,`calc_premium_ref_open` double
+,`premium` double
+,`update_time` datetime
+,`bid` int(1)
+,`ask` int(1)
+,`last_price` bigint(11)
+,`sell_price` bigint(11)
+,`pos_value` double
+,`pos_value_ref` double
+,`pos_value_ref_open` double
+,`pos_value_last` double
+,`pos_value_last_ref` double
+,`pos_value_last_ref_open` double
+,`pnl` double
+,`pnl_ref` double
+,`pnl_ref_open` double
+,`pnl_last` double
+,`decimals` int(11)
+,`ref_decimals` int(11)
+);
+-- --------------------------------------------------------
+
+--
 -- Stand-in structure for view `v_trade_pnl_get_prices`
 --
+DROP VIEW IF EXISTS `v_trade_pnl_get_prices`;
 CREATE TABLE IF NOT EXISTS `v_trade_pnl_get_prices` (
 `portfolio_id` int(11)
 ,`security_id` int(11)
@@ -3205,8 +3524,49 @@ CREATE TABLE IF NOT EXISTS `v_trade_pnl_get_prices` (
 -- --------------------------------------------------------
 
 --
+-- Stand-in structure for view `v_trade_pnl_get_prices_cash`
+--
+DROP VIEW IF EXISTS `v_trade_pnl_get_prices_cash`;
+CREATE TABLE IF NOT EXISTS `v_trade_pnl_get_prices_cash` (
+`portfolio_id` int(11)
+,`security_id` int(11)
+,`security_name` varchar(200)
+,`security_type_id` int(11)
+,`asset_class` varchar(200)
+,`asset_code` varchar(2)
+,`currency_id` int(11)
+,`trade_curr` varchar(20)
+,`sec_currency_id` int(11)
+,`security_issuer_id` binary(0)
+,`sec_curr` binary(0)
+,`trade_date` datetime
+,`price` double
+,`price_ref` double
+,`price_ref_open` double
+,`size` double
+,`security_quote_type_id` binary(0)
+,`quantity_factor` double
+,`calc_premium` double
+,`calc_premium_ref` double
+,`calc_premium_ref_open` double
+,`premium` double
+,`bid` int(1)
+,`ask` int(1)
+,`last_price` int(1)
+,`sell_price` int(1)
+,`update_time` datetime
+,`ref_currency_id` int(11)
+,`decimals` int(11)
+,`ref_decimals` int(11)
+,`fx_rate` int(1)
+,`fx_rate_open` double
+);
+-- --------------------------------------------------------
+
+--
 -- Stand-in structure for view `v_trade_premium`
 --
+DROP VIEW IF EXISTS `v_trade_premium`;
 CREATE TABLE IF NOT EXISTS `v_trade_premium` (
 `portfolio_id` int(11)
 ,`security_id` int(11)
@@ -3228,8 +3588,28 @@ CREATE TABLE IF NOT EXISTS `v_trade_premium` (
 -- --------------------------------------------------------
 
 --
+-- Stand-in structure for view `v_trade_premium_cash`
+--
+DROP VIEW IF EXISTS `v_trade_premium_cash`;
+CREATE TABLE IF NOT EXISTS `v_trade_premium_cash` (
+`portfolio_id` int(11)
+,`currency_id` int(11)
+,`trade_curr` varchar(20)
+,`trade_date` datetime
+,`price` double
+,`size` double
+,`calc_premium` double
+,`premium` double
+,`fx_rate_open` double
+,`ref_currency_id` int(11)
+,`decimals` int(11)
+);
+-- --------------------------------------------------------
+
+--
 -- Stand-in structure for view `v_trade_premium_fifo`
 --
+DROP VIEW IF EXISTS `v_trade_premium_fifo`;
 CREATE TABLE IF NOT EXISTS `v_trade_premium_fifo` (
 `portfolio_id` int(11)
 ,`security_id` int(11)
@@ -3254,6 +3634,7 @@ CREATE TABLE IF NOT EXISTS `v_trade_premium_fifo` (
 --
 -- Stand-in structure for view `v_trade_premium_long_short`
 --
+DROP VIEW IF EXISTS `v_trade_premium_long_short`;
 CREATE TABLE IF NOT EXISTS `v_trade_premium_long_short` (
 `portfolio_id` int(11)
 ,`security_id` int(11)
@@ -3267,6 +3648,7 @@ CREATE TABLE IF NOT EXISTS `v_trade_premium_long_short` (
 --
 -- Stand-in structure for view `v_trade_premium_ref`
 --
+DROP VIEW IF EXISTS `v_trade_premium_ref`;
 CREATE TABLE IF NOT EXISTS `v_trade_premium_ref` (
 `portfolio_id` int(11)
 ,`security_id` int(11)
@@ -3297,8 +3679,42 @@ CREATE TABLE IF NOT EXISTS `v_trade_premium_ref` (
 -- --------------------------------------------------------
 
 --
+-- Stand-in structure for view `v_trade_premium_ref_cash`
+--
+DROP VIEW IF EXISTS `v_trade_premium_ref_cash`;
+CREATE TABLE IF NOT EXISTS `v_trade_premium_ref_cash` (
+`portfolio_id` int(11)
+,`security_id` binary(0)
+,`currency_id` int(11)
+,`trade_curr` varchar(20)
+,`sec_currency_id` int(11)
+,`security_issuer_id` binary(0)
+,`sec_curr` binary(0)
+,`decimals` int(11)
+,`trade_date` datetime
+,`price` double
+,`price_ref` double
+,`price_trade_ref` double
+,`price_ref_open` double
+,`size` double
+,`security_quote_type_id` binary(0)
+,`quantity_factor` double
+,`calc_premium` double
+,`calc_premium_ref` double
+,`calc_premium_trade_ref` double
+,`calc_premium_ref_open` double
+,`premium` double
+,`ref_currency_id` int(11)
+,`ref_decimals` int(11)
+,`fx_rate` int(1)
+,`fx_rate_open` double
+);
+-- --------------------------------------------------------
+
+--
 -- Stand-in structure for view `v_trade_premium_ref_get`
 --
+DROP VIEW IF EXISTS `v_trade_premium_ref_get`;
 CREATE TABLE IF NOT EXISTS `v_trade_premium_ref_get` (
 `portfolio_id` int(11)
 ,`security_id` int(11)
@@ -3323,8 +3739,30 @@ CREATE TABLE IF NOT EXISTS `v_trade_premium_ref_get` (
 -- --------------------------------------------------------
 
 --
+-- Stand-in structure for view `v_trade_premium_ref_get_cash`
+--
+DROP VIEW IF EXISTS `v_trade_premium_ref_get_cash`;
+CREATE TABLE IF NOT EXISTS `v_trade_premium_ref_get_cash` (
+`portfolio_id` int(11)
+,`currency_id` int(11)
+,`trade_curr` varchar(20)
+,`decimals` int(11)
+,`trade_date` datetime
+,`price` double
+,`size` double
+,`calc_premium` double
+,`premium` double
+,`ref_currency_id` int(11)
+,`quantity_factor` double
+,`trade_fx_rate` double
+,`fx_rate_open` double
+);
+-- --------------------------------------------------------
+
+--
 -- Stand-in structure for view `v_trade_premium_ref_get_fx`
 --
+DROP VIEW IF EXISTS `v_trade_premium_ref_get_fx`;
 CREATE TABLE IF NOT EXISTS `v_trade_premium_ref_get_fx` (
 `portfolio_id` int(11)
 ,`security_id` int(11)
@@ -3354,8 +3792,50 @@ CREATE TABLE IF NOT EXISTS `v_trade_premium_ref_get_fx` (
 -- --------------------------------------------------------
 
 --
+-- Stand-in structure for view `v_trade_premium_ref_get_fx_cash`
+--
+DROP VIEW IF EXISTS `v_trade_premium_ref_get_fx_cash`;
+CREATE TABLE IF NOT EXISTS `v_trade_premium_ref_get_fx_cash` (
+`portfolio_id` int(11)
+,`security_id` binary(0)
+,`currency_id` int(11)
+,`trade_curr` varchar(20)
+,`sec_currency_id` int(11)
+,`security_issuer_id` binary(0)
+,`sec_curr` binary(0)
+,`decimals` int(11)
+,`trade_date` datetime
+,`price` double
+,`price_trade_ref` double
+,`price_ref_open` double
+,`size` double
+,`security_quote_type_id` binary(0)
+,`quantity_factor` double
+,`calc_premium` double
+,`calc_premium_trade_ref` double
+,`calc_premium_ref_open` double
+,`premium` double
+,`ref_currency_id` int(11)
+,`ref_decimals` int(11)
+,`trade_fx_rate` double
+,`fx_rate_open` double
+,`fx_rate` int(1)
+);
+-- --------------------------------------------------------
+
+--
+-- Stand-in structure for view `v_trade_premium_ref_get_fx_missing`
+--
+DROP VIEW IF EXISTS `v_trade_premium_ref_get_fx_missing`;
+CREATE TABLE IF NOT EXISTS `v_trade_premium_ref_get_fx_missing` (
+`portfolio_id` int(11)
+);
+-- --------------------------------------------------------
+
+--
 -- Stand-in structure for view `v_trade_premium_ref_get_sec`
 --
+DROP VIEW IF EXISTS `v_trade_premium_ref_get_sec`;
 CREATE TABLE IF NOT EXISTS `v_trade_premium_ref_get_sec` (
 `portfolio_id` int(11)
 ,`security_id` int(11)
@@ -3396,6 +3876,7 @@ CREATE TABLE IF NOT EXISTS `v_trade_security` (
 --
 -- Stand-in structure for view `v_trade_select`
 --
+DROP VIEW IF EXISTS `v_trade_select`;
 CREATE TABLE IF NOT EXISTS `v_trade_select` (
 `trade_id` int(11)
 ,`trade_key` varchar(444)
@@ -3405,20 +3886,82 @@ CREATE TABLE IF NOT EXISTS `v_trade_select` (
 --
 -- Stand-in structure for view `v_trade_stati`
 --
+DROP VIEW IF EXISTS `v_trade_stati`;
 CREATE TABLE IF NOT EXISTS `v_trade_stati` (
 `trade_status_id` int(11)
 ,`status_text` varchar(200)
 ,`use_for_position` tinyint(1)
 ,`use_for_simulation` tinyint(1)
 ,`use_for_reconciliation` tinyint(1)
-,`comment` text,
+,`comment` text
 );
 -- --------------------------------------------------------
 
 --
 -- Stand-in structure for view `v_trade_types`
 --
+DROP VIEW IF EXISTS `v_trade_types`;
 CREATE TABLE IF NOT EXISTS `v_trade_types` (
+`trade_type_id` int(11)
+,`description` varchar(200)
+);
+-- --------------------------------------------------------
+
+--
+-- Stand-in structure for view `v_trade_types_bond`
+--
+DROP VIEW IF EXISTS `v_trade_types_bond`;
+CREATE TABLE IF NOT EXISTS `v_trade_types_bond` (
+`trade_type_id` int(11)
+,`description` varchar(200)
+);
+-- --------------------------------------------------------
+
+--
+-- Stand-in structure for view `v_trade_types_cash`
+--
+DROP VIEW IF EXISTS `v_trade_types_cash`;
+CREATE TABLE IF NOT EXISTS `v_trade_types_cash` (
+`trade_type_id` int(11)
+,`description` varchar(200)
+);
+-- --------------------------------------------------------
+
+--
+-- Stand-in structure for view `v_trade_types_equity`
+--
+DROP VIEW IF EXISTS `v_trade_types_equity`;
+CREATE TABLE IF NOT EXISTS `v_trade_types_equity` (
+`trade_type_id` int(11)
+,`description` varchar(200)
+);
+-- --------------------------------------------------------
+
+--
+-- Stand-in structure for view `v_trade_types_fund`
+--
+DROP VIEW IF EXISTS `v_trade_types_fund`;
+CREATE TABLE IF NOT EXISTS `v_trade_types_fund` (
+`trade_type_id` int(11)
+,`description` varchar(200)
+);
+-- --------------------------------------------------------
+
+--
+-- Stand-in structure for view `v_trade_types_fx`
+--
+DROP VIEW IF EXISTS `v_trade_types_fx`;
+CREATE TABLE IF NOT EXISTS `v_trade_types_fx` (
+`trade_type_id` int(11)
+,`description` varchar(200)
+);
+-- --------------------------------------------------------
+
+--
+-- Stand-in structure for view `v_trade_types_fx_swap`
+--
+DROP VIEW IF EXISTS `v_trade_types_fx_swap`;
+CREATE TABLE IF NOT EXISTS `v_trade_types_fx_swap` (
 `trade_type_id` int(11)
 ,`description` varchar(200)
 );
@@ -3437,6 +3980,7 @@ CREATE TABLE IF NOT EXISTS `v_trade_type_bank_codes` (
 --
 -- Stand-in structure for view `v_underlyings`
 --
+DROP VIEW IF EXISTS `v_underlyings`;
 CREATE TABLE IF NOT EXISTS `v_underlyings` (
 `underlying_id` int(11)
 ,`name` varchar(200)
@@ -3444,17 +3988,9 @@ CREATE TABLE IF NOT EXISTS `v_underlyings` (
 -- --------------------------------------------------------
 
 --
--- Stand-in structure for view `v_security_link_types`
---
-CREATE TABLE IF NOT EXISTS `v_security_link_types` (
-`security_link_type_id` int(11)
-,`type_name` varchar(200)
-);
--- --------------------------------------------------------
-
---
 -- Stand-in structure for view `v_user_types`
 --
+DROP VIEW IF EXISTS `v_user_types`;
 CREATE TABLE IF NOT EXISTS `v_user_types` (
 `user_type_id` int(11)
 ,`type_name` varchar(200)
@@ -3832,6 +4368,26 @@ CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW 
 -- --------------------------------------------------------
 
 --
+-- Structure for view `v_exposure_asset_classes`
+--
+DROP TABLE IF EXISTS `v_exposure_asset_classes`;
+
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `v_exposure_asset_classes` AS 
+select 
+  NULL AS `exposure_item_id`,
+  ' not set' AS `description` 
+union select 
+  i.`exposure_item_id` AS `exposure_item_id`,
+  i.`description` AS `description` 
+from 
+  `exposure_items` i, `exposure_types` t
+where
+  i.`exposure_type_id` = t.`exposure_type_id`
+  and t.`code_id` = 'asset_class';
+
+-- --------------------------------------------------------
+
+--
 -- Structure for view `v_exposure_items`
 --
 DROP TABLE IF EXISTS `v_exposure_items`;
@@ -3869,26 +4425,6 @@ union select
   i.`description` AS `part_of` 
 from 
   `exposure_items` i;
-
--- --------------------------------------------------------
-
---
--- Structure for view `v_exposure_asset_classes`
---
-DROP TABLE IF EXISTS `v_exposure_asset_classes`;
-
-CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `v_exposure_asset_classes` AS 
-select 
-  NULL AS `exposure_item_id`,
-  ' not set' AS `description` 
-union select 
-  i.`exposure_item_id` AS `exposure_item_id`,
-  i.`description` AS `description` 
-from 
-  `exposure_items` i, `exposure_types` t
-where
-  i.`exposure_type_id` = t.`exposure_type_id`
-  and t.`code_id` = 'asset_class';
 
 -- --------------------------------------------------------
 
@@ -4111,6 +4647,26 @@ union select
 -- --------------------------------------------------------
 
 --
+-- Structure for view `v_portfolios_f` - list of all portfolios open to all users or if the TREAM user is an admin
+--
+DROP TABLE IF EXISTS `v_portfolios_f`;
+
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `v_portfolios_f` AS 
+select 
+  `log_users`.`user_id`,
+  `log_users`.`code_id` AS `user_name`,
+  `portfolios`.*
+from 
+  `portfolios`, `portfolio_rights`, `log_user_types`, `log_user_rights`, `log_users` 
+where 
+  `portfolios`.`portfolio_id` = `portfolio_rights`.`portfolio_id`
+  AND `portfolio_rights`.`user_right_id` = `log_user_rights`.`user_right_id`
+  AND `log_users`.`user_type_id` = `log_user_types`.`user_type_id`
+  AND (`log_user_types`.`code_id` = 'normal' OR `log_user_types`.`code_id` = 'admin');
+
+-- --------------------------------------------------------
+
+--
 -- Structure for view `v_portfolios_r` - list of all restricted portfolios and the TREAM users that are premitted to see it
 --
 
@@ -4135,26 +4691,6 @@ where
   AND w.`user_id` = u.`user_id`
   AND u.`user_type_id` = i.`user_type_id`
   AND i.`code_id` in ('system','root','admin','power_user','user','risk');
-
--- --------------------------------------------------------
-
---
--- Structure for view `v_portfolios_f` - list of all portfolios open to all users or if the TREAM user is an admin
---
-DROP TABLE IF EXISTS `v_portfolios_f`;
-
-CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `v_portfolios_f` AS 
-select 
-  `log_users`.`user_id`,
-  `log_users`.`code_id` AS `user_name`,
-  `portfolios`.*
-from 
-  `portfolios`, `portfolio_rights`, `log_user_types`, `log_user_rights`, `log_users` 
-where 
-  `portfolios`.`portfolio_id` = `portfolio_rights`.`portfolio_id`
-  AND `portfolio_rights`.`user_right_id` = `log_user_rights`.`user_right_id`
-  AND `log_users`.`user_type_id` = `log_user_types`.`user_type_id`
-  AND (`log_user_types`.`code_id` = 'normal' OR `log_user_types`.`code_id` = 'admin');
 
 -- --------------------------------------------------------
 
@@ -4538,6 +5074,13 @@ where `v_portfolio_pos_get`.`security_id` = `securities`.`security_id`;
 -- --------------------------------------------------------
 
 --
+-- Structure for view `v_portfolio_pos_named`
+--
+DROP TABLE IF EXISTS `v_portfolio_pos_named`;
+
+-- --------------------------------------------------------
+
+--
 -- Structure for view `v_portfolio_types`
 --
 DROP TABLE IF EXISTS `v_portfolio_types`;
@@ -4669,7 +5212,6 @@ SELECT
   ''         AS `curr`,
   NULL       AS `security_type_id`,
   NULL       AS `currency_pair_id`,
-  NULL       AS `bsi_id`, 
   NULL       AS `symbol_market_map`, 
   NULL       AS `price_feed_type_id`, 
   ''         AS `valor`,  
@@ -4692,7 +5234,6 @@ UNION SELECT
   `currencies`.`symbol` AS `curr`,
   `securities`.`security_type_id` AS `security_type_id`,
   `securities`.`currency_pair_id` AS `currency_pair_id`,
-  `securities`.`bsi_id` AS `bsi_id`, 
   `securities`.`symbol_market_map` AS `symbol_market_map`, 
   `securities`.`price_feed_type_id` AS `price_feed_type_id`, 
   `securities`.`valor` AS `valor`,  
@@ -4730,6 +5271,23 @@ AND (`securities`.`symbol_market_map` = '' OR `securities`.`last_price` = 0 OR `
 DROP TABLE IF EXISTS `v_security_amount_types`;
 
 CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `v_security_amount_types` AS select NULL AS `security_amount_type_id`,' not set' AS `type_name` union select `security_amount_types`.`security_amount_type_id` AS `security_amount_type_id`,`security_amount_types`.`type_name` AS `type_name` from `security_amount_types`;
+
+-- --------------------------------------------------------
+
+--
+-- Structure for view `v_security_exchanges`
+--
+DROP TABLE IF EXISTS `v_security_exchanges`;
+
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `v_security_exchanges` AS
+select 
+  NULL AS `security_exchange_id`,
+  ' not set' AS `exchange_name` 
+union select 
+  `security_exchanges`.`security_exchange_id` AS `security_exchange_id`,
+  `security_exchanges`.`exchange_name` AS `exchange_name`
+from 
+  `security_exchanges`;
 
 -- --------------------------------------------------------
 
@@ -4774,23 +5332,6 @@ union select
   `security_issuers`.`issuer_name` AS `issuer_name`
 from 
   `security_issuers`;
-
--- --------------------------------------------------------
-
---
--- Structure for view `v_security_exchanges`
---
-DROP TABLE IF EXISTS `v_security_exchanges`;
-
-CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `v_security_exchanges` AS
-select 
-  NULL AS `security_exchange_id`,
-  ' not set' AS `exchange_name` 
-union select 
-  `security_exchanges`.`security_exchange_id` AS `security_exchange_id`,
-  `security_exchanges`.`exchange_name` AS `exchange_name`
-from 
-  `security_exchanges`;
 
 -- --------------------------------------------------------
 
@@ -4883,7 +5424,7 @@ where (`v_security_pnl`.`position` <> 0)
 --
 DROP TABLE IF EXISTS `v_security_price_feed`;
 
-CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `v_security_price_feed` AS select `securities`.`security_id` AS `security_id`,`securities`.`name` AS `name`,`securities`.`ISIN` AS `ISIN`,`securities`.`last_price` AS `last_price`,`securities`.`currency_id` AS `currency_id`,`securities`.`security_type_id` AS `security_type_id`,`securities`.`currency_pair_id` AS `currency_pair_id`,`securities`.`bsi_id` AS `bsi_id`,`securities`.`symbol_market_map` AS `symbol_market_map`,`securities`.`price_feed_type_id` AS `price_feed_type_id` from `securities`;
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `v_security_price_feed` AS select `securities`.`security_id` AS `security_id`,`securities`.`name` AS `name`,`securities`.`ISIN` AS `ISIN`,`securities`.`last_price` AS `last_price`,`securities`.`currency_id` AS `currency_id`,`securities`.`security_type_id` AS `security_type_id`,`securities`.`currency_pair_id` AS `currency_pair_id`,`securities`.`symbol_market_map` AS `symbol_market_map`,`securities`.`price_feed_type_id` AS `price_feed_type_id` from `securities`;
 
 -- --------------------------------------------------------
 
@@ -5904,38 +6445,71 @@ from (`v_trade_premium_ref_get_fx_cash`
 -- --------------------------------------------------------
 
 --
+-- Structure for view `v_trade_premium_ref_get`
+--
+DROP TABLE IF EXISTS `v_trade_premium_ref_get`;
+
+-- --------------------------------------------------------
+
+--
+-- Structure for view `v_trade_premium_ref_get_cash`
+--
+DROP TABLE IF EXISTS `v_trade_premium_ref_get_cash`;
+
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `v_trade_premium_ref_get_cash` AS 
+select 
+  c.`portfolio_id`          AS `portfolio_id`,
+  c.`currency_id`           AS `currency_id`,
+  c.`trade_curr`            AS `trade_curr`,
+  c.`decimals`              AS `decimals`,
+  c.`trade_date`            AS `trade_date`,
+  c.`price`                 AS `price`,
+  c.`size`                  AS `size`,
+  c.`calc_premium`          AS `calc_premium`,
+  c.`premium`               AS `premium`,
+  c.`ref_currency_id`       AS `ref_currency_id`,
+  `currency_pairs`.`factor` AS `quantity_factor`,
+  if((c.`currency_id` = c.`ref_currency_id`),1,`currency_pairs`.`fx_rate` * `currency_pairs`.`factor`) AS `trade_fx_rate`,
+  if((c.`currency_id` = c.`ref_currency_id`),1,c.`fx_rate_open`           * `currency_pairs`.`factor`) AS `fx_rate_open` 
+from (`v_trade_premium_cash` c
+      left join `currency_pairs` on ((c.`currency_id`     = `currency_pairs`.`currency1_id`) 
+                                 and (c.`ref_currency_id` = `currency_pairs`.`currency2_id`)));
+
+-- --------------------------------------------------------
+
+--
 -- Structure for view `v_trade_premium_ref_get_fx_cash`
 --
 DROP TABLE IF EXISTS `v_trade_premium_ref_get_fx_cash`;
 
 CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `v_trade_premium_ref_get_fx_cash` AS 
 select 
-  `v_trade_premium_ref_get_cash`.`portfolio_id`    AS `portfolio_id`,
-  Null                                             AS `security_id`,
-  `v_trade_premium_ref_get_cash`.`currency_id`     AS `currency_id`,
-  `v_trade_premium_ref_get_cash`.`trade_curr`      AS `trade_curr`,
-  `v_trade_premium_ref_get_cash`.`currency_id`     AS `sec_currency_id`,
-  Null                                             AS `security_issuer_id`,
-  Null                                             AS `sec_curr`,
-  `v_trade_premium_ref_get_cash`.`decimals`        AS `decimals`,
-  `v_trade_premium_ref_get_cash`.`trade_date`      AS `trade_date`,
-  `v_trade_premium_ref_get_cash`.`price`           AS `price`,
-  `v_trade_premium_ref_get_cash`.`price`           AS `price_trade_ref`,
-  `v_trade_premium_ref_get_cash`.`price`           AS `price_ref_open`,
-  `v_trade_premium_ref_get_cash`.`size`            AS `size`,
-  Null                                             AS `security_quote_type_id`,
-  `v_trade_premium_ref_get_cash`.`quantity_factor` AS `quantity_factor`,
-  `v_trade_premium_ref_get_cash`.`calc_premium`    AS `calc_premium`,
-  `v_trade_premium_ref_get_cash`.`calc_premium`    AS `calc_premium_trade_ref`,
-  `v_trade_premium_ref_get_cash`.`calc_premium`    AS `calc_premium_ref_open`,
-  `v_trade_premium_ref_get_cash`.`premium`         AS `premium`,
-  `v_trade_premium_ref_get_cash`.`ref_currency_id` AS `ref_currency_id`,
-  `v_trade_premium_ref_get_cash`.`decimals`        AS `ref_decimals`,
-  `v_trade_premium_ref_get_cash`.`trade_fx_rate`   AS `trade_fx_rate` ,
-  `v_trade_premium_ref_get_cash`.`fx_rate_open`    AS `fx_rate_open`, 
-  1                                                AS `fx_rate`
+  c.`portfolio_id`    AS `portfolio_id`,
+  Null                AS `security_id`,
+  c.`currency_id`     AS `currency_id`,
+  c.`trade_curr`      AS `trade_curr`,
+  c.`currency_id`     AS `sec_currency_id`,
+  Null                AS `security_issuer_id`,
+  Null                AS `sec_curr`,
+  c.`decimals`        AS `decimals`,
+  c.`trade_date`      AS `trade_date`,
+  c.`price`           AS `price`,
+  c.`price`           AS `price_trade_ref`,
+  c.`price`           AS `price_ref_open`,
+  c.`size`            AS `size`,
+  Null                AS `security_quote_type_id`,
+  c.`quantity_factor` AS `quantity_factor`,
+  c.`calc_premium`    AS `calc_premium`,
+  c.`calc_premium`    AS `calc_premium_trade_ref`,
+  c.`calc_premium`    AS `calc_premium_ref_open`,
+  c.`premium`         AS `premium`,
+  c.`ref_currency_id` AS `ref_currency_id`,
+  c.`decimals`        AS `ref_decimals`,
+  c.`trade_fx_rate`   AS `trade_fx_rate` ,
+  c.`fx_rate_open`    AS `fx_rate_open`, 
+  1                   AS `fx_rate`
 from 
-    `v_trade_premium_ref_get_cash`;
+    `v_trade_premium_ref_get_cash` c;
 
 -- --------------------------------------------------------
 
@@ -6039,31 +6613,6 @@ from
 
 -- --------------------------------------------------------
 
---
--- Structure for view `v_trade_premium_ref_get_cash`
---
-DROP TABLE IF EXISTS `v_trade_premium_ref_get_cash`;
-
-CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `v_trade_premium_ref_get_cash` AS 
-select 
-  `v_trade_premium_cash`.`portfolio_id` AS `portfolio_id`,
-  `v_trade_premium_cash`.`currency_id` AS `currency_id`,
-  `v_trade_premium_cash`.`trade_curr` AS `trade_curr`,
-  `v_trade_premium_cash`.`decimals` AS `decimals`,
-  `v_trade_premium_cash`.`trade_date` AS `trade_date`,
-  `v_trade_premium_cash`.`price` AS `price`,
-  `v_trade_premium_cash`.`size` AS `size`,
-  `v_trade_premium_cash`.`calc_premium` AS `calc_premium`,
-  `v_trade_premium_cash`.`premium` AS `premium`,
-  `v_trade_premium_cash`.`ref_currency_id` AS `ref_currency_id`,
-  `currency_pairs`.`factor` AS `quantity_factor`,
-  if((`v_trade_premium_cash`.`currency_id` = `v_trade_premium_cash`.`ref_currency_id`),1,`currency_pairs`.`fx_rate`            * `currency_pairs`.`factor`) AS `trade_fx_rate`,
-  if((`v_trade_premium_cash`.`currency_id` = `v_trade_premium_cash`.`ref_currency_id`),1,`v_trade_premium_cash`.`fx_rate_open` * `currency_pairs`.`factor`) AS `fx_rate_open` 
-from (`v_trade_premium_cash` 
-      left join `currency_pairs` on ((`v_trade_premium_cash`.`currency_id`     = `currency_pairs`.`currency1_id`) 
-                                 and (`v_trade_premium_cash`.`ref_currency_id` = `currency_pairs`.`currency2_id`)));
-
--- --------------------------------------------------------
 
 --
 -- Structure for view `v_trade_premium_ref_get_sec`
